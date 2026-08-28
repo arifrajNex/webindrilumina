@@ -1,0 +1,540 @@
+import {
+  Destination,
+  TravelPackage,
+  StatItem,
+  Testimonial,
+  GalleryPhoto,
+  WhyChooseUsFeature,
+} from '../types';
+
+export const STATS_DATA: StatItem[] = [
+  {
+    value: '15+ Tahun',
+    label: 'Pengalaman Terpercaya',
+    detail: 'Membimbing jamaah & pelancong sejak 2011',
+    iconName: 'Award',
+  },
+  {
+    value: '50.000+',
+    label: 'Jamaah & Wisatawan',
+    detail: 'Telah terlayani dengan kepuasan bintang 5',
+    iconName: 'Users',
+  },
+  {
+    value: '28+ Negara',
+    label: 'Destinasi Wisata Dunia',
+    detail: 'Jejak peradaban Islam & wisata halal global',
+    iconName: 'Globe',
+  },
+  {
+    value: '100% Resmi',
+    label: 'Izin Kemenag & IATA',
+    detail: 'Legalitas penuh, visa terjamin & tiket pasti',
+    iconName: 'ShieldCheck',
+  },
+];
+
+export const DESTINATIONS_DATA: Destination[] = [
+  {
+    id: 'makkah-madinah',
+    title: 'Makkah & Madinah Al-Munawwarah',
+    subtitle: 'Tanah Suci Dua Kota Kemuliaan',
+    country: 'Arab Saudi',
+    region: 'Timur Tengah',
+    category: 'umroh-religi',
+    image:
+      'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop',
+    duration: '9 - 13 Hari',
+    priceFrom: 'Rp 28.500.000',
+    rating: 5.0,
+    reviewsCount: 1420,
+    badge: 'Paling Populer',
+    hotelStar: 5,
+    airlines: 'Saudia Airlines / Garuda Indonesia Direct',
+    highlights: [
+      'Hotel Ring 1 pelataran Masjidil Haram',
+      'Muthawif pembimbing bersertifikat resmi',
+      'Ziarah napak tilas Rasulullah SAW lengkap',
+      'Handling bagasi penuh & fast track',
+    ],
+    description:
+      'Raih kekhusyukan ibadah Umroh dan Haji dengan akomodasi hotel bintang 5 langsung di depan Masjidil Haram dan Masjid Nabawi, didampingi pembimbing ibadah sunnah yang berpengalaman.',
+  },
+  {
+    id: 'turki-cappadocia',
+    title: 'Istanbul, Bursa & Cappadocia',
+    subtitle: 'Kemegahan Khilafah Utsmaniyah & Balon Udara',
+    country: 'Turki',
+    region: 'Eurasia',
+    category: 'islamic-heritage',
+    image:
+      'https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=1200&auto=format&fit=crop',
+    duration: '10 - 12 Hari',
+    priceFrom: 'Rp 34.900.000',
+    rating: 4.9,
+    reviewsCount: 860,
+    badge: 'Favorit Keluarga',
+    hotelStar: 5,
+    airlines: 'Turkish Airlines Direct',
+    highlights: [
+      'Masjid Hagia Sophia & Blue Mosque',
+      'Cave Hotel 5 Star & Hot Air Balloon Cappadocia',
+      'Bosphorus Cruise privat panorama 2 benua',
+      'Kuliner 100% Halal khas Ottoman',
+    ],
+    description:
+      'Jelajahi perpaduan magis antara sejarah keemasan Islam di Istanbul, kota sutra Bursa, hingga lanskap negeri dongeng Cappadocia dengan penerbangan balon udara saat matahari terbit.',
+  },
+  {
+    id: 'dubai-abudhabi',
+    title: 'Dubai & Abu Dhabi Grand Tour',
+    subtitle: 'Pesona Futuristik & Masjid Sheikh Zayed',
+    country: 'Uni Emirat Arab',
+    region: 'Timur Tengah',
+    category: 'vip-luxury',
+    image:
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1200&auto=format&fit=crop',
+    duration: '6 - 8 Hari',
+    priceFrom: 'Rp 22.800.000',
+    rating: 4.9,
+    reviewsCount: 640,
+    badge: 'Luxury Escape',
+    hotelStar: 5,
+    airlines: 'Emirates Airline A380',
+    highlights: [
+      'Masjid Agung Sheikh Zayed marmer putih termegah',
+      'Burj Khalifa Level 124 & Dubai Mall Fountain',
+      'Desert Safari Sunset BBQ VIP 4x4 Land Cruiser',
+      'Museum of The Future & Miracle Garden',
+    ],
+    description:
+      'Nikmati kemewahan kosmopolitan kelas dunia di Dubai dan Abu Dhabi dengan menginap di hotel bintang 5 ternama, kuliner internasional halal lezat, serta pemandangan spektakuler.',
+  },
+  {
+    id: 'andalusia-spain',
+    title: 'Jejak Andalusia: Cordoba & Granada',
+    subtitle: 'Napak Tilas 8 Abad Kegemilangan Islam Eropa',
+    country: 'Spanyol & Portugal',
+    region: 'Eropa Selatan',
+    category: 'islamic-heritage',
+    image:
+      'https://images.unsplash.com/photo-1563298723-dcfebaa392e3?q=80&w=1200&auto=format&fit=crop',
+    duration: '11 - 13 Hari',
+    priceFrom: 'Rp 48.500.000',
+    rating: 4.9,
+    reviewsCount: 390,
+    badge: 'Heritage Masterpiece',
+    hotelStar: 4,
+    airlines: 'Qatar Airways / Turkish Airlines',
+    highlights: [
+      'Kompleks Istana Alhambra & Generalife Granada',
+      'Mezquita Katedral Cordoba & Madinat Az-Zahra',
+      'Plaza de Espana Sevilla & Istana Alcazar',
+      'Tur Ramah Muslim & Resto Halal Terverifikasi',
+    ],
+    description:
+      'Saksikan langsung jejak mahakarya peradaban Islam di Semenanjung Iberia. Menyusuri lorong-lorong batu Granada, keagungan Mezquita Cordoba, dan arsitektur Mudejar Sevilla.',
+  },
+  {
+    id: 'egypt-alexandria',
+    title: 'Cairo, Alexandria & Nile Cruise',
+    subtitle: 'Negeri Para Nabi & Universitas Al-Azhar',
+    country: 'Mesir',
+    region: 'Afrika Utara',
+    category: 'islamic-heritage',
+    image:
+      'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?q=80&w=1200&auto=format&fit=crop',
+    duration: '10 Hari',
+    priceFrom: 'Rp 31.500.000',
+    rating: 4.8,
+    reviewsCount: 510,
+    badge: 'Sejarah Klasik',
+    hotelStar: 5,
+    airlines: 'EgyptAir / Saudia Airlines',
+    highlights: [
+      'Piramida Giza, Sphinx & Grand Egyptian Museum',
+      'Masjid Imam Syafi’i, Sayyidina Husein & Al-Azhar',
+      'Kapal Pesiar Mewah 5-Star Cruise Sungai Nil',
+      'Benteng Qaitbay & Pantai Mediterania Alexandria',
+    ],
+    description:
+      'Telusuri peradaban tertua dunia dan jejak para nabi di tanah Kinanah Mesir, dari kemegahan Piramida hingga makam dan universitas ulama besar Islam di Kairo.',
+  },
+  {
+    id: 'uzbekistan-silkroad',
+    title: 'Uzbekistan Jalur Sutra & Samarkand',
+    subtitle: 'Napak Tilas Imam Al-Bukhari & Sains Islam',
+    country: 'Uzbekistan',
+    region: 'Asia Tengah',
+    category: 'islamic-heritage',
+    image:
+      'https://images.unsplash.com/photo-1528702748617-c64d49f918af?q=80&w=1200&auto=format&fit=crop',
+    duration: '8 - 10 Hari',
+    priceFrom: 'Rp 27.900.000',
+    rating: 4.9,
+    reviewsCount: 320,
+    badge: 'Jalur Sutra',
+    hotelStar: 4,
+    airlines: 'Uzbekistan Airways Direct',
+    highlights: [
+      'Ziarah Kompleks Makam Imam Al-Bukhari',
+      'Registan Square Samarkand berkilau mozaik biru',
+      'Kota Kuno Bukhara & Arsitektur Timurid Khiva',
+      'Kereta Cepat Afrosiyob lintas gurun Jalur Sutra',
+    ],
+    description:
+      'Perjalanan spiritual dan intelektual menyusuri jantung peradaban Jalur Sutra, tempat lahirnya ulama hadis agung Imam Bukhari dan ilmuwan-ilmuwan emas Islam.',
+  },
+  {
+    id: 'japan-halal-tour',
+    title: 'Tokyo, Kyoto & Mount Fuji Halal Tour',
+    subtitle: 'Harmoni Tradisi Sakura & Wisata Ramah Muslim',
+    country: 'Jepang',
+    region: 'Asia Timur',
+    category: 'halal-world',
+    image:
+      'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1200&auto=format&fit=crop',
+    duration: '7 - 9 Hari',
+    priceFrom: 'Rp 36.500.000',
+    rating: 4.9,
+    reviewsCount: 780,
+    badge: 'Halal Certified',
+    hotelStar: 4,
+    airlines: 'All Nippon Airways (ANA) / Garuda Indonesia',
+    highlights: [
+      'Tokyo Camii & Turkish Culture Center Masjid',
+      'Pemandangan Gunung Fuji dari Danau Kawaguchiko',
+      'Kuil Bambu Arashiyama & Fushimi Inari Kyoto',
+      'Resto Halal bersertifikasi (Wagyu, Ramen, Sushi)',
+    ],
+    description:
+      'Nikmati kenyamanan berlibur ke Negeri Sakura dengan jaminan makanan halal lezat, jadwal shalat yang teratur di masjid-masjid bersejarah Jepang, dan pemandu fasih berbahasa Indonesia.',
+  },
+  {
+    id: 'swiss-paris-halal',
+    title: 'Swiss Alps & Paris Romance Explorer',
+    subtitle: 'Puncak Salju Titlis & Keanggunan Eropa Barat',
+    country: 'Swiss & Prancis',
+    region: 'Eropa Barat',
+    category: 'vip-luxury',
+    image:
+      'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1200&auto=format&fit=crop',
+    duration: '10 - 12 Hari',
+    priceFrom: 'Rp 54.000.000',
+    rating: 5.0,
+    reviewsCount: 410,
+    badge: 'VIP Platinum',
+    hotelStar: 5,
+    airlines: 'Qatar Airways / Singapore Airlines',
+    highlights: [
+      'Gunung Titlis cable car berputar 360° & Salju Abadi',
+      'Danau Lucerne & Kota Dongeng Interlaken',
+      'Menara Eiffel, Louvre Museum & Cruise Sungai Seine',
+      'Layanan Private Transport VIP Mercedes Sprinter',
+    ],
+    description:
+      'Eksplorasi panorama terindah Pegunungan Alpen Swiss dipadukan dengan pesona romantis Kota Paris. Dirancang khusus dengan menu halal dan kenyamanan akomodasi premium.',
+  },
+];
+
+export const PACKAGES_DATA: TravelPackage[] = [
+  {
+    id: 'pkg-umroh-ramadhan',
+    title: 'Paket Umroh Lailatul Qadar & Syawal VIP',
+    category: 'umroh-religi',
+    destination: 'Makkah - Madinah',
+    duration: '12 Hari',
+    departureMonth: 'Maret / April 2026',
+    price: 'Rp 39.500.000',
+    originalPrice: 'Rp 43.000.000',
+    airline: 'Garuda Indonesia Direct Jakarta - Jeddah',
+    hotel: 'Movenpick Clock Tower (Makkah) ★★★★★ | Dallah Taibah (Madinah) ★★★★★',
+    isBestSeller: true,
+    slotsLeft: 6,
+    inclusions: [
+      'Tiket Pesawat PP Direct Flight',
+      'Visa Umroh Resmi & Asuransi Perjalanan',
+      'Hotel Bintang 5 Ring 1 (Jalan Kaki ke Masjid)',
+      'Makan 3x Sehari Menu Indonesia Buffet',
+      'Muthawif & Tour Leader Bersertifikat Kemenag',
+      'Air Zamzam 5 Liter & Perlengkapan Koper Premium',
+    ],
+    itinerary: [
+      {
+        day: 'Hari 1-2',
+        title: 'Keberangkatan & Ketibaan di Madinah',
+        desc: 'Penerbangan langsung Jakarta - Madinah, check-in hotel dan istirahat sejenak, dilanjutkan ziarah Raudhah dan makam Rasulullah SAW.',
+      },
+      {
+        day: 'Hari 3-5',
+        title: 'Ibadah Madinah & Ziarah Kota',
+        desc: 'Memperbanyak ibadah di Masjid Nabawi, ziarah Masjid Quba, Kebun Kurma, Jabal Uhud, dan Masjid Qiblatain.',
+      },
+      {
+        day: 'Hari 6-9',
+        title: 'Menuju Makkah & Pelaksanaan Umroh',
+        desc: 'Mengambil Miqat di Bir Ali, perjalanan dengan Kereta Cepat Haramain Express, pelaksanaan ibadah Umroh tawaf dan sai bersama.',
+      },
+      {
+        day: 'Hari 10-12',
+        title: 'Thawaf Wada & Kepulangan ke Tanah Air',
+        desc: 'Melaksanakan Thawaf Wada, transfer ke Bandara King Abdulaziz Jeddah, penerbangan kembali ke Jakarta dengan predikat Umroh Mabrur.',
+      },
+    ],
+  },
+  {
+    id: 'pkg-turki-tulip',
+    title: 'Turki Tulip Festival & Cappadocia Cave Experience',
+    category: 'islamic-heritage',
+    destination: 'Istanbul - Bursa - Kusadasi - Pamukkale - Cappadocia - Ankara',
+    duration: '10 Hari 7 Malam',
+    departureMonth: 'April - Mei 2026',
+    price: 'Rp 26.900.000',
+    originalPrice: 'Rp 29.500.000',
+    airline: 'Turkish Airlines Direct',
+    hotel: 'Crowne Plaza Istanbul ★★★★★ | Cappadocia Cave Hotel ★★★★★',
+    isBestSeller: true,
+    slotsLeft: 9,
+    inclusions: [
+      'Tiket PP Turkish Airlines Direct',
+      'Menginap di Hotel Cave Bintang 5 Cappadocia',
+      'Bosphorus Cruise Privat',
+      'Makan Penuh Full Board 100% Halal',
+      'Tiket Masuk Semua Objek Wisata & Museum',
+      'Tour Leader Profesional dari Jakarta',
+    ],
+    itinerary: [
+      {
+        day: 'Hari 1-3',
+        title: 'Pesona Istanbul & Kota Sutra Bursa',
+        desc: 'Hagia Sophia, Blue Mosque, Topkapi Palace, Grand Bazaar, dan ziarah makam Sultan Utsmani di Bursa.',
+      },
+      {
+        day: 'Hari 4-6',
+        title: 'Pamukkale Cotton Castle & Cappadocia',
+        desc: 'Mata air mineral kalsium Pamukkale, kota bawah tanah Kaymakli, dan menikmati sunset di lembah bebatuan unik Cappadocia.',
+      },
+      {
+        day: 'Hari 7-10',
+        title: 'Hot Air Balloon & Kembali ke Istanbul',
+        desc: 'Naik balon udara saat subuh, kunjungan kerajinan keramik & karpet Turki, transfer ke Istanbul dan penerbangan pulang.',
+      },
+    ],
+  },
+  {
+    id: 'pkg-dubai-safari',
+    title: 'Dubai Sparkling & Abu Dhabi Mosque Royal Tour',
+    category: 'vip-luxury',
+    destination: 'Dubai & Abu Dhabi',
+    duration: '6 Hari 4 Malam',
+    departureMonth: 'Tiap Bulan Sepanjang Tahun',
+    price: 'Rp 19.800.000',
+    airline: 'Emirates Airline / Etihad Airways',
+    hotel: 'Hilton Dubai Al Habtoor City ★★★★★ | Radisson Blu Abu Dhabi ★★★★★',
+    slotsLeft: 12,
+    inclusions: [
+      'Tiket Pesawat PP Maskapai Bintang 5',
+      'Hotel Bintang 5 dengan Sarapan Mewah',
+      'Desert Safari Sunset with BBQ Dinner & Show',
+      'Tiket Burj Khalifa Observation Deck Lt. 124',
+      'Ziarah & Wisata Masjid Sheikh Zayed Abu Dhabi',
+      'Visa Turis UAE & Asuransi Perjalanan',
+    ],
+    itinerary: [
+      {
+        day: 'Hari 1-2',
+        title: 'City Tour Dubai & Burj Khalifa',
+        desc: 'Dubai Frame, Dubai Marina, Mall of Emirates, naik ke observatorium Burj Khalifa, dan pertunjukan air mancur.',
+      },
+      {
+        day: 'Hari 3-4',
+        title: 'Desert Safari 4x4 & Wisata Abu Dhabi',
+        desc: 'Petualangan bukit pasir Desert Safari, ziarah Masjid Megah Sheikh Zayed Abu Dhabi, dan Istana Kepresidenan Qasr Al Watan.',
+      },
+      {
+        day: 'Hari 5-6',
+        title: 'Miracle Garden & Belanja Emas Deira',
+        desc: 'Mengunjungi taman bunga terbesar dunia Miracle Garden, belanja di Gold & Spice Souk, lalu transfer ke bandara.',
+      },
+    ],
+  },
+  {
+    id: 'pkg-andalusia-heritage',
+    title: 'Grand Andalusia & Maroko: Kejayaan Islam',
+    category: 'islamic-heritage',
+    destination: 'Madrid - Toledo - Cordoba - Sevilla - Granada - Casablanca',
+    duration: '12 Hari',
+    departureMonth: 'Juni / September 2026',
+    price: 'Rp 49.800.000',
+    originalPrice: 'Rp 53.000.000',
+    airline: 'Qatar Airways / Saudia Airlines',
+    hotel: 'Melia Granada ★★★★ | Eurostars Palace Cordoba ★★★★★',
+    slotsLeft: 8,
+    inclusions: [
+      'Penerbangan PP Maskapai Internasional',
+      'Hotel Bintang 4-5 di Lokasi Strategis',
+      'Tiket Masuk Istana Alhambra & Katedral Mezquita',
+      'Makan Halal Menu Mediterania & Spanyol',
+      'Ustadz Pembimbing Sejarah Islam',
+      'Bus Pariwisata Eksekutif Ber-WiFi',
+    ],
+    itinerary: [
+      {
+        day: 'Hari 1-3',
+        title: 'Madrid, Kota Kuno Toledo & Cordoba',
+        desc: 'Mengagumi peninggalan era keemasan di Toledo, jembatan Romawi, dan keajaiban arsitektur 856 pilar Masjid Mezquita Cordoba.',
+      },
+      {
+        day: 'Hari 4-7',
+        title: 'Sevilla & Pesona Istana Alhambra Granada',
+        desc: 'Menara Giralda Sevilla, kompleks istana dan taman surga Alhambra Granada dengan kaligrafi "La Ghaliba Illallah".',
+      },
+      {
+        day: 'Hari 8-12',
+        title: 'Ferry Lintas Benua & Masjid Hassan II Casablanca',
+        desc: 'Menyeberangi Selat Gibraltar menuju Maroko, kunjungan ke kota biru Chefchaouen dan Masjid terapung Hassan II di Casablanca.',
+      },
+    ],
+  },
+];
+
+export const WHY_CHOOSE_US_DATA: WhyChooseUsFeature[] = [
+  {
+    id: 'legal-cert',
+    title: 'Legalitas & Akreditasi Resmi A Kemenag',
+    description:
+      'Beroperasi dengan izin resmi PPIU & PIHK Kementerian Agama RI serta keanggotaan penuh IATA dengan jaminan keberangkatan 100%.',
+    iconName: 'ShieldCheck',
+    highlight: 'Terdaftar Resmi Kemenag',
+  },
+  {
+    id: 'ring-1-hotels',
+    title: 'Hotel Bintang 5 Ring 1 (Pelataran Masjid)',
+    description:
+      'Jarak dekat ke Masjidil Haram, Nabawi, maupun landmark pusat kota dunia sehingga hemat tenaga untuk beribadah dan bersantai.',
+    iconName: 'Hotel',
+    highlight: 'Kenyamanan Maksimal',
+  },
+  {
+    id: 'halal-certified',
+    title: 'Jaminan Kuliner 100% Halal & Muslim-Friendly',
+    description:
+      'Seluruh rute perjalanan dunia telah dikurasi cermat dengan restoran bersertifikat halal, waktu sholat terjaga, dan fasilitas wudhu nyaman.',
+    iconName: 'Utensils',
+    highlight: 'Tenang & Berkah',
+  },
+  {
+    id: 'expert-leaders',
+    title: 'Pembimbing Berpengalaman & Ustadz Sunnah',
+    description:
+      'Didampingi langsung oleh Hj. Triana Indrian SE dan asatidz profesional yang ramah, komunikatif, dan menguasai fiqih perjalanan.',
+    iconName: 'Users',
+    highlight: 'Bimbingan Penuh Kasih',
+  },
+  {
+    id: 'five-star-airline',
+    title: 'Penerbangan Maskapai Bintang 5 Direct',
+    description:
+      'Bekerjasama dengan Garuda Indonesia, Saudia Airlines, Emirates, Turkish Airlines, dan Qatar Airways untuk kenyamanan terbang tinggi.',
+    iconName: 'Plane',
+    highlight: 'Direct & On-Time',
+  },
+  {
+    id: 'comprehensive-insurance',
+    title: 'Proteksi Asuransi Perjalanan Global',
+    description:
+      'Perlindungan medis, keterlambatan bagasi, hingga evakuasi darurat internasional untuk keamanan seluruh anggota keluarga Anda.',
+    iconName: 'HeartHandshake',
+    highlight: 'Aman Terlindungi',
+  },
+];
+
+export const GALLERY_PHOTOS: GalleryPhoto[] = [
+  {
+    id: 'gal-1',
+    title: 'Thawaf Mengelilingi Ka’bah Suci',
+    location: 'Masjidil Haram, Makkah',
+    category: 'Makkah & Madinah',
+    imageUrl:
+      'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=900&auto=format&fit=crop',
+  },
+  {
+    id: 'gal-2',
+    title: 'Kemegahan Payung Raksasa Nabawi',
+    location: 'Masjid Nabawi, Madinah',
+    category: 'Makkah & Madinah',
+    imageUrl:
+      'https://images.unsplash.com/photo-1564769625905-50e93615e769?q=80&w=900&auto=format&fit=crop',
+  },
+  {
+    id: 'gal-3',
+    title: 'Matahari Terbit Bersama Balon Udara',
+    location: 'Cappadocia, Turki',
+    category: 'Wisata Dunia',
+    imageUrl:
+      'https://images.unsplash.com/photo-1609137144820-2211f4407b46?q=80&w=900&auto=format&fit=crop',
+  },
+  {
+    id: 'gal-4',
+    title: 'Arsitektur Kubah Megah Hagia Sophia',
+    location: 'Istanbul, Turki',
+    category: 'Jejak Islam',
+    imageUrl:
+      'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=80&w=900&auto=format&fit=crop',
+  },
+  {
+    id: 'gal-5',
+    title: 'Masjid Sheikh Zayed Berbalut Marmer Putih',
+    location: 'Abu Dhabi, UEA',
+    category: 'Wisata Dunia',
+    imageUrl:
+      'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=900&auto=format&fit=crop',
+  },
+  {
+    id: 'gal-6',
+    title: 'Keindahan Danau & Puncak Salju Swiss',
+    location: 'Interlaken, Swiss',
+    category: 'Wisata Dunia',
+    imageUrl:
+      'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=900&auto=format&fit=crop',
+  },
+];
+
+export const TESTIMONIALS_DATA: Testimonial[] = [
+  {
+    id: 'test-1',
+    name: 'Prof. Dr. Ir. H. Bambang Suryanto',
+    location: 'Surabaya, Jawa Timur',
+    avatar:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
+    packageTaken: 'Umroh VIP Ramadhan Bintang 5',
+    rating: 5,
+    review:
+      'Pelayanan dari Ibu Hj. Triana Indrian SE dan tim Arminareka sungguh luar biasa istimewa. Hotel benar-benar selangkah dari pelataran Masjidil Haram, makanan lezat dan melimpah, muthawif sangat berilmu dan sabar. Ibadah sekeluarga menjadi sangat khusyuk dan tak terlupakan.',
+    year: 'Maret 2025',
+  },
+  {
+    id: 'test-2',
+    name: 'Hj. Ratna Dewi & Keluarga',
+    location: 'Jakarta Selatan',
+    avatar:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop',
+    packageTaken: 'Turki Tulip Festival & Cappadocia',
+    rating: 5,
+    review:
+      'Tour keliling Turki selama 10 hari bersama Bu Triana berjalan sangat teratur. Makanan selalu halal terjamin, hotel cave di Cappadocia sangat mewah, dan bimbingan nilai-nilai sejarah Islamnya sangat membuka wawasan anak-anak kami. Recommended sekali!',
+    year: 'Mei 2025',
+  },
+  {
+    id: 'test-3',
+    name: 'H. Achmad Fauzan, M.M.',
+    location: 'Bandung, Jawa Barat',
+    avatar:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
+    packageTaken: 'Haji Khusus Furoda VIP',
+    rating: 5,
+    review:
+      'Komitmen dan kejujuran adalah hal nomor satu di Arminareka. Dari kepengurusan visa Furoda yang lancar tanpa kendala, tenda ber-AC di Mina yang sangat nyaman, hingga kepulangan ke tanah air semuanya diurus dengan prima oleh Ibu Triana Indrian.',
+    year: 'Musim Haji 2024',
+  },
+];

@@ -1,0 +1,6 @@
+{
+  "name": "Arminareka",
+  "description": "Pelayanan Umroh dan Haji Plus terpercaya mengedepankan kualitas dan kepuasan jamaah.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
