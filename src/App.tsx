@@ -14,8 +14,6 @@ import {
   Instagram,
   Sparkles,
   ArrowUpRight,
-  Volume2,
-  VolumeX,
   Compass,
   Globe,
   Calendar,
@@ -23,11 +21,12 @@ import {
   MessageCircle,
   Menu,
   X,
+  Mail,
 } from 'lucide-react';
 
 import StatsSection from './components/StatsSection';
-import DestinationsPortfolio from './components/DestinationsPortfolio';
 import FeaturedPackages from './components/FeaturedPackages';
+import ScheduleSection from './components/ScheduleSection';
 import WhyChooseUs from './components/WhyChooseUs';
 import AboutConsultant from './components/AboutConsultant';
 import GallerySection from './components/GallerySection';
@@ -38,21 +37,20 @@ import PackageModal from './components/PackageModal';
 import { Destination, TravelPackage } from './types';
 
 export default function App() {
-  const [isMuted, setIsMuted] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<TravelPackage | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
 
   const handleDirectWhatsApp = (subject: string) => {
     const text = encodeURIComponent(
-      `Assalamu'alaikum Ibu Hj. Triana Indrian SE,\n\nSaya tertarik dengan paket: *${subject}*.\nMohon informasi ketersediaan jadwal, rincian biaya, dan syarat pendaftaran.\n\nTerima kasih.`
+      `Assalamualaikum Kak, Aku siap Berangkat Umrah & Haji, Boleh dibantu...??\n\n(Tertarik dengan paket/destinasi: ${subject})`
     );
-    window.open(`https://wa.me/6281234567890?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/6281310508974?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   const navLinks = [
-    { label: 'Destinasi Dunia', href: '#destinasi-portfolio' },
     { label: 'Paket & Jadwal', href: '#paket-unggulan' },
+    { label: 'Jadwal Desember', href: '#jadwal-umroh' },
     { label: 'Keunggulan', href: '#keunggulan-layanan' },
     { label: 'Profil Leader', href: '#profil-konsultan' },
     { label: 'Galeri', href: '#galeri-dokumentasi' },
@@ -102,7 +100,7 @@ export default function App() {
         src={heroVideo}
         autoPlay
         loop
-        muted={isMuted}
+        muted
         playsInline
         className="fixed inset-0 w-full h-full object-cover object-[35%_center] sm:object-[20%_center] md:object-center z-[0]"
       />
@@ -110,20 +108,6 @@ export default function App() {
       {/* Atmospheric Overlays for Contrast and Depth */}
       <div className="fixed inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/90 pointer-events-none z-[1]" />
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black/70 pointer-events-none z-[1]" />
-
-      {/* Audio Control Floating Button */}
-      <button
-        id="sound-toggle-btn"
-        type="button"
-        onClick={() => setIsMuted(!isMuted)}
-        className="liquid-glass fixed top-6 right-6 z-30 px-3.5 py-2 rounded-full flex items-center gap-2 text-xs text-white/80 hover:text-white transition-all cursor-pointer shadow-lg border border-white/10"
-        title={isMuted ? 'Aktifkan Suara' : 'Matikan Suara'}
-      >
-        {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-        <span className="text-[11px] font-medium tracking-wide">
-          {isMuted ? 'Suara Mati' : 'Suara Aktif'}
-        </span>
-      </button>
 
       {/* Main Container */}
       <div
@@ -133,6 +117,7 @@ export default function App() {
         {/* Top Navigation Bar */}
         <header
           id="top-nav-header"
+          style={{ paddingTop: '14px', marginTop: '-16px' }}
           className="liquid-glass w-full rounded-full px-5 sm:px-8 py-3.5 mb-12 md:mb-20 flex items-center justify-between border border-white/15 sticky top-4 z-40 backdrop-blur-md"
         >
           {/* Brand Logo */}
@@ -202,6 +187,7 @@ export default function App() {
         {/* Hero Section */}
         <section
           id="upper-hero-cta"
+          style={{ marginTop: '86px' }}
           className="w-full flex flex-col items-center text-center my-auto py-10 md:py-24 max-w-4xl mx-auto"
         >
           <motion.div
@@ -210,16 +196,6 @@ export default function App() {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-center"
           >
-            {/* Pill Tag */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white/90 text-xs font-medium mb-8 border border-white/15 shadow-sm"
-            >
-              <Sparkles size={14} className="text-amber-300 animate-spin-slow" />
-              <span>Pelayanan Umroh, Haji Plus &amp; Wisata Halal Dunia</span>
-            </motion.div>
 
             {/* Person Name Title */}
             <motion.h1
@@ -270,13 +246,13 @@ export default function App() {
               </motion.a>
 
               <motion.a
-                href="#destinasi-portfolio"
+                href="#paket-unggulan"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-black font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-sm transition-all shadow-lg shadow-amber-500/25 cursor-pointer"
               >
                 <Compass size={16} />
-                <span>Jelajahi Destinasi Portofolio</span>
+                <span>Lihat Paket &amp; Jadwal</span>
               </motion.a>
             </motion.div>
           </motion.div>
@@ -285,15 +261,15 @@ export default function App() {
         {/* 1. Stats & Reputation Milestones */}
         <StatsSection />
 
-        {/* 2. Global & Spiritual Destinations Portfolio */}
-        <DestinationsPortfolio
-          onSelectDestination={(dest) => setSelectedDestination(dest)}
-        />
-
-        {/* 3. Featured Packages & Schedules */}
+        {/* 2. Featured Packages & Schedules */}
         <FeaturedPackages
           onSelectPackage={(pkg) => setSelectedPackage(pkg)}
           onBookDirect={handleDirectWhatsApp}
+        />
+
+        {/* 3. December 2026 Schedule Table */}
+        <ScheduleSection
+          onBookSchedule={handleDirectWhatsApp}
         />
 
         {/* 4. International Service Standards (Why Choose Us) */}
@@ -341,9 +317,18 @@ export default function App() {
                 <p className="text-sm leading-relaxed max-w-sm text-white/75 mb-6">
                   Menyajikan pelayanan umroh, haji plus, dan wisata halal dunia dengan mengedepankan kualitas, kenyamanan akomodasi bintang 5, serta kepuasan jamaah berlandaskan Al-Qur'an dan As-Sunnah.
                 </p>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-amber-300">
-                  <ShieldCheck size={14} />
-                  <span>Izin Resmi PPIU &amp; PIHK Kemenag RI</span>
+                <div className="flex flex-wrap items-center gap-3 mt-4">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-amber-300">
+                    <ShieldCheck size={14} />
+                    <span>Izin Resmi PPIU &amp; PIHK Kemenag RI</span>
+                  </div>
+                  <a
+                    href="mailto:triana.indrian180774@gmail.com"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-xs text-amber-300 hover:bg-amber-400/20 transition-colors"
+                  >
+                    <Mail size={14} />
+                    <span>triana.indrian180774@gmail.com</span>
+                  </a>
                 </div>
               </div>
             </div>

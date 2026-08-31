@@ -4,6 +4,7 @@ import {
   MessageCircle,
   Sparkles,
   CheckCircle2,
+  Mail,
 } from 'lucide-react';
 
 const headerVariants = {
@@ -42,12 +43,20 @@ export default function ConsultationSection() {
     e.preventDefault();
     // Format WhatsApp message to consultant
     const textMessage = encodeURIComponent(
-      `Assalamu'alaikum Ibu Hj. Triana Indrian SE,\n\nSaya ingin konsultasi rencana perjalanan:\n• Nama: ${name || 'Jamaah'}\n• No. WhatsApp: ${phone || '-'}\n• Domisili: ${city || '-'}\n• Pilihan Paket: ${destination}\n• Estimasi Waktu: ${month}\n• Jumlah Jamaah: ${pax}\n• Catatan Tambahan: ${notes || 'Mohon info ketersediaan seat & rincian brosur lengkap.'}\n\nTerima kasih.`
+      `Assalamualaikum Kak, Aku siap Berangkat Umrah & Haji, Boleh dibantu...??\n\nDetail Konsultasi:\n• Nama: ${name || 'Jamaah'}\n• No. WhatsApp: ${phone || '-'}\n• Domisili: ${city || '-'}\n• Pilihan Paket: ${destination}\n• Estimasi Waktu: ${month}\n• Jumlah Jamaah: ${pax}\n• Catatan Tambahan: ${notes || '-'}`
     );
-    // WhatsApp direct link (standard Indonesian WhatsApp international format)
-    const waUrl = `https://wa.me/6281234567890?text=${textMessage}`;
+    // WhatsApp direct link
+    const waUrl = `https://wa.me/6281310508974?text=${textMessage}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');
     setIsSubmitted(true);
+  };
+
+  const handleEmailSubmit = () => {
+    const subject = encodeURIComponent(`Konsultasi Umroh & Haji - ${destination} (${name || 'Jamaah'})`);
+    const body = encodeURIComponent(
+      `Assalamualaikum Wr. Wb.\nIbu Hj. Triana Indrian SE,\n\nBerikut detail konsultasi / pertanyaan saya:\n• Nama: ${name || 'Jamaah'}\n• No. WhatsApp/Telp: ${phone || '-'}\n• Domisili: ${city || '-'}\n• Pilihan Paket: ${destination}\n• Estimasi Waktu: ${month}\n• Jumlah Jamaah: ${pax}\n• Catatan Tambahan: ${notes || '-'}\n\nMohon bantuannya. Terima kasih.`
+    );
+    window.location.href = `mailto:triana.indrian180774@gmail.com?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -264,6 +273,17 @@ export default function ConsultationSection() {
               >
                 <MessageCircle size={18} />
                 <span>Kirim Permintaan Konsultasi via WhatsApp</span>
+              </motion.button>
+
+              <motion.button
+                type="button"
+                onClick={handleEmailSubmit}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3.5 rounded-xl font-semibold text-xs bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Mail size={16} className="text-amber-300" />
+                <span>Kirim via Email Resmi (triana.indrian180774@gmail.com)</span>
               </motion.button>
 
               {isSubmitted && (

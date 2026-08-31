@@ -188,7 +188,7 @@ export default function FeaturedPackages({
               </div>
 
               {/* Inclusions Highlights */}
-              <div className="space-y-2 mb-8">
+              <div className="space-y-2 mb-6">
                 <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2">
                   Fasilitas Sudah Termasuk (All-In):
                 </p>
@@ -203,6 +203,54 @@ export default function FeaturedPackages({
                   ))}
                 </div>
               </div>
+
+              {/* Special Pricing Box for Mesir Aqsa Jordan */}
+              {pkg.id === 'pkg-mesir-aqsa-jordan' && (
+                <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-400/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles size={14} />
+                      Jadwal All-In (11 Januari 2027)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-center">
+                    <div className="p-2.5 rounded-xl bg-black/40 border border-white/10">
+                      <span className="block text-[10px] text-white/50 uppercase">ESTIMASI BIAYA</span>
+                      <span className="text-base font-bold text-amber-300">$3,000 USD</span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-black/40 border border-white/10">
+                      <span className="block text-[10px] text-white/50 uppercase">MASKAPAI</span>
+                      <span className="text-sm font-bold text-amber-300">EgyptAir</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Special Pricing Box for Umroh Turkey Salju */}
+              {pkg.id === 'pkg-umroh-turkey-salju' && (
+                <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-400/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles size={14} />
+                      Harga All-In (Musim Salju 11 Jan 2027)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="p-2 rounded-xl bg-black/40 border border-white/10">
+                      <span className="block text-[10px] text-white/50 uppercase">QUAD 🛏️🛏️🛏️🛏️</span>
+                      <span className="text-sm font-bold text-amber-300">Rp. 48,5 JT</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-black/40 border border-white/10">
+                      <span className="block text-[10px] text-white/50 uppercase">TRIPLE 🛏️🛏️🛏️</span>
+                      <span className="text-sm font-bold text-amber-300">Rp. 50 JT</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-black/40 border border-white/10">
+                      <span className="block text-[10px] text-white/50 uppercase">DOUBLE 🛏️🛏️</span>
+                      <span className="text-sm font-bold text-amber-300">Rp. 53 JT</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom Actions */}
