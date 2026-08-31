@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Flame,
   Users,
+  Sparkles,
 } from 'lucide-react';
 import { PACKAGES_DATA } from '../data/travelData';
 import { TravelPackage } from '../types';
@@ -17,6 +18,51 @@ interface FeaturedPackagesProps {
   onBookDirect: (pkgTitle: string) => void;
 }
 
+const headerVariants = {
+  hidden: { opacity: 0, y: 25 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const textFade = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 35, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
 export default function FeaturedPackages({
   onSelectPackage,
   onBookDirect,
@@ -24,37 +70,60 @@ export default function FeaturedPackages({
   return (
     <section id="paket-unggulan" className="w-full py-16 md:py-24">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <motion.div
+        variants={headerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-60px' }}
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
+      >
         <div className="max-w-2xl">
-          <div className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-amber-300 text-xs font-medium mb-4">
-            <Flame size={14} className="text-amber-400" />
+          <motion.div
+            variants={textFade}
+            className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-amber-300 text-xs font-medium mb-4 shadow-sm"
+          >
+            <Flame size={14} className="text-amber-400 animate-pulse" />
             <span className="uppercase tracking-wider">Jadwal Keberangkatan Resmi 2026</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white tracking-tight">
+          </motion.div>
+          <motion.h2
+            variants={textFade}
+            className="text-3xl sm:text-4xl md:text-5xl font-light text-white tracking-tight"
+          >
             Paket Pilihan &amp;{' '}
             <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">
               Jadwal Eksklusif
             </span>
-          </h2>
+          </motion.h2>
         </div>
-        <p className="text-sm text-white/70 max-w-md">
+        <motion.p
+          variants={textFade}
+          className="text-sm text-white/70 max-w-md"
+        >
           Nikmati kepastian kuota, tiket pesawat terkonfirmasi, dan pendampingan menyeluruh dari manasik hingga kepulangan.
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       {/* Packages Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {PACKAGES_DATA.map((pkg, index) => (
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+      >
+        {PACKAGES_DATA.map((pkg) => (
           <motion.div
             key={pkg.id}
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className={`liquid-glass rounded-3xl p-6 sm:p-8 border flex flex-col justify-between transition-all group ${
+            variants={cardVariants}
+            whileHover={{
+              y: -8,
+              scale: 1.015,
+              transition: { duration: 0.3, ease: 'easeOut' },
+            }}
+            className={`liquid-glass rounded-3xl p-6 sm:p-8 border flex flex-col justify-between transition-colors group cursor-default shadow-xl ${
               pkg.isBestSeller
-                ? 'border-amber-400/40 shadow-2xl shadow-amber-500/10'
-                : 'border-white/10 hover:border-white/20'
+                ? 'border-amber-400/40 hover:border-amber-400/80 shadow-amber-500/10 hover:shadow-2xl hover:shadow-amber-500/20'
+                : 'border-white/10 hover:border-amber-400/40 hover:shadow-2xl'
             }`}
           >
             <div>
@@ -79,12 +148,12 @@ export default function FeaturedPackages({
               </div>
 
               {/* Title */}
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 group-hover:text-amber-300 transition-colors">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 group-hover:text-amber-300 transition-colors duration-200">
                 {pkg.title}
               </h3>
 
               {/* Schedule & Airline Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 p-4 rounded-2xl bg-black/30 border border-white/10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 p-4 rounded-2xl bg-black/30 border border-white/10 group-hover:border-amber-400/20 transition-colors">
                 <div className="flex items-center gap-2.5 text-xs text-white/80">
                   <Clock size={15} className="text-amber-400 shrink-0" />
                   <div>
@@ -153,29 +222,33 @@ export default function FeaturedPackages({
               </div>
 
               <div className="flex items-center gap-3">
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => onSelectPackage(pkg)}
-                  className="px-4 py-2.5 rounded-full text-xs font-medium text-white/90 hover:text-white border border-white/20 hover:bg-white/10 transition-all cursor-pointer"
+                  className="px-4 py-2.5 rounded-full text-xs font-medium text-white/90 hover:text-white border border-white/20 hover:bg-white/10 transition-colors cursor-pointer"
                 >
                   Itinerary Lengkap
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => onBookDirect(pkg.title)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black transition-all cursor-pointer shadow-lg shadow-amber-500/20 group/btn"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black transition-all cursor-pointer shadow-lg shadow-amber-500/25 group/btn"
                 >
                   <span>Daftar / Tanya</span>
                   <ArrowRight
                     size={14}
                     className="transition-transform group-hover/btn:translate-x-1"
                   />
-                </button>
+                </motion.button>
               </div>
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }

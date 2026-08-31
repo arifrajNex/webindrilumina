@@ -2,14 +2,31 @@ import { useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import {
   MessageCircle,
-  Phone,
-  Send,
   Sparkles,
-  MapPin,
-  Calendar,
-  Users,
   CheckCircle2,
 } from 'lucide-react';
+
+const headerVariants = {
+  hidden: { opacity: 0, y: 25 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const textFade = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
+};
 
 export default function ConsultationSection() {
   const [name, setName] = useState('');
@@ -35,62 +52,96 @@ export default function ConsultationSection() {
 
   return (
     <section id="konsultasi" className="w-full py-16 md:py-24">
-      <div className="liquid-glass rounded-3xl p-8 sm:p-12 border border-amber-400/40 shadow-2xl relative overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: 35 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="liquid-glass rounded-3xl p-8 sm:p-12 border border-amber-400/40 shadow-2xl relative overflow-hidden"
+      >
         {/* Glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-0 right-0 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Left info column */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
+          <motion.div
+            variants={headerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="lg:col-span-5 flex flex-col justify-between"
+          >
             <div>
-              <div className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-amber-300 text-xs font-medium mb-6">
-                <Sparkles size={14} />
+              <motion.div
+                variants={textFade}
+                className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-amber-300 text-xs font-medium mb-6 shadow-sm"
+              >
+                <Sparkles size={14} className="animate-spin-slow" />
                 <span className="uppercase tracking-wider">Layanan Konsultasi Cepat</span>
-              </div>
+              </motion.div>
 
-              <h2 className="text-3xl sm:text-4xl font-light text-white tracking-tight mb-4">
+              <motion.h2
+                variants={textFade}
+                className="text-3xl sm:text-4xl font-light text-white tracking-tight mb-4"
+              >
                 Rencanakan Perjalanan Ibadah &amp;{' '}
                 <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">
                   Wisata Dunia Anda
                 </span>
-              </h2>
+              </motion.h2>
 
-              <p className="text-sm text-white/80 leading-relaxed mb-8">
+              <motion.p
+                variants={textFade}
+                className="text-sm text-white/80 leading-relaxed mb-8"
+              >
                 Diskusikan anggaran, tanggal keberangkatan terbaik, hingga kebutuhan khusus lansia dan anak-anak bersama konsultan berpengalaman Hj. Triana Indrian SE.
-              </p>
+              </motion.p>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
-                  <div className="w-8 h-8 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <span>Konsultasi 100% Gratis tanpa biaya komitmen</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
-                  <div className="w-8 h-8 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <span>Dapatkan simulasi tabungan umroh &amp; rincian detail</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-white/90">
-                  <div className="w-8 h-8 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <span>Respon cepat langsung melalui WhatsApp resmi</span>
-                </div>
+                {[
+                  'Konsultasi 100% Gratis tanpa biaya komitmen',
+                  'Dapatkan simulasi tabungan umroh & rincian detail',
+                  'Respon cepat langsung melalui WhatsApp resmi',
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    variants={textFade}
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-center gap-3 text-xs sm:text-sm text-white/90 cursor-default"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
+                      <CheckCircle2 size={16} />
+                    </div>
+                    <span>{item}</span>
+                  </motion.div>
+                ))}
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/10 text-xs text-white/60">
+            <motion.div
+              variants={textFade}
+              className="mt-8 pt-6 border-t border-white/10 text-xs text-white/60"
+            >
               <p>Kantor Pusat Arminareka Perdana • Melayani Jamaah Se-Nusantara</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Right form column */}
-          <div className="lg:col-span-7">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-7"
+          >
             <form
               onSubmit={handleSubmit}
-              className="p-6 sm:p-8 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md space-y-4"
+              className="p-6 sm:p-8 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md space-y-4 shadow-xl"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -103,7 +154,7 @@ export default function ConsultationSection() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Contoh: H. Ahmad Zaki"
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
                   />
                 </div>
 
@@ -117,7 +168,7 @@ export default function ConsultationSection() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="0812-xxxx-xxxx"
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
                   />
                 </div>
               </div>
@@ -130,7 +181,7 @@ export default function ConsultationSection() {
                   <select
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#1a1a1a] border border-white/15 text-white text-xs focus:outline-none focus:border-amber-400 transition-colors cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl bg-[#1a1a1a] border border-white/15 text-white text-xs focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors cursor-pointer"
                   >
                     <option value="Umroh Reguler Bintang 5">Umroh Reguler Bintang 5</option>
                     <option value="Umroh Ramadhan & Syawal VIP">Umroh Ramadhan &amp; Syawal VIP</option>
@@ -152,7 +203,7 @@ export default function ConsultationSection() {
                   <select
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#1a1a1a] border border-white/15 text-white text-xs focus:outline-none focus:border-amber-400 transition-colors cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl bg-[#1a1a1a] border border-white/15 text-white text-xs focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors cursor-pointer"
                   >
                     <option value="Maret / Ramadhan 2026">Maret / Ramadhan 2026</option>
                     <option value="April / Syawal 2026">April / Syawal 2026</option>
@@ -174,7 +225,7 @@ export default function ConsultationSection() {
                     value={pax}
                     onChange={(e) => setPax(e.target.value)}
                     placeholder="Contoh: 4 Orang (Keluarga)"
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
                   />
                 </div>
 
@@ -187,7 +238,7 @@ export default function ConsultationSection() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Contoh: Jakarta / Surabaya / Medan"
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
                   />
                 </div>
               </div>
@@ -201,27 +252,33 @@ export default function ConsultationSection() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Contoh: Memerlukan kursi roda untuk orang tua / request kamar berdua (double bed)..."
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors resize-none"
                 />
               </div>
 
-              <button
+              <motion.button
                 type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
               >
                 <MessageCircle size={18} />
                 <span>Kirim Permintaan Konsultasi via WhatsApp</span>
-              </button>
+              </motion.button>
 
               {isSubmitted && (
-                <p className="text-center text-xs text-amber-300 font-medium pt-2">
+                <motion.p
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center text-xs text-amber-300 font-medium pt-2"
+                >
                   ✓ Permintaan sedang dialihkan ke WhatsApp resmi Hj. Triana Indrian SE.
-                </p>
+                </motion.p>
               )}
             </form>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

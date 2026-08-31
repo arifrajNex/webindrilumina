@@ -205,19 +205,29 @@ export default function App() {
           className="w-full flex flex-col items-center text-center my-auto py-10 md:py-24 max-w-4xl mx-auto"
         >
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-center"
           >
             {/* Pill Tag */}
-            <div className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white/90 text-xs font-medium mb-8 border border-white/15">
-              <Sparkles size={14} className="text-amber-300" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-white/90 text-xs font-medium mb-8 border border-white/15 shadow-sm"
+            >
+              <Sparkles size={14} className="text-amber-300 animate-spin-slow" />
               <span>Pelayanan Umroh, Haji Plus &amp; Wisata Halal Dunia</span>
-            </div>
+            </motion.div>
 
             {/* Person Name Title */}
-            <h1 className="font-light text-white tracking-tight leading-tight mb-6">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="font-light text-white tracking-tight leading-tight mb-6"
+            >
               <span
                 id="hero-person-name"
                 className="block font-bold italic font-['Cormorant_Garamond'] text-3xl sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent mb-2 tracking-wide drop-shadow-[0_0_30px_rgba(245,158,11,0.7)]"
@@ -227,34 +237,48 @@ export default function App() {
               <span className="block text-2xl sm:text-4xl md:text-5xl font-light text-white/95">
                 Antara Anda &amp; Baitullah
               </span>
-            </h1>
+            </motion.h1>
 
             {/* Subtext */}
-            <p className="text-base sm:text-lg md:text-xl text-white/90 font-normal max-w-2xl mb-10 leading-relaxed">
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.45, ease: 'easeOut' }}
+              className="text-base sm:text-lg md:text-xl text-white/90 font-normal max-w-2xl mb-10 leading-relaxed"
+            >
               Menyajikan pelayanan umroh dan haji plus dengan mengedepankan kualitas, kenyamanan hotel bintang 5, serta kepuasan jamaah dalam menjelajahi keindahan peradaban dunia.
-            </p>
+            </motion.p>
 
             {/* Hero CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-wrap items-center justify-center gap-4"
+            >
+              <motion.a
                 href="#konsultasi"
-                className="liquid-glass group inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-medium text-sm transition-all hover:bg-white/10 hover:shadow-xl cursor-pointer border border-white/20"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="liquid-glass group inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-medium text-sm transition-colors hover:bg-white/10 hover:shadow-xl cursor-pointer border border-white/20"
               >
                 <span>Konsultasi Sekarang</span>
                 <ArrowUpRight
                   size={16}
                   className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-amber-300"
                 />
-              </a>
+              </motion.a>
 
-              <a
+              <motion.a
                 href="#destinasi-portfolio"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-black font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-sm transition-all shadow-lg shadow-amber-500/25"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-black font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-sm transition-all shadow-lg shadow-amber-500/25 cursor-pointer"
               >
                 <Compass size={16} />
                 <span>Jelajahi Destinasi Portofolio</span>
-              </a>
-            </div>
+              </motion.a>
+            </motion.div>
           </motion.div>
         </section>
 

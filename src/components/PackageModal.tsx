@@ -186,18 +186,20 @@ export default function PackageModal({ pkg, dest, onClose, onBook }: ModalProps)
               </span>
             </div>
 
-            <button
+            <motion.button
               type="button"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => {
                 const title = pkg ? pkg.title : dest?.title || '';
                 onBook(title);
                 onClose();
               }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black transition-all cursor-pointer shadow-lg shadow-amber-500/20"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black transition-all cursor-pointer shadow-lg shadow-amber-500/25"
             >
               <MessageCircle size={16} />
               <span>Daftar / Konsultasi WhatsApp</span>
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </motion.div>
