@@ -72,7 +72,7 @@ export default function AboutConsultant({ onConsultClick }: AboutConsultantProps
               className="liquid-glass inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-amber-300 text-xs font-medium mb-6 shadow-sm"
             >
               <Award size={14} />
-              <span className="uppercase tracking-wider">Senior Travel Consultant &amp; Leader</span>
+              <span className="uppercase tracking-wider">Tour Leader &amp; Business Consultant</span>
             </motion.div>
 
             <motion.h2

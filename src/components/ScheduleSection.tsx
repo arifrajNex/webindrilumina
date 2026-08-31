@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Plane, ShieldCheck, UserCheck, Clock, CheckCircle2, Search, Filter } from 'lucide-react';
+import { Calendar, Plane, ShieldCheck, UserCheck, Clock, CheckCircle2, Search, Filter, Building2, Bus, Utensils, Users, Briefcase } from 'lucide-react';
 
 interface ScheduleItem {
   no: number;
@@ -62,8 +62,8 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             <Calendar size={14} />
             <span>Arminareka Kancab 009</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white">
-            Jadwal Umroh <span className="text-amber-400">Desember 2026</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight mb-4 text-white">
+            Jadwal Umroh <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">Desember 2026</span>
           </h2>
           <p className="text-base text-slate-300 italic">
             "🌸 Nyaman Ibadahnya, Berkesan Perjalanannya 🌸"
@@ -71,10 +71,16 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
         </div>
 
         {/* Filters & Search Toolbar */}
-        <div className="bg-slate-900/90 border border-white/10 rounded-2xl p-4 sm:p-6 mb-8 backdrop-blur-md flex flex-col md:flex-row gap-4 items-center justify-between shadow-xl">
+        <motion.div
+          whileHover={{
+            y: -4,
+            transition: { duration: 0.3, ease: 'easeOut' },
+          }}
+          className="liquid-glass rounded-3xl p-6 sm:p-8 mb-8 border border-white/10 hover:border-amber-400/50 transition-all flex flex-col md:flex-row gap-6 items-center justify-between shadow-xl hover:shadow-2xl hover:shadow-amber-500/10"
+        >
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-xl px-3 py-2 w-full sm:w-64 focus-within:border-amber-400 transition-colors">
-              <Search size={16} className="text-slate-400" />
+            <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-2xl px-4 py-2.5 w-full sm:w-72 focus-within:border-amber-400 transition-colors">
+              <Search size={16} className="text-amber-400 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Cari paket, PIC, atau tanggal..."
@@ -88,33 +94,39 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             <select
               value={filterAirline}
               onChange={(e) => setFilterAirline(e.target.value)}
-              className="bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-400"
+              className="liquid-glass bg-slate-950/70 border border-amber-500/30 hover:border-amber-400 focus:border-amber-400 rounded-3xl px-5 py-3 text-sm text-slate-200 focus:outline-none cursor-pointer transition-all shadow-[0_0_15px_rgba(251,191,36,0.1)]"
             >
-              <option value="ALL" className="bg-slate-900">Semua Maskapai</option>
-              <option value="Garuda Indonesia" className="bg-slate-900">Garuda Indonesia</option>
-              <option value="Lion Air" className="bg-slate-900">Lion Air</option>
-              <option value="Saudia" className="bg-slate-900">Saudia Airlines</option>
+              <option value="ALL" className="bg-slate-950 text-amber-300 font-medium">Semua Maskapai</option>
+              <option value="Garuda Indonesia" className="bg-slate-950 text-slate-200">Garuda Indonesia</option>
+              <option value="Lion Air" className="bg-slate-950 text-slate-200">Lion Air</option>
+              <option value="Saudia" className="bg-slate-950 text-slate-200">Saudia Airlines</option>
             </select>
 
             {/* Status Filter */}
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-400"
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl px-5 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-400 cursor-pointer transition-all shadow-md"
             >
-              <option value="ALL" className="bg-slate-900">Semua Status</option>
-              <option value="FIX DATE" className="bg-slate-900">FIX DATE</option>
-              <option value="ESTIMATED" className="bg-slate-900">ESTIMATED</option>
+              <option value="ALL" className="bg-slate-950">Semua Status</option>
+              <option value="FIX DATE" className="bg-slate-950">FIX DATE</option>
+              <option value="ESTIMATED" className="bg-slate-950">ESTIMATED</option>
             </select>
           </div>
 
-          <div className="text-xs text-slate-400">
+          <div className="text-xs sm:text-sm text-slate-300 font-medium bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
             Menampilkan <span className="text-amber-400 font-bold">{filteredSchedules.length}</span> jadwal keberangkatan
           </div>
-        </div>
+        </motion.div>
 
         {/* Schedule Table / Cards Grid */}
-        <div className="bg-slate-900/90 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-md">
+        <motion.div
+          whileHover={{
+            y: -2,
+            transition: { duration: 0.3, ease: 'easeOut' },
+          }}
+          className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md p-2 sm:p-4 transition-all"
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -201,51 +213,105 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
 
         {/* Facilities footer banner */}
-        <div className="mt-12 bg-slate-900 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-xl">
-          <div className="text-center mb-6">
-            <h3 className="text-lg sm:text-xl font-bold text-amber-300 uppercase tracking-wider">
-              Fasilitas Terbaik Untuk Perjalanan Ibadah Anda
+        <motion.div
+          whileHover={{
+            y: -2,
+            transition: { duration: 0.3, ease: 'easeOut' },
+          }}
+          className="mt-12 liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-8 sm:p-10 backdrop-blur-md shadow-2xl transition-all"
+        >
+          <div className="text-center mb-8">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-white">
+              Fasilitas Terbaik <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">Untuk Perjalanan Ibadah Anda</span>
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            <p className="text-xs sm:text-sm text-slate-300 mt-2">
               Kenyamanan jamaah adalah prioritas utama Arminareka Kancab 009
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10">
-              <span className="block text-xl mb-1">✈️</span>
-              <h4 className="text-xs font-bold text-white">Penerbangan Terpercaya</h4>
-              <p className="text-[10px] text-slate-400 mt-1">Garuda, Lion & Saudia</p>
-            </div>
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10">
-              <span className="block text-xl mb-1">🏨</span>
-              <h4 className="text-xs font-bold text-white">Hotel Bintang Pilihan</h4>
-              <p className="text-[10px] text-slate-400 mt-1">Mekkah & Madinah</p>
-            </div>
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10">
-              <span className="block text-xl mb-1">🚌</span>
-              <h4 className="text-xs font-bold text-white">Transportasi Nyaman</h4>
-              <p className="text-[10px] text-slate-400 mt-1">Bus VIP Ber-AC</p>
-            </div>
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10">
-              <span className="block text-xl mb-1">🍽️</span>
-              <h4 className="text-xs font-bold text-white">Makan 3x Sehari</h4>
-              <p className="text-[10px] text-slate-400 mt-1">Full Board Menu Indonesia</p>
-            </div>
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10">
-              <span className="block text-xl mb-1">👳‍♂️</span>
-              <h4 className="text-xs font-bold text-white">Muthawif &amp; TL</h4>
-              <p className="text-[10px] text-slate-400 mt-1">Berpengalaman &amp; Profesional</p>
-            </div>
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10">
-              <span className="block text-xl mb-1">🧳</span>
-              <h4 className="text-xs font-bold text-white">Perlengkapan Lengkap</h4>
-              <p className="text-[10px] text-slate-400 mt-1">Koper &amp; Atribut Eksklusif</p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <Plane className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Penerbangan Terpercaya</h4>
+              <p className="text-xs text-slate-300 mt-1">Garuda, Lion & Saudia</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <Building2 className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Hotel Bintang Pilihan</h4>
+              <p className="text-xs text-slate-300 mt-1">Mekkah & Madinah</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <Bus className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Transportasi Nyaman</h4>
+              <p className="text-xs text-slate-300 mt-1">Bus VIP Ber-AC</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <Utensils className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Makan 3x Sehari</h4>
+              <p className="text-xs text-slate-300 mt-1">Full Board Menu Indonesia</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <Users className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Muthawif &amp; TL</h4>
+              <p className="text-xs text-slate-300 mt-1">Berpengalaman &amp; Profesional</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <Briefcase className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Perlengkapan Lengkap</h4>
+              <p className="text-xs text-slate-300 mt-1">Koper &amp; Atribut Eksklusif</p>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
