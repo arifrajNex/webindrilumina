@@ -22,6 +22,8 @@ import {
   Menu,
   X,
   Mail,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 
 import StatsSection from './components/StatsSection';
@@ -40,6 +42,40 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<TravelPackage | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+
+  const toggleMusic = () => {
+    const videoEl = document.getElementById('bg-hero-video') as HTMLVideoElement;
+    let audio = audioElement;
+    if (!audio) {
+      audio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=spiritual-ambient-111214.mp3');
+      audio.loop = true;
+      audio.volume = 0.3;
+      setAudioElement(audio);
+    }
+
+    if (isPlayingMusic) {
+      // Mute / Turn Off
+      if (videoEl) {
+        videoEl.muted = true;
+      }
+      audio.pause();
+      setIsPlayingMusic(false);
+    } else {
+      // Unmute / Turn On
+      if (videoEl) {
+        videoEl.muted = false;
+        videoEl.play().catch(() => {});
+      }
+      audio.play().then(() => {
+        setIsPlayingMusic(true);
+      }).catch(err => {
+        console.log("Audio play prevented:", err);
+        setIsPlayingMusic(true);
+      });
+    }
+  };
 
   const handleDirectWhatsApp = (subject: string) => {
     const text = encodeURIComponent(
@@ -130,7 +166,7 @@ export default function App() {
                 Arminareka
               </span>
               <span className="text-[10px] text-amber-300 font-medium tracking-wider uppercase">
-                World Travel &amp; Umroh
+                Kancab 09 Tangerang
               </span>
             </div>
           </a>
@@ -148,13 +184,35 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Action Button & Mobile Toggle */}
+          {/* Action Button & Music Toggle & Mobile Toggle */}
           <div className="flex items-center gap-3">
+            {/* Transparent Music Toggle Icon Button */}
+            <button
+              onClick={toggleMusic}
+              aria-label="Toggle Background Music"
+              className="liquid-glass bg-slate-950/40 border border-amber-500/30 hover:border-amber-400 text-amber-300 p-2.5 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(251,191,36,0.1)] transition-all duration-300 hover:scale-105 group relative"
+            >
+              <div className="relative flex items-center justify-center w-4 h-4">
+                {isPlayingMusic ? (
+                  <>
+                    <Volume2 size={16} className="text-amber-400 animate-pulse" />
+                    <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                  </>
+                ) : (
+                  <VolumeX size={16} className="text-slate-400 group-hover:text-amber-300 transition-colors" />
+                )}
+              </div>
+            </button>
+
             <a
               href="#konsultasi"
-              className="text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 px-4 py-2 rounded-full font-bold shadow-md shadow-amber-500/20 transition-all"
+              className="text-[10px] sm:text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold shadow-md shadow-amber-500/20 transition-all flex flex-col items-center justify-center text-center leading-tight mx-auto"
             >
-              Konsultasi Gratis
+              <span className="block text-center w-full">Konsultasi</span>
+              <span className="block text-center w-full">Free</span>
             </a>
 
             <button
@@ -206,7 +264,7 @@ export default function App() {
             >
               <span
                 id="hero-person-name"
-                className="block font-bold italic font-['Cormorant_Garamond'] text-3xl sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent mb-2 tracking-wide drop-shadow-[0_0_30px_rgba(245,158,11,0.7)]"
+                className="block font-bold italic font-['Cormorant_Garamond'] text-3xl sm:text-5xl md:text-6xl lg:text-7xl animate-shine-gold mb-2 tracking-wide drop-shadow-[0_0_35px_rgba(245,158,11,0.8)] pb-1"
               >
                 Hj. Triana Indrian SE
               </span>
@@ -238,7 +296,7 @@ export default function App() {
                 whileTap={{ scale: 0.95 }}
                 className="liquid-glass group inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-medium text-sm transition-colors hover:bg-white/10 hover:shadow-xl cursor-pointer border border-white/20"
               >
-                <span>Konsultasi Sekarang</span>
+                <span>Konsultasi Free</span>
                 <ArrowUpRight
                   size={16}
                   className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-amber-300"

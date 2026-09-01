@@ -121,7 +121,7 @@ export default function AboutConsultant({ onConsultClick }: AboutConsultantProps
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black transition-all cursor-pointer shadow-lg shadow-amber-500/25"
               >
                 <MessageCircle size={18} />
-                <span>Konsultasi Pribadi via WhatsApp</span>
+                <span>Konsultasi Free via WhatsApp</span>
               </motion.button>
               <motion.a
                 href="#paket-unggulan"

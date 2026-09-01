@@ -112,7 +112,7 @@ export default function ConsultationSection() {
 
               <div className="space-y-4">
                 {[
-                  'Konsultasi 100% Gratis tanpa biaya komitmen',
+                  'Konsultasi 100% Free tanpa biaya komitmen',
                   'Dapatkan simulasi tabungan umroh & rincian detail',
                   'Respon cepat langsung melalui WhatsApp resmi',
                 ].map((item, i) => (

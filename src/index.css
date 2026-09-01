@@ -45,3 +45,30 @@
   mask-composite: exclude;
   pointer-events: none;
 }
+
+@keyframes shine-gold {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shine-gold {
+  background: linear-gradient(90deg, #fde047 0%, #f59e0b 20%, #ffffff 40%, #fef08a 50%, #f59e0b 70%, #fde047 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine-gold 3.5s linear infinite;
+}
+
+@keyframes sparkle-float {
+  0%, 100% { transform: translateY(0) scale(0.8); opacity: 0.6; }
+  50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+}
+
+.animate-sparkle {
+  animation: sparkle-float 2s ease-in-out infinite;
+}
