@@ -161,7 +161,7 @@ export default function App() {
             <div className="w-8 h-8 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
               <Compass size={18} />
             </div>
-            <div>
+            <div className="text-center flex flex-col items-center">
               <span className="text-white font-bold text-base tracking-wider block leading-none">
                 Arminareka
               </span>

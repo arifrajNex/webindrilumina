@@ -38,7 +38,7 @@ const textFade = {
 export default function AboutConsultant({ onConsultClick }: AboutConsultantProps) {
   const credentials = [
     'Senior Official Consultant Arminareka Perdana',
-    'Sertifikasi Pembimbing Ibadah Haji & Umroh Nasional',
+    'Berpengalaman lebih dari 7 tahun',
     'Telah memimpin lebih dari 120+ grup keberangkatan',
     'Spesialis Rute Wisata Halal & Napak Tilas Peradaban Islam',
   ];
@@ -83,7 +83,7 @@ export default function AboutConsultant({ onConsultClick }: AboutConsultantProps
                 Hj. Triana Indrian SE
               </span>
               <span className="text-xl sm:text-2xl font-light text-white/90">
-                Membimbing dengan Hati, Melayani dengan Ikhlas
+                "Membimbing dengan Hati, Tulus Ikhlas Melayani"
               </span>
             </motion.h2>
 

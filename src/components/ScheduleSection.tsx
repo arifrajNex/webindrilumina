@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Plane, ShieldCheck, UserCheck, Clock, CheckCircle2, Search, Filter, Building2, Bus, Utensils, Users, Briefcase } from 'lucide-react';
+import { Calendar, Plane, ShieldCheck, UserCheck, Clock, CheckCircle2, Search, Filter, Building2, Bus, Utensils, Users, Briefcase, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ScheduleItem {
   no: number;
@@ -38,6 +38,20 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
   const [filterAirline, setFilterAirline] = useState<string>('ALL');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isHotelModalOpen, setIsHotelModalOpen] = useState<boolean>(false);
+  const facilitiesScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleFacilityScrollLeft = () => {
+    if (facilitiesScrollRef.current) {
+      facilitiesScrollRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const handleFacilityScrollRight = () => {
+    if (facilitiesScrollRef.current) {
+      facilitiesScrollRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
 
   const filteredSchedules = SCHEDULE_DATA.filter((item) => {
     const matchAirline = filterAirline === 'ALL' || item.airline === filterAirline;
@@ -66,7 +80,7 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             Jadwal Umroh <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">Desember 2026</span>
           </h2>
           <p className="text-base text-slate-300 italic">
-            "🌸 Nyaman Ibadahnya, Berkesan Perjalanannya 🌸"
+            "Nyaman Ibadahnya, Berkesan Perjalanannya"
           </p>
         </div>
 
@@ -221,20 +235,44 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             y: -2,
             transition: { duration: 0.3, ease: 'easeOut' },
           }}
-          className="mt-12 liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-8 sm:p-10 backdrop-blur-md shadow-2xl transition-all"
+          className="mt-12 liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-10 backdrop-blur-md shadow-2xl transition-all"
         >
-          <div className="text-center mb-8">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-white">
-              Fasilitas Terbaik <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">Untuk Perjalanan Ibadah Anda</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 mt-2">
-              Kenyamanan jamaah adalah prioritas utama Arminareka Kancab 009
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-white">
+                Fasilitas Terbaik <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">Untuk Perjalanan Ibadah Anda</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2">
+                Kenyamanan jamaah adalah prioritas utama Arminareka Kancab 009
+              </p>
+            </div>
+            {/* Scroll Navigation Buttons */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleFacilityScrollLeft}
+                className="w-10 h-10 rounded-full liquid-glass border border-white/20 flex items-center justify-center text-white/80 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer shadow-md"
+                aria-label="Geser Kiri"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                type="button"
+                onClick={handleFacilityScrollRight}
+                className="w-10 h-10 rounded-full liquid-glass border border-white/20 flex items-center justify-center text-white/80 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer shadow-md"
+                aria-label="Geser Kanan"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+          <div
+            ref={facilitiesScrollRef}
+            className="flex overflow-x-auto gap-6 pb-4 pt-2 px-2 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          >
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
             >
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
@@ -247,20 +285,25 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             </motion.div>
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+              onClick={() => setIsHotelModalOpen(true)}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center cursor-pointer relative group"
             >
+              <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-medium border border-amber-400/30 group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                Detail Hotel
+              </div>
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
                 className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
               >
                 <Building2 className="w-6 h-6 text-amber-400" />
               </motion.div>
-              <h4 className="text-sm font-bold text-white">Hotel Bintang Pilihan</h4>
-              <p className="text-xs text-slate-300 mt-1">Mekkah & Madinah</p>
+              <h4 className="text-sm font-bold text-white">Hotel Nyaman</h4>
+              <p className="text-xs text-slate-300 mt-1">Mekah & Madinah</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Pilihan hotel strategis dan berkualitas</p>
             </motion.div>
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
             >
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
@@ -273,7 +316,7 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             </motion.div>
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
             >
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
@@ -286,7 +329,7 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             </motion.div>
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
             >
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
@@ -299,7 +342,7 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             </motion.div>
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center"
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
             >
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
@@ -310,9 +353,141 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
               <h4 className="text-sm font-bold text-white">Perlengkapan Lengkap</h4>
               <p className="text-xs text-slate-300 mt-1">Koper &amp; Atribut Eksklusif</p>
             </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <ShieldCheck className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Pelayanan Terbaik</h4>
+              <p className="text-xs text-slate-300 mt-1">Standar pelayanan tinggi dan profesional</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
+            >
+              <motion.div
+                whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
+                className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
+              >
+                <CheckCircle2 className="w-6 h-6 text-amber-400" />
+              </motion.div>
+              <h4 className="text-sm font-bold text-white">Fasilitas Lengkap</h4>
+              <p className="text-xs text-slate-300 mt-1">Perjalanan ibadah yang nyaman dan berkesan</p>
+            </motion.div>
           </div>
         </motion.div>
       </div>
+
+      {/* Hotel Bintang Pilihan Detail Modal */}
+      {isHotelModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto liquid-glass bg-slate-900/95 border border-amber-400/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-white"
+          >
+            <button
+              onClick={() => setIsHotelModalOpen(false)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+              aria-label="Tutup"
+            >
+              ✕
+            </button>
+
+            <div className="text-center mb-6">
+              <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold mb-1 block">POSISI HOTEL PILIHAN DI MEKKAH</span>
+              <h3 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
+                Arminareka <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">- Antara Anda dan Baitullah</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 italic">
+                Hotel pilihan terbaik Arminareka yang berlokasi sangat dekat dengan Masjidil Haram.
+              </p>
+            </div>
+
+            <div className="space-y-6 text-sm text-slate-200">
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10">
+                <h4 className="font-bold text-amber-300 uppercase text-xs tracking-wider mb-2 flex items-center gap-2">
+                  <Building2 size={16} /> Area & Lokasi Hotel
+                </h4>
+                
+                <div className="space-y-4 mt-3">
+                  <div>
+                    <h5 className="font-semibold text-white">KOMPLEKS ABRAJ AL BAIT</h5>
+                    <p className="text-xs text-slate-300 mb-2">Hotel-hotel berlokasi di dalam kompleks Abraj Al Bait, tepat menghadap Masjidil Haram dan akses langsung ke pelataran.</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Marwa Rotana</span>
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Movenpick</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10">
+                    <h5 className="font-semibold text-white">KAWASAN AJYAD</h5>
+                    <p className="text-xs text-slate-300 mb-2">Hotel-hotel pilihan Arminareka di kawasan Ajyad, hanya beberapa langkah menuju Masjidil Haram.</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Arrayana</span>
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Prestige</span>
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Ajyad Makareem</span>
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Sofwa Orchid</span>
+                      <span className="px-3 py-1 rounded-full text-xs bg-amber-400/10 border border-amber-400/30 text-amber-200">Mekkah Tower</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10">
+                <h4 className="font-bold text-amber-300 uppercase text-xs tracking-wider mb-2">AKSES TERDEKAT</h4>
+                <p className="text-xs text-slate-300">Selangkah menuju pintu masuk Masjidil Haram melalui King Abdul Aziz Gate.</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10">
+                <h4 className="font-bold text-amber-300 uppercase text-xs tracking-wider mb-3">KEUNGGULAN LOKASI HOTEL</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-white block">Sangat Dekat</strong>
+                      <span className="text-slate-300">Hanya beberapa langkah menuju Masjidil Haram.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-white block">Akses Langsung</strong>
+                      <span className="text-slate-300">Akses mudah ke pelataran dan berbagai pintu masuk.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-white block">Pemandangan Haram</strong>
+                      <span className="text-slate-300">Nikmati pemandangan indah Masjidil Haram dari kamar hotel.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-white block">Fasilitas Nyaman</strong>
+                      <span className="text-slate-300">Layanan terbaik dan fasilitas premium untuk kenyamanan Anda beribadah.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center pt-2 border-t border-white/10">
+                <p className="text-xs text-amber-300/90 italic">
+                  "Arminareka berkomitmen memberikan pelayanan terbaik untuk perjalanan ibadah yang nyaman dan berkesan."
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </section>
   );
 }

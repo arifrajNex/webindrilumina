@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Camera, MapPin, X, ZoomIn } from 'lucide-react';
+import { Camera, MapPin, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GALLERY_PHOTOS } from '../data/travelData';
 import { GalleryPhoto } from '../types';
 
@@ -29,6 +29,7 @@ const textFade = {
 export default function GallerySection() {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('Semua');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const filters = ['Semua', 'Makkah & Madinah', 'Wisata Dunia', 'Jejak Islam'];
 
@@ -36,6 +37,18 @@ export default function GallerySection() {
     activeFilter === 'Semua'
       ? GALLERY_PHOTOS
       : GALLERY_PHOTOS.filter((p) => p.category === activeFilter);
+
+  const handleScrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -380, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 380, behavior: 'smooth' });
+    }
+  };
 
   return (
     <section id="galeri-dokumentasi" className="w-full py-16 md:py-24">
@@ -45,7 +58,7 @@ export default function GallerySection() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-60px' }}
-        className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12"
+        className="flex flex-col items-center text-center max-w-3xl mx-auto mb-10"
       >
         <motion.div
           variants={textFade}
@@ -71,55 +84,78 @@ export default function GallerySection() {
         </motion.p>
       </motion.div>
 
-      {/* Filter Tabs */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="flex items-center justify-center gap-2 mb-10 overflow-x-auto pb-2 no-scrollbar"
-      >
-        {filters.map((filter) => (
-          <motion.button
-            key={filter}
-            type="button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
-              activeFilter === filter
-                ? 'bg-gradient-to-r from-amber-400 to-amber-600 text-black font-bold shadow-md shadow-amber-500/20'
-                : 'liquid-glass text-white/80 hover:text-white hover:bg-white/10 border border-white/10'
-            }`}
-          >
-            {filter}
-          </motion.button>
-        ))}
-      </motion.div>
-
-      {/* Photos Grid */}
-      <motion.div
-        layout
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        <AnimatePresence mode="popLayout">
-          {filteredPhotos.map((photo, index) => (
-            <motion.div
-              key={photo.id}
-              layout
-              initial={{ opacity: 0, scale: 0.94, y: 25 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.45, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{
-                y: -8,
-                scale: 1.02,
-                transition: { duration: 0.3, ease: 'easeOut' },
-              }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setSelectedPhoto(photo)}
-              className="group relative h-72 rounded-3xl overflow-hidden cursor-pointer liquid-glass border border-white/10 hover:border-amber-400/60 shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 transition-colors"
+      {/* Filter Tabs & Scroll Controls Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 px-2">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar w-full sm:w-auto justify-start sm:justify-center"
+        >
+          {filters.map((filter) => (
+            <motion.button
+              key={filter}
+              type="button"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveFilter(filter)}
+              className={`px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                activeFilter === filter
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-600 text-black font-bold shadow-md shadow-amber-500/20'
+                  : 'liquid-glass text-white/80 hover:text-white hover:bg-white/10 border border-white/10'
+              }`}
             >
+              {filter}
+            </motion.button>
+          ))}
+        </motion.div>
+
+        {/* Scroll Navigation Buttons */}
+        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={handleScrollLeft}
+            className="w-10 h-10 rounded-full liquid-glass border border-white/20 flex items-center justify-center text-white/80 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer shadow-md"
+            aria-label="Geser Kiri"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            type="button"
+            onClick={handleScrollRight}
+            className="w-10 h-10 rounded-full liquid-glass border border-white/20 flex items-center justify-center text-white/80 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer shadow-md"
+            aria-label="Geser Kanan"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      </div>
+
+      {/* Photos Horizontal Swipe/Scroll Carousel */}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto gap-6 pb-6 pt-2 px-2 sm:px-4 no-scrollbar scroll-smooth snap-x snap-mandatory"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredPhotos.map((photo, index) => (
+              <motion.div
+                key={photo.id}
+                layout
+                initial={{ opacity: 0, scale: 0.94, y: 25 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.45, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{
+                  y: -8,
+                  scale: 1.02,
+                  transition: { duration: 0.3, ease: 'easeOut' },
+                }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedPhoto(photo)}
+                className="group relative h-80 min-w-[300px] sm:min-w-[360px] md:min-w-[400px] max-w-[440px] shrink-0 snap-start rounded-3xl overflow-hidden cursor-pointer liquid-glass border border-white/10 hover:border-amber-400/60 shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 transition-colors"
+              >
               <img
                 src={photo.imageUrl}
                 alt={photo.title}
@@ -149,7 +185,8 @@ export default function GallerySection() {
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Lightbox Modal */}
       <AnimatePresence>

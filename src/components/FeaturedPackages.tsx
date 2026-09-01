@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { motion } from 'motion/react';
 import {
   Calendar,
@@ -9,6 +10,8 @@ import {
   Flame,
   Users,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { PACKAGES_DATA } from '../data/travelData';
 import { TravelPackage } from '../types';
@@ -40,33 +43,24 @@ const textFade = {
   },
 };
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 35, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
-
 export default function FeaturedPackages({
   onSelectPackage,
   onBookDirect,
 }: FeaturedPackagesProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -450, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 450, behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="paket-unggulan" className="w-full py-16 md:py-24">
       {/* Header */}
@@ -75,7 +69,7 @@ export default function FeaturedPackages({
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-60px' }}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
       >
         <div className="max-w-2xl">
           <motion.div
@@ -95,37 +89,55 @@ export default function FeaturedPackages({
             </span>
           </motion.h2>
         </div>
-        <motion.p
-          variants={textFade}
-          className="text-sm text-white/70 max-w-md"
-        >
-          Nikmati kepastian kuota, tiket pesawat terkonfirmasi, dan pendampingan menyeluruh dari manasik hingga kepulangan.
-        </motion.p>
+        <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto">
+          <motion.p
+            variants={textFade}
+            className="text-sm text-white/70 max-w-md hidden sm:block"
+          >
+            Nikmati kepastian kuota, tiket pesawat terkonfirmasi, dan pendampingan menyeluruh dari manasik hingga kepulangan.
+          </motion.p>
+          {/* Scroll Navigation Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleScrollLeft}
+              className="w-10 h-10 rounded-full liquid-glass border border-white/20 flex items-center justify-center text-white/80 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer shadow-md"
+              aria-label="Geser Kiri"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={handleScrollRight}
+              className="w-10 h-10 rounded-full liquid-glass border border-white/20 flex items-center justify-center text-white/80 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer shadow-md"
+              aria-label="Geser Kanan"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
       </motion.div>
 
-      {/* Packages Grid */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-50px' }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-      >
-        {PACKAGES_DATA.map((pkg) => (
-          <motion.div
-            key={pkg.id}
-            variants={cardVariants}
-            whileHover={{
-              y: -8,
-              scale: 1.015,
-              transition: { duration: 0.3, ease: 'easeOut' },
-            }}
-            className={`liquid-glass rounded-3xl p-6 sm:p-8 border flex flex-col justify-between transition-colors group cursor-default shadow-xl ${
-              pkg.isBestSeller
-                ? 'border-amber-400/40 hover:border-amber-400/80 shadow-amber-500/10 hover:shadow-2xl hover:shadow-amber-500/20'
-                : 'border-white/10 hover:border-amber-400/40 hover:shadow-2xl'
-            }`}
-          >
+      {/* Packages Horizontal Swipe/Scroll Carousel */}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto gap-6 pb-6 pt-2 px-2 sm:px-4 no-scrollbar scroll-smooth snap-x snap-mandatory"
+        >
+          {PACKAGES_DATA.map((pkg) => (
+            <motion.div
+              key={pkg.id}
+              whileHover={{
+                y: -8,
+                scale: 1.015,
+                transition: { duration: 0.3, ease: 'easeOut' },
+              }}
+              className={`liquid-glass rounded-3xl p-6 sm:p-8 border flex flex-col justify-between transition-colors group cursor-default shadow-xl min-w-[320px] sm:min-w-[400px] md:min-w-[440px] max-w-[480px] shrink-0 snap-start ${
+                pkg.isBestSeller
+                  ? 'border-amber-400/40 hover:border-amber-400/80 shadow-amber-500/10 hover:shadow-2xl hover:shadow-amber-500/20'
+                  : 'border-white/10 hover:border-amber-400/40 hover:shadow-2xl'
+              }`}
+            >
             <div>
               {/* Top Meta Bar */}
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -237,15 +249,15 @@ export default function FeaturedPackages({
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-2 rounded-xl bg-black/40 border border-white/10">
-                      <span className="block text-[10px] text-white/50 uppercase">QUAD 🛏️🛏️🛏️🛏️</span>
+                      <span className="block text-[10px] text-white/50 uppercase">QUAD</span>
                       <span className="text-sm font-bold text-amber-300">Rp. 48,5 JT</span>
                     </div>
                     <div className="p-2 rounded-xl bg-black/40 border border-white/10">
-                      <span className="block text-[10px] text-white/50 uppercase">TRIPLE 🛏️🛏️🛏️</span>
+                      <span className="block text-[10px] text-white/50 uppercase">TRIPLE</span>
                       <span className="text-sm font-bold text-amber-300">Rp. 50 JT</span>
                     </div>
                     <div className="p-2 rounded-xl bg-black/40 border border-white/10">
-                      <span className="block text-[10px] text-white/50 uppercase">DOUBLE 🛏️🛏️</span>
+                      <span className="block text-[10px] text-white/50 uppercase">DOUBLE</span>
                       <span className="text-sm font-bold text-amber-300">Rp. 53 JT</span>
                     </div>
                   </div>
@@ -296,7 +308,8 @@ export default function FeaturedPackages({
             </div>
           </motion.div>
         ))}
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }
