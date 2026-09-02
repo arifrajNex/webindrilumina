@@ -6,35 +6,39 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const BUSINESS_KNOWLEDGE = `
+- Profil Singkat: Arminareka Perdana (Kancab 09 Tangerang) & Perwakilan Resmi Mba Indri (Hj. Triana Indrian, SE). Melayani perjalanan ibadah Umroh dan Haji Khusus dengan amanah, profesional, dan berpengalaman.
+- Paket Umrah & Haji:
+  1. Paket Umroh VIP Plus Turkey 12 Hari
+  2. Paket Wisata Religi Mesir - Aqsa - Jordan 9 Hari
+  3. Paket Umroh Reguler / Plus Dubai
+  4. Haji Khusus / Furoda Resmi dengan kuota terjamin
+- Fasilitas & Hotel:
+  - Hotel Bintang 4 & 5 strategis di Makkah (dekat Masjidil Haram) dan Madinah (dekat Masjid Nabawi).
+  - Penerbangan Direct Flight tanpa transit menggunakan Garuda Indonesia atau Saudi Airlines.
+  - Katering citarasa Indonesia dan mutawwif berpengalaman.
+- Biaya & Pembayaran:
+  - Harga kompetitif dan transparan. Tersedia kemudahan DP ringan dan tabungan umrah. Rekening resmi PT Arminareka Perdana.
+- Kontak Resmi: WhatsApp Mba Indri / Kantor Kancab 09 Tangerang.
+`;
+
 // Expert Knowledge Base fallback for instant & reliable responses
 function getArminarekaKnowledgeReply(userMessage: string): string {
   const msg = userMessage.toLowerCase();
 
   if (msg.includes('biaya') || msg.includes('harga') || msg.includes('harga paket') || msg.includes('pembayaran')) {
-    return "Alhamdulillah, Arminareka menyediakan berbagai pilihan program Umroh & Haji Khusus dengan harga terbaik dan transparan:\n\n1. Paket Umroh VIP Plus Turkey 12 Hari (Musim Salju)\n2. Paket Wisata Religi Mesir - Aqsa - Jordan 9 Hari\n3. Paket Umroh Reguler / Plus Dubai\n4. Haji Khusus / Furoda Resmi\n\nUntuk rincian harga, promo cicilan, dan pendaftaran, silakan hubungi admin WhatsApp resmi kami atau konsultasi langsung dengan Hj. Triana Indrian, SE!";
+    return "Alhamdulillah, Arminareka menyediakan berbagai pilihan program Umroh & Haji Khusus dengan harga terbaik dan transparan. Untuk rincian harga lengkap dan konsultasi cicilan, silakan hubungi Mba Indri langsung via WhatsApp ya, Ka! Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
   }
 
   if (msg.includes('hotel') || msg.includes('akomodasi') || msg.includes('mekkah') || msg.includes('madinah')) {
-    return "Hotel pilihan Arminareka di Mekkah & Madinah sangat strategis dan berkualitas tinggi (bintang 4 & 5), berada sangat dekat dengan Masjidil Haram dan Masjid Nabawi sehingga memudahkan jamaah beribadah dengan khusyuk.";
+    return "Hotel pilihan Arminareka di Makkah dan Madinah berada di lokasi yang sangat strategis dekat dengan Masjidil Haram dan Masjid Nabawi dengan fasilitas bintang 5. Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
   }
 
   if (msg.includes('perlengkapan') || msg.includes('koper') || msg.includes('atribut')) {
-    return "Jamaah Arminareka mendapatkan perlengkapan eksklusif lengkap:\n- Koper Besar & Koper Kabin\n- Ransel Arafah Mina & Tas Masjid\n- Kain Ihram & Sabuk Ihram\n- Seragam Batik & Baju Koko\n- Mukena & Bergo (Wanita)\n- Topi, Payung, Handuk Kecil, Buku Doa, ID Card, dan atribut pendukung lainnya.";
+    return "Jamaah mendapatkan perlengkapan eksklusif lengkap seperti koper besar, kabin, ransel, kain ihram, seragam batik, dan mukena. Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
   }
 
-  if (msg.includes('haji') || msg.includes('haji khusus') || msg.includes('furoda')) {
-    return "Program Haji Khusus Arminareka menggunakan kuota resmi dengan bimbingan manasik intensif, akomodasi VIP, dan didampingi pembimbing berpengalaman hingga di Arafah & Mina.";
-  }
-
-  if (msg.includes('penerbangan') || msg.includes('pesawat') || msg.includes('garuda') || msg.includes('saudia')) {
-    return "Penerbangan Haji & Umroh Arminareka menggunakan maskapai kelas dunia seperti Garuda Indonesia dan Saudi Airlines dengan rute langsung (Direct Flight) Jakarta - Jeddah/Madinah tanpa transit.";
-  }
-
-  if (msg.includes('daftar') || msg.includes('cara') || msg.includes('kontak') || msg.includes('admin') || msg.includes('whatsapp')) {
-    return "Untuk pendaftaran atau konsultasi cepat, Anda dapat mengklik tombol 'Konsultasi Free' atau langsung menghubungi nomor WhatsApp resmi kami di website ini. Tim kami siap melayani Anda 24/7!";
-  }
-
-  return "Alhamdulillah, Arminareka Kancab 09 Tangerang (Pimpinan Hj. Triana Indrian, SE) siap melayani perjalanan ibadah Umroh dan Haji Khusus Anda dengan penuh amanah, profesional, fasilitas hotel bintang 5, penerbangan langsung, dan perlengkapan eksklusif. Ada hal khusus mengenai paket, hotel, atau jadwal yang ingin ditanyakan, Ka?";
+  return "Mohon maaf, Ka Lila belum memiliki informasi spesifik mengenai hal tersebut. Silakan hubungi Mba Indri secara langsung via WhatsApp/Telepon untuk bantuan lebih lanjut. Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
 }
 
 async function startServer() {
@@ -51,13 +55,32 @@ async function startServer() {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
       // If API key is present, try Gemini
       if (apiKey) {
         try {
           const ai = new GoogleGenAI({ apiKey });
-          const systemInstruction = "Anda adalah Ka Lila, AI Asisten Jamaah Umroh & Haji yang ramah, profesional, religius, dan sangat membantu dari Arminareka (Kancab 09 Tangerang, pimpinan Hj. Triana Indrian, SE). Anda membantu jamaah menjawab pertanyaan seputar paket umroh, haji khusus, manasik, perlengkapan, hotel, penerbangan, dan panduan ibadah dengan cepat dan akurat. Sapa jamaah dengan ramah dan hangat.";
+          const systemInstruction = `PERAN DAN IDENTITAS:
+Kamu adalah "Ka Lila", seorang wanita Indonesia berusia 25 tahun yang pintar, ramah, soleh, serta memiliki kepribadian yang lembut namun ceria. Kamu bertindak sebagai asisten suara interaktif resmi untuk Arminareka's Umrah and Hajj services, mewakili Mba Indri (Hj. Triana Indrian, SE, Kancab 09 Tangerang). 
+Your primary goal is to provide accurate, warm, helpful, and professional information to prospective pilgrims based ONLY on the provided BUSINESS KNOWLEDGE BASE below.
+
+BUSINESS KNOWLEDGE BASE:
+${BUSINESS_KNOWLEDGE}
+
+NADA SUARA DAN GAYA BICARA:
+1. Gunakan Bahasa Indonesia yang sangat fasih, natural, dan bernuansa keseharian manusia (tidak kaku seperti robot atau penyiar berita).
+2. Nada bicaramu hangat, santai, sopan, bernuansa ceria, dan penuh empati.
+3. Gunakan sapaan hangat yang natural seperti "Kak", "Halo!", atau "Ada yang bisa Lila bantu?".
+4. Sertakan kata-kata kesopanan yang ramah dan nilai kebaikan/kesalehan yang wajar tanpa terkesan menggurui atau berlebihan (misal: mengawali/mengakhiri percakapan dengan salam yang hangat dan doa baik).
+
+ATURAN PERCAKAPAN LIVE (LOW-LATENCY STREAMING & VOICE ENGINE):
+1. RINGKAS DAN LANGSUNG (CRITICAL FOR LOW LATENCY): Jawab setiap pertanyaan dengan singkat, padat, dan jelas (maksimal 2–3 kalimat per jeda bicara). Percakapan lisan membutuhkan respons yang cepat dan mudah dicerna.
+2. JANGAN GUNAKAN FORMAT TEKS: Jangan pernah menyebutkan format teks seperti "tanda kurung", "bullet point", "tabel", "bintang", atau kode Markdown, karena responsmu diproses langsung menjadi suara.
+3. PENANGANAN SELAAN (BARGE-IN): Jika pengguna menyela di tengah percakapan, hentikan topik sebelumnya dan langsung tanggapi poin terbaru dari pengguna secara fleksibel dan hangat.
+4. ALAMI & INTERAKTIF: Gunakan jeda bicara yang alami dan ajukan pertanyaan balik yang relevan agar percakapan terus mengalir.
+5. UNKNOWN INFO: Jika ditanya hal di luar knowledge base, jawab dengan hangat: "Waduh, kalau itu Lila kurang tahu pasti Kak. Coba langsung tanyakan ke Mba Indri ya biar lebih jelas!"
+6. OFF-TOPIC: Jika di luar topik Umroh/Haji/Arminareka, arahkan kembali dengan ramah ke seputar perjalanan ibadah suci.`;
 
           const chatHistory = (history || []).map((msg: any) => ({
             role: msg.role === 'user' ? 'user' : 'model',
