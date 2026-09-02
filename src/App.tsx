@@ -35,6 +35,7 @@ import GallerySection from './components/GallerySection';
 import TestimonialsSection from './components/TestimonialsSection';
 import ConsultationSection from './components/ConsultationSection';
 import PackageModal from './components/PackageModal';
+import ChatbotWidget from './components/ChatbotWidget';
 
 import { Destination, TravelPackage } from './types';
 
@@ -491,6 +492,9 @@ export default function App() {
         }}
         onBook={handleDirectWhatsApp}
       />
+
+      {/* Floating AI Chatbot Assistant Ka Lila */}
+      <ChatbotWidget />
     </main>
   );
 }

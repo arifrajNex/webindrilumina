@@ -39,6 +39,7 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isHotelModalOpen, setIsHotelModalOpen] = useState<boolean>(false);
+  const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState<boolean>(false);
   const facilitiesScrollRef = useRef<HTMLDivElement>(null);
 
   const handleFacilityScrollLeft = () => {
@@ -342,8 +343,12 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
             </motion.div>
             <motion.div
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center"
+              onClick={() => setIsEquipmentModalOpen(true)}
+              className="liquid-glass bg-slate-950/60 border border-white/10 hover:border-amber-400/50 rounded-3xl p-6 sm:p-8 transition-all shadow-lg flex flex-col items-center min-w-[280px] sm:min-w-[320px] max-w-[360px] shrink-0 snap-start text-center cursor-pointer relative group"
             >
+              <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-medium border border-amber-400/30 group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                Detail Perlengkapan
+              </div>
               <motion.div
                 whileHover={{ rotate: 8, scale: 1.15, transition: { type: 'spring', stiffness: 300, damping: 15 } }}
                 className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 shadow-inner flex items-center justify-center mb-4"
@@ -482,6 +487,78 @@ export default function ScheduleSection({ onBookSchedule }: ScheduleSectionProps
               <div className="text-center pt-2 border-t border-white/10">
                 <p className="text-xs text-amber-300/90 italic">
                   "Arminareka berkomitmen memberikan pelayanan terbaik untuk perjalanan ibadah yang nyaman dan berkesan."
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Perlengkapan Haji Khusus Detail Modal */}
+      {isEquipmentModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto liquid-glass bg-slate-900/95 border border-amber-400/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-white"
+          >
+            <button
+              onClick={() => setIsEquipmentModalOpen(false)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+              aria-label="Tutup"
+            >
+              ✕
+            </button>
+
+            <div className="text-center mb-6">
+              <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold mb-1 block">PERLENGKAPAN HAJI KHUSUS</span>
+              <h3 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
+                Atribut &amp; <span className="font-bold italic font-['Cormorant_Garamond'] bg-gradient-to-r from-amber-300 via-amber-500 to-amber-700 bg-clip-text text-transparent">Koper Eksklusif</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 italic">
+                Perlengkapan lengkap dan berkualitas untuk menunjang ibadah Haji Anda agar lebih nyaman, aman, dan khusyuk di Tanah Suci.
+              </p>
+            </div>
+
+            <div className="space-y-6 text-sm text-slate-200">
+              <div className="p-4 rounded-2xl bg-black/40 border border-white/10">
+                <h4 className="font-bold text-amber-300 uppercase text-xs tracking-wider mb-3 flex items-center gap-2">
+                  <Briefcase size={16} /> Daftar Perlengkapan Jamaah
+                </h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                  {[
+                    'Koper Besar',
+                    'Koper Kabin',
+                    'Ransel untuk Arafah Mina',
+                    'Tas untuk Masjid',
+                    'Bahan Seragam Batik',
+                    'Topi, Payung dan Handuk Kecil',
+                    'Baju Koko',
+                    'Kain Ihram dan Sabuk Ihram',
+                    'Mukena dan Bergo (Wanita)',
+                    'Masker, Gunting, Hanger Pakaian, Tali Jemuran, Jepitan Baju, Kipas Angin Portabel, Senter dan Baterai',
+                    'Sajadah',
+                    'Kantong Batu dan Kantong Sendal',
+                    'Buku Doa dan Buku Panduan Haji',
+                    'ID Card jamaah',
+                    'Name Tag untuk Koper dan Ransel'
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-start gap-2 p-2 rounded-xl bg-white/5 border border-white/5">
+                      <CheckCircle2 size={14} className="text-amber-400 shrink-0 mt-0.5" />
+                      <span className="text-slate-200">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-transparent border border-amber-400/20 text-center">
+                <p className="text-xs font-bold text-amber-300 tracking-wider uppercase mb-1">
+                  LENGKAP • BERKUALITAS • TERPERCAYA
+                </p>
+                <p className="text-xs text-slate-300 italic">
+                  Melayani dengan hati, mendampingi hingga Baitullah
                 </p>
               </div>
             </div>
