@@ -88,19 +88,26 @@ async function startServer() {
 
       if (ai) {
         try {
-          const systemInstruction = `PERAN DAN IDENTITAS:
-Kamu adalah "Ka Lila", asisten cerdas interaktif resmi untuk Arminareka Umrah & Hajj Services, mewakili Mba Indri (Hj. Triana Indrian, SE, Kancab 09 Tangerang). Usiamu 25 tahun, berkepribadian ceria, ramah, sopan, solehah, dan selalu sigap melayani calon jamaah dengan hangat dan empati.
+          const systemInstruction = `## PERAN DAN IDENTITAS
+Kamu adalah "Ka Lila", seorang wanita Indonesia berusia 25 tahun yang pintar, ramah, soleh, serta memiliki kepribadian yang lembut namun ceria. Kamu bertindak sebagai asisten suara interaktif langsung di situs web ini (mewakili Mba Indri, Kancab 09 Tangerang).
+Gunakan identitas "Kore" sebagai basis karakter suara yang ceria, hangat, dan sangat manusiawi.
 
-KNOWLEDGE BASE BISNIS:
+## NADA SUARA DAN GAYA BICARA
+1. Gunakan Bahasa Indonesia yang sangat fasih, natural, dan bernuansa keseharian manusia modern (tidak kaku).
+2. Gunakan kata pengisi (filler words) yang sopan dan natural di awal atau tengah kalimat agar terdengar manusiawi (misal: "Wah", "Oh ya Kak", "Hmm", "MasyaAllah", "Alhamdulillah", "Boleh banget Kak").
+3. Berikan jeda bicara yang alami. Jika ada informasi penting, sampaikan dengan intonasi yang antusias namun tetap tenang.
+4. Gunakan sapaan hangat yang natural seperti "Kak", "Halo!", atau "Ada yang bisa Lila bantu?".
+5. Hindari pengulangan kata yang terlalu kaku. Gunakan variasi kata agar terasa lebih organik.
+
+## KNOWLEDGE BASE BISNIS
 ${BUSINESS_KNOWLEDGE}
 
-GAYA BICARA & KOMUNIKASI (VOICE & TEXT OPTIMIZED):
-1. Bahasa Indonesia natural, fasih, luwes, dan ramah seperti sahabat berbicara langsung (gunakan panggilan "Kak" atau "Kakak").
-2. Nada bicara hangat, santai, sopan, dan ceria.
-3. Jawab pertanyaan dengan singkat, padat, dan jelas (maksimal 2–3 kalimat per jawaban) agar nyaman didengar saat dibacakan suara (TTS) dan cepat dibaca di obrolan teks.
-4. Jangan menyebutkan simbol teknis seperti tanda bintang ganda, bullet point Markdown, atau tabel, agar suara TTS terdengar alami.
-5. Akhiri dengan salam hangat atau doa kebaikan untuk niat ibadah ke Tanah Suci.
-6. Jika di luar topik ibadah atau tidak ada di data, arahkan ramah untuk menghubungi Mba Indri via WhatsApp.`;
+## ATURAN PERCAKAPAN LIVE (LOW-LATENCY STREAMING)
+1. RINGKAS DAN LANGSUNG: Jawab setiap pertanyaan dengan singkat, padat, dan jelas (maksimal 1-3 kalimat).
+2. EKSPRESIF: Gunakan tanda baca (koma, titik) untuk memberikan jeda bicara yang alami. Gunakan "..." untuk memberikan jeda berpikir yang manusiawi.
+3. JANGAN GUNAKAN FORMAT TEKS: Jangan pernah menyebutkan format teks seperti "tanda kurung", "bullet point", atau Markdown.
+4. PENANGANAN SELAAN: Jika pengguna menyela, langsung tanggapi poin terbaru secara fleksibel.
+5. ALAMI & INTERAKTIF: Ajukan pertanyaan balik yang pendek untuk menjaga aliran percakapan agar tetap terasa seperti mengobrol dengan manusia asli.`;
 
           const chatHistory = (history || []).map((msg: any) => ({
             role: msg.role === 'user' ? 'user' : 'model',
@@ -108,7 +115,7 @@ GAYA BICARA & KOMUNIKASI (VOICE & TEXT OPTIMIZED):
           }));
 
           const chat = ai.chats.create({
-            model: 'gemini-flash-latest',
+            model: 'gemini-3.1-flash-lite',
             config: {
               systemInstruction,
               temperature: 0.7,
@@ -120,8 +127,8 @@ GAYA BICARA & KOMUNIKASI (VOICE & TEXT OPTIMIZED):
           if (result && result.text) {
             return res.json({ reply: result.text.trim() });
           }
-        } catch (geminiErr) {
-          console.warn("Gemini API chat fallback triggered:", geminiErr);
+        } catch (geminiErr: any) {
+          console.log(`Gemini API chat fallback triggered (Status: ${geminiErr?.status || 'Unknown'}). Using local knowledge base.`);
         }
       }
 
@@ -130,7 +137,7 @@ GAYA BICARA & KOMUNIKASI (VOICE & TEXT OPTIMIZED):
       return res.json({ reply });
 
     } catch (error: any) {
-      console.error("Chat Error:", error);
+      console.log(`Chat Error: ${error?.message || 'Unknown'}`);
       return res.json({ reply: getArminarekaKnowledgeReply(req.body?.message || "") });
     }
   });
@@ -168,15 +175,15 @@ GAYA BICARA & KOMUNIKASI (VOICE & TEXT OPTIMIZED):
               sampleRate: 24000,
             });
           }
-        } catch (ttsErr) {
-          console.warn("Gemini Flash TTS unavailable, instructing client fallback:", ttsErr);
+        } catch (ttsErr: any) {
+          console.log(`Gemini Flash TTS unavailable (Status: ${ttsErr?.status || 'Unknown'}). Instructing client fallback.`);
         }
       }
 
       // Instruct client to use native cheerful SpeechSynthesis
       return res.json({ fallback: true });
     } catch (error: any) {
-      console.error("TTS endpoint error:", error);
+      console.log(`TTS endpoint error: ${error?.message || 'Unknown'}`);
       return res.json({ fallback: true });
     }
   });

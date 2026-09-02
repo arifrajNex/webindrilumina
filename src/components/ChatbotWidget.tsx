@@ -38,6 +38,17 @@ export default function ChatbotWidget() {
   const [isVoiceCallActive, setIsVoiceCallActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [audioSourceNode, setAudioSourceNode] = useState<AudioBufferSourceNode | null>(null);
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      const loadVoices = () => {
+        setAvailableVoices(window.speechSynthesis.getVoices());
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -94,17 +105,39 @@ export default function ChatbotWidget() {
     }
     window.speechSynthesis.cancel();
 
-    const clean = text.replace(/[*#_`~-]/g, ' ').trim();
+    const clean = text
+      .replace(/[*#_`~-]/g, ' ')
+      .replace(/Rp\s?(\d+)/g, '$1 Rupiah')
+      .replace(/(\d+)\s?jt/gi, '$1 Juta')
+      .replace(/bln/gi, 'bulan')
+      .replace(/(\d+)\s?rb/gi, '$1 Ribu')
+      .replace(/(\d+)\s?k/gi, '$1 Ribu')
+      .replace(/(\d+)\/(\d+)/g, '$1 per $2')
+      .replace(/\byg\b/gi, 'yang')
+      .replace(/\bsdh\b/gi, 'sudah')
+      .replace(/\butk\b/gi, 'untuk')
+      .replace(/\bbgt\b/gi, 'banget')
+      .replace(/\bsy\b/gi, 'saya')
+      .replace(/\btdk\b/gi, 'tidak')
+      .replace(/\bdr\b/gi, 'dari')
+      .replace(/\.\.\./g, ', ') // Replace triple dots with comma for natural pause
+      .replace(/\s+/g, ' ')
+      .trim();
     const utterance = new SpeechSynthesisUtterance(clean);
     utterance.lang = 'id-ID';
-    utterance.rate = 1.05;
-    utterance.pitch = 1.15; // Natural cheerful Indonesian female tone
+    utterance.rate = 0.92; // Slightly slower for more human-like pacing
+    utterance.pitch = 1.1; // Gentle, warmer and slightly more feminine tone
 
-    const voices = window.speechSynthesis.getVoices();
-    const idVoice = voices.find(
-      (v) => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia')
-    );
-    if (idVoice) utterance.voice = idVoice;
+    let bestVoice = availableVoices.find(v => v.name === 'Google Bahasa Indonesia');
+    if (!bestVoice) {
+      bestVoice = availableVoices.find(v => v.lang.startsWith('id') && v.name.toLowerCase().includes('female'));
+    }
+    if (!bestVoice) {
+      bestVoice = availableVoices.find(v => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia'));
+    }
+    if (bestVoice) {
+      utterance.voice = bestVoice;
+    }
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => {
@@ -179,8 +212,8 @@ export default function ChatbotWidget() {
         source.start(0);
         return;
       }
-    } catch (err) {
-      console.warn("TTS API fetch fallback to browser SpeechSynthesis:", err);
+    } catch (err: any) {
+      console.log(`TTS API fetch fallback to browser SpeechSynthesis (Status: ${err?.message || 'Unknown'})`);
     }
 
     // Fallback to browser SpeechSynthesis
@@ -299,8 +332,8 @@ export default function ChatbotWidget() {
           }, 500);
         }
       });
-    } catch (err) {
-      console.error("Chat error:", err);
+    } catch (err: any) {
+      console.log(`Chat error: ${err?.message || 'Unknown'}`);
       const fallbackReply =
         "Alhamdulillah, Arminareka menyediakan beragam paket Umroh & Haji Khusus terbaik dengan fasilitas hotel bintang 5. Hubungi Mba Indri di WhatsApp untuk informasi selengkapnya!";
       setMessages((prev) => [...prev, { role: 'model', text: fallbackReply }]);
@@ -380,9 +413,6 @@ export default function ChatbotWidget() {
                   <div>
                     <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
                       Ka Lila AI Assistant
-                      <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-400/30">
-                        v2.6 Live
-                      </span>
                     </h4>
                     <p className="text-[11px] text-amber-300/80">
                       Asisten Cerdas Arminareka (Mba Indri)
