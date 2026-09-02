@@ -75,8 +75,8 @@ export default function TestimonialsSection() {
           >
             Pengalaman nyata para jamaah yang telah menunaikan ibadah bersama Hj. Triana Indrian SE.
           </motion.p>
-          {/* Scroll Navigation Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Scroll Navigation Buttons for mobile / small screens */}
+          <div className="flex md:hidden items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={handleScrollLeft}
@@ -97,11 +97,11 @@ export default function TestimonialsSection() {
         </div>
       </motion.div>
 
-      {/* Testimonials Horizontal Swipe/Scroll Carousel */}
+      {/* Testimonials Container: 3-column Grid on md/lg, horizontal swipe on mobile */}
       <div className="relative">
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto gap-6 pb-6 pt-2 px-2 sm:px-4 no-scrollbar scroll-smooth snap-x snap-mandatory"
+          className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-visible gap-6 pb-6 pt-2 px-2 sm:px-4 no-scrollbar scroll-smooth snap-x snap-mandatory"
         >
           {TESTIMONIALS_DATA.map((t) => (
             <motion.div
@@ -111,11 +111,11 @@ export default function TestimonialsSection() {
                 scale: 1.02,
                 transition: { duration: 0.3, ease: 'easeOut' },
               }}
-              className="liquid-glass rounded-3xl p-7 border border-white/10 hover:border-amber-400/50 transition-colors flex flex-col justify-between group shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 cursor-default min-w-[320px] sm:min-w-[380px] md:min-w-[420px] max-w-[460px] shrink-0 snap-start"
+              className="liquid-glass rounded-3xl p-7 border border-white/10 hover:border-amber-400/50 transition-colors flex flex-col justify-between group shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 cursor-default min-w-[300px] sm:min-w-[340px] md:min-w-0 w-full shrink-0 md:shrink snap-start"
             >
               <div>
                 {/* Header quote icon & stars */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-1 text-amber-400">
                     {[...Array(t.rating)].map((_, i) => (
                       <motion.div
@@ -131,7 +131,7 @@ export default function TestimonialsSection() {
                 </div>
 
                 {/* Review text */}
-                <p className="text-xs sm:text-sm text-white/85 leading-relaxed italic mb-6 group-hover:text-white transition-colors">
+                <p className="text-xs sm:text-sm text-white/90 leading-relaxed italic mb-6 group-hover:text-white transition-colors">
                   "{t.review}"
                 </p>
               </div>
@@ -142,17 +142,21 @@ export default function TestimonialsSection() {
                   whileHover={{ scale: 1.1 }}
                   src={t.avatar}
                   alt={t.name}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-amber-400/50 group-hover:border-amber-300 shadow-md transition-colors"
+                  className="w-13 h-13 rounded-full object-cover border-2 border-amber-400/60 group-hover:border-amber-300 shadow-md transition-colors shrink-0"
                 />
-                <div>
-                  <div className="flex items-center gap-1">
-                    <h4 className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors">{t.name}</h4>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors truncate">
+                      {t.name}
+                    </h4>
                     <CheckCircle2 size={13} className="text-amber-400 shrink-0" />
                   </div>
-                  <p className="text-[11px] text-amber-300/90 font-medium">
-                    {t.packageTaken}
+                  <p className="text-xs font-semibold text-amber-300">
+                    {t.location}
                   </p>
-                  <p className="text-[10px] text-white/50">{t.location} • {t.year}</p>
+                  <p className="text-[11px] text-white/50 truncate">
+                    {t.packageTaken} {t.year ? `• ${t.year}` : ''}
+                  </p>
                 </div>
               </div>
             </motion.div>

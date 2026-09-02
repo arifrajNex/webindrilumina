@@ -1,44 +1,59 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const BUSINESS_KNOWLEDGE = `
-- Profil Singkat: Arminareka Perdana (Kancab 09 Tangerang) & Perwakilan Resmi Mba Indri (Hj. Triana Indrian, SE). Melayani perjalanan ibadah Umroh dan Haji Khusus dengan amanah, profesional, dan berpengalaman.
-- Paket Umrah & Haji:
-  1. Paket Umroh VIP Plus Turkey 12 Hari
-  2. Paket Wisata Religi Mesir - Aqsa - Jordan 9 Hari
-  3. Paket Umroh Reguler / Plus Dubai
-  4. Haji Khusus / Furoda Resmi dengan kuota terjamin
-- Fasilitas & Hotel:
-  - Hotel Bintang 4 & 5 strategis di Makkah (dekat Masjidil Haram) dan Madinah (dekat Masjid Nabawi).
-  - Penerbangan Direct Flight tanpa transit menggunakan Garuda Indonesia atau Saudi Airlines.
-  - Katering citarasa Indonesia dan mutawwif berpengalaman.
-- Biaya & Pembayaran:
-  - Harga kompetitif dan transparan. Tersedia kemudahan DP ringan dan tabungan umrah. Rekening resmi PT Arminareka Perdana.
-- Kontak Resmi: WhatsApp Mba Indri / Kantor Kancab 09 Tangerang.
+- Profil Singkat: Arminareka Perdana (Kancab 09 Tangerang) & Perwakilan Resmi Mba Indri (Hj. Triana Indrian, SE). Melayani perjalanan ibadah Umroh dan Haji Khusus dengan amanah, profesional, dan berpengalaman puluhan tahun.
+- Paket Unggulan:
+  1. Paket Umroh VIP Ramadhan Bintang 5 (12 Hari) - Hotel depan pelataran Ka'bah (Pullman Zamzam / Fairmont Makkah & Dallah Taibah Madinah).
+  2. Paket Umroh Reguler 9 & 12 Hari - Direct flight Garuda Indonesia / Saudi Airlines tanpa transit.
+  3. Paket Umroh Plus Turki & Cappadocia (12 Hari) - Menikmati keindahan Blue Mosque, Bosphorus Cruise, dan balon udara Cappadocia.
+  4. Paket Wisata Halal Mesir - Aqsa - Jordan (9 Hari) - Napak tilas sejarah para Nabi dan Masjidil Aqsa.
+  5. Haji Khusus Furoda VIP Resmi Kuota Terjamin - Tenda AC eksklusif di Mina & Arafah, pembimbing ibadah ustadz berpengalaman.
+- Fasilitas Unggulan:
+  - Hotel bintang 4 & 5 ring 1 sangat dekat pelataran masjid.
+  - Penerbangan Direct Flight (Jakarta - Madinah/Jeddah) hemat waktu & nyaman bagi lansia.
+  - Sajian katering prasmanan menu masakan khas Nusantara 3x sehari.
+  - Muthawif & Tour Leader berizin resmi dan berpengalaman membimbing secara khusyuk sesuai Sunnah.
+  - Perlengkapan eksklusif: koper bagasi 28 inch, koper kabin, tas paspor, mukena/kain ihram, buku panduan, seragam batik resmi.
+- Solusi Pembayaran & Tabungan:
+  - DP awal sangat ringan, pelunasan bertahap atau fasilitas program tabungan umroh syariah terpercaya.
+  - Pembayaran 100% aman disalurkan langsung ke rekening resmi PT Arminareka Perdana.
+- Kontak Resmi Konsultan:
+  - Konsultan: Mba Indri (Hj. Triana Indrian, SE)
+  - WhatsApp: +62 813-1050-8974
+  - Kantor: Kancab 09 Tangerang
 `;
 
 // Expert Knowledge Base fallback for instant & reliable responses
 function getArminarekaKnowledgeReply(userMessage: string): string {
   const msg = userMessage.toLowerCase();
 
-  if (msg.includes('biaya') || msg.includes('harga') || msg.includes('harga paket') || msg.includes('pembayaran')) {
-    return "Alhamdulillah, Arminareka menyediakan berbagai pilihan program Umroh & Haji Khusus dengan harga terbaik dan transparan. Untuk rincian harga lengkap dan konsultasi cicilan, silakan hubungi Mba Indri langsung via WhatsApp ya, Ka! Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
+  if (msg.includes('biaya') || msg.includes('harga') || msg.includes('paket') || msg.includes('tarif') || msg.includes('bayar') || msg.includes('dp')) {
+    return "Alhamdulillah, Arminareka memiliki berbagai paket pilihan mulai dari Umroh Reguler, Umroh VIP Ramadhan, hingga Umroh Plus Turki dan Haji Furoda dengan DP ringan dan skema tabungan syariah. Untuk brosur rincian harga terbaru sesuai tanggal keberangkatan, silakan langsung hubungi Mba Indri via WhatsApp ya Kak! Semoga dimudahkan langkahnya ke Baitullah.";
   }
 
-  if (msg.includes('hotel') || msg.includes('akomodasi') || msg.includes('mekkah') || msg.includes('madinah')) {
-    return "Hotel pilihan Arminareka di Makkah dan Madinah berada di lokasi yang sangat strategis dekat dengan Masjidil Haram dan Masjid Nabawi dengan fasilitas bintang 5. Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
+  if (msg.includes('hotel') || msg.includes('penginapan') || msg.includes('akomodasi') || msg.includes('mekkah') || msg.includes('madinah')) {
+    return "Hotel rekanan Arminareka di Makkah dan Madinah berstandar Bintang 4 & Bintang 5 di ring 1 (sangat dekat pelataran Masjidil Haram dan Masjid Nabawi), sehingga memudahkan jamaah untuk beribadah dan sholat fardhu setiap waktu.";
   }
 
-  if (msg.includes('perlengkapan') || msg.includes('koper') || msg.includes('atribut')) {
-    return "Jamaah mendapatkan perlengkapan eksklusif lengkap seperti koper besar, kabin, ransel, kain ihram, seragam batik, dan mukena. Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
+  if (msg.includes('syarat') || msg.includes('berkas') || msg.includes('paspor') || msg.includes('dokumen') || msg.includes('daftar')) {
+    return "Syarat pendaftarannya sangat mudah Kak: paspor asli yang masih berlaku minimal 8 bulan (nama minimal 2 suku kata), fotokopi KTP & KK, buku nikah/akta lahir, pas foto terbaru, serta kartu kuning meningitis/vaksin sesuai aturan Kemenkes.";
   }
 
-  return "Mohon maaf, Ka Lila belum memiliki informasi spesifik mengenai hal tersebut. Silakan hubungi Mba Indri secara langsung via WhatsApp/Telepon untuk bantuan lebih lanjut. Semoga Allah memudahkan niat suci Anda ke Tanah Suci.";
+  if (msg.includes('perlengkapan') || msg.includes('koper') || msg.includes('fasilitas') || msg.includes('seragam')) {
+    return "Setiap jamaah mendapatkan perlengkapan komplit eksklusif: koper bagasi besar, koper kabin, tas paspor, seragam batik Arminareka, kain ihram bagi ikhwan atau mukena bagi akhwat, serta buku panduan doa.";
+  }
+
+  if (msg.includes('haji') || msg.includes('furoda') || msg.includes('khusus')) {
+    return "Arminareka menyediakan program Haji Khusus Furoda VIP resmi dengan visa haji mujamalah kuota resmi pemerintah Saudi tanpa antri bertahun-tahun, dilengkapi akomodasi bintang 5 dan tenda maktab ber-AC di Mina & Arafah.";
+  }
+
+  return "Alhamdulillah, terima kasih sudah bertanya Kak! Ka Lila siap bantu berbagai info seputar Umroh, Haji Khusus, jadwal, dan pendaftaran Arminareka. Untuk konsultasi detail dan pendaftaran langsung, Kakak bisa hubungi Mba Indri di WhatsApp resmi kami ya!";
 }
 
 async function startServer() {
@@ -47,7 +62,21 @@ async function startServer() {
 
   app.use(express.json());
 
-  // API Chat endpoint with Gemini & Smart Fallback
+  // Helper to initialize GoogleGenAI with telemetry headers
+  const getGeminiClient = () => {
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!apiKey) return null;
+    return new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
+  };
+
+  // API Chat endpoint with Gemini Flash & Fallback
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, history } = req.body;
@@ -55,32 +84,23 @@ async function startServer() {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+      const ai = getGeminiClient();
 
-      // If API key is present, try Gemini
-      if (apiKey) {
+      if (ai) {
         try {
-          const ai = new GoogleGenAI({ apiKey });
           const systemInstruction = `PERAN DAN IDENTITAS:
-Kamu adalah "Ka Lila", seorang wanita Indonesia berusia 25 tahun yang pintar, ramah, soleh, serta memiliki kepribadian yang lembut namun ceria. Kamu bertindak sebagai asisten suara interaktif resmi untuk Arminareka's Umrah and Hajj services, mewakili Mba Indri (Hj. Triana Indrian, SE, Kancab 09 Tangerang). 
-Your primary goal is to provide accurate, warm, helpful, and professional information to prospective pilgrims based ONLY on the provided BUSINESS KNOWLEDGE BASE below.
+Kamu adalah "Ka Lila", asisten cerdas interaktif resmi untuk Arminareka Umrah & Hajj Services, mewakili Mba Indri (Hj. Triana Indrian, SE, Kancab 09 Tangerang). Usiamu 25 tahun, berkepribadian ceria, ramah, sopan, solehah, dan selalu sigap melayani calon jamaah dengan hangat dan empati.
 
-BUSINESS KNOWLEDGE BASE:
+KNOWLEDGE BASE BISNIS:
 ${BUSINESS_KNOWLEDGE}
 
-NADA SUARA DAN GAYA BICARA:
-1. Gunakan Bahasa Indonesia yang sangat fasih, natural, dan bernuansa keseharian manusia (tidak kaku seperti robot atau penyiar berita).
-2. Nada bicaramu hangat, santai, sopan, bernuansa ceria, dan penuh empati.
-3. Gunakan sapaan hangat yang natural seperti "Kak", "Halo!", atau "Ada yang bisa Lila bantu?".
-4. Sertakan kata-kata kesopanan yang ramah dan nilai kebaikan/kesalehan yang wajar tanpa terkesan menggurui atau berlebihan (misal: mengawali/mengakhiri percakapan dengan salam yang hangat dan doa baik).
-
-ATURAN PERCAKAPAN LIVE (LOW-LATENCY STREAMING & VOICE ENGINE):
-1. RINGKAS DAN LANGSUNG (CRITICAL FOR LOW LATENCY): Jawab setiap pertanyaan dengan singkat, padat, dan jelas (maksimal 2–3 kalimat per jeda bicara). Percakapan lisan membutuhkan respons yang cepat dan mudah dicerna.
-2. JANGAN GUNAKAN FORMAT TEKS: Jangan pernah menyebutkan format teks seperti "tanda kurung", "bullet point", "tabel", "bintang", atau kode Markdown, karena responsmu diproses langsung menjadi suara.
-3. PENANGANAN SELAAN (BARGE-IN): Jika pengguna menyela di tengah percakapan, hentikan topik sebelumnya dan langsung tanggapi poin terbaru dari pengguna secara fleksibel dan hangat.
-4. ALAMI & INTERAKTIF: Gunakan jeda bicara yang alami dan ajukan pertanyaan balik yang relevan agar percakapan terus mengalir.
-5. UNKNOWN INFO: Jika ditanya hal di luar knowledge base, jawab dengan hangat: "Waduh, kalau itu Lila kurang tahu pasti Kak. Coba langsung tanyakan ke Mba Indri ya biar lebih jelas!"
-6. OFF-TOPIC: Jika di luar topik Umroh/Haji/Arminareka, arahkan kembali dengan ramah ke seputar perjalanan ibadah suci.`;
+GAYA BICARA & KOMUNIKASI (VOICE & TEXT OPTIMIZED):
+1. Bahasa Indonesia natural, fasih, luwes, dan ramah seperti sahabat berbicara langsung (gunakan panggilan "Kak" atau "Kakak").
+2. Nada bicara hangat, santai, sopan, dan ceria.
+3. Jawab pertanyaan dengan singkat, padat, dan jelas (maksimal 2–3 kalimat per jawaban) agar nyaman didengar saat dibacakan suara (TTS) dan cepat dibaca di obrolan teks.
+4. Jangan menyebutkan simbol teknis seperti tanda bintang ganda, bullet point Markdown, atau tabel, agar suara TTS terdengar alami.
+5. Akhiri dengan salam hangat atau doa kebaikan untuk niat ibadah ke Tanah Suci.
+6. Jika di luar topik ibadah atau tidak ada di data, arahkan ramah untuk menghubungi Mba Indri via WhatsApp.`;
 
           const chatHistory = (history || []).map((msg: any) => ({
             role: msg.role === 'user' ? 'user' : 'model',
@@ -88,7 +108,7 @@ ATURAN PERCAKAPAN LIVE (LOW-LATENCY STREAMING & VOICE ENGINE):
           }));
 
           const chat = ai.chats.create({
-            model: 'gemini-3.6-flash',
+            model: 'gemini-flash-latest',
             config: {
               systemInstruction,
               temperature: 0.7,
@@ -98,20 +118,66 @@ ATURAN PERCAKAPAN LIVE (LOW-LATENCY STREAMING & VOICE ENGINE):
 
           const result = await chat.sendMessage({ message });
           if (result && result.text) {
-            return res.json({ reply: result.text });
+            return res.json({ reply: result.text.trim() });
           }
         } catch (geminiErr) {
-          console.warn("Gemini API call warning/error, falling back to expert knowledge base:", geminiErr);
+          console.warn("Gemini API chat fallback triggered:", geminiErr);
         }
       }
 
-      // Fallback to instant knowledge base reply
+      // Fallback to instant smart knowledge base
       const reply = getArminarekaKnowledgeReply(message);
-      res.json({ reply });
+      return res.json({ reply });
 
     } catch (error: any) {
       console.error("Chat Error:", error);
-      res.json({ reply: getArminarekaKnowledgeReply(req.body?.message || "") });
+      return res.json({ reply: getArminarekaKnowledgeReply(req.body?.message || "") });
+    }
+  });
+
+  // API Text-to-Speech (TTS) endpoint using Gemini Flash TTS preview with instant browser fallback
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text) {
+        return res.status(400).json({ error: "Text is required" });
+      }
+
+      const ai = getGeminiClient();
+      if (ai) {
+        try {
+          const cleanText = text.replace(/[*#_`~-]/g, ' ').trim();
+          const ttsResponse = await ai.models.generateContent({
+            model: "gemini-3.1-flash-tts-preview",
+            contents: [{ parts: [{ text: `Say cheerfully in warm Indonesian: ${cleanText}` }] }],
+            config: {
+              responseModalities: [Modality.AUDIO],
+              speechConfig: {
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: 'Kore' }, // Cheerful female natural voice
+                },
+              },
+            },
+          });
+
+          const base64Audio = ttsResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+          if (base64Audio) {
+            return res.json({
+              audio: base64Audio,
+              format: 'pcm',
+              sampleRate: 24000,
+            });
+          }
+        } catch (ttsErr) {
+          console.warn("Gemini Flash TTS unavailable, instructing client fallback:", ttsErr);
+        }
+      }
+
+      // Instruct client to use native cheerful SpeechSynthesis
+      return res.json({ fallback: true });
+    } catch (error: any) {
+      console.error("TTS endpoint error:", error);
+      return res.json({ fallback: true });
     }
   });
 
@@ -140,3 +206,4 @@ ATURAN PERCAKAPAN LIVE (LOW-LATENCY STREAMING & VOICE ENGINE):
 }
 
 startServer();
+

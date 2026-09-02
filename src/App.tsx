@@ -32,6 +32,7 @@ import ScheduleSection from './components/ScheduleSection';
 import WhyChooseUs from './components/WhyChooseUs';
 import AboutConsultant from './components/AboutConsultant';
 import GallerySection from './components/GallerySection';
+import PosterSection from './components/PosterSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import ConsultationSection from './components/ConsultationSection';
 import PackageModal from './components/PackageModal';
@@ -91,6 +92,7 @@ export default function App() {
     { label: 'Keunggulan', href: '#keunggulan-layanan' },
     { label: 'Profil Leader', href: '#profil-konsultan' },
     { label: 'Galeri', href: '#galeri-dokumentasi' },
+    { label: 'Poster & Brosur', href: '#poster-resmi' },
     { label: 'Testimoni', href: '#testimoni-jamaah' },
   ];
 
@@ -342,10 +344,13 @@ export default function App() {
         {/* 6. Travel & Pilgrimage Documentation Gallery */}
         <GallerySection />
 
-        {/* 7. Client & Pilgrim Testimonials */}
+        {/* 7. Official Posters & Digital Brochures (Download & Upload) */}
+        <PosterSection />
+
+        {/* 8. Client & Pilgrim Testimonials */}
         <TestimonialsSection />
 
-        {/* 8. Instant Consultation & Booking Form */}
+        {/* 9. Instant Consultation & Booking Form */}
         <ConsultationSection />
 
         {/* Liquid Glass Footer */}

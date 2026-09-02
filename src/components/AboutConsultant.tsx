@@ -38,9 +38,7 @@ const textFade = {
 export default function AboutConsultant({ onConsultClick }: AboutConsultantProps) {
   const credentials = [
     'Senior Official Consultant Arminareka Perdana',
-    'Berpengalaman lebih dari 7 tahun',
     'Telah memimpin lebih dari 120+ grup keberangkatan',
-    'Spesialis Rute Wisata Halal & Napak Tilas Peradaban Islam',
   ];
 
   return (

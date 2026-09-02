@@ -553,14 +553,6 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
       'https://images.unsplash.com/photo-1564769625905-50e93615e769?q=80&w=900&auto=format&fit=crop',
   },
   {
-    id: 'gal-3',
-    title: 'Matahari Terbit Bersama Balon Udara',
-    location: 'Cappadocia, Turki',
-    category: 'Wisata Dunia',
-    imageUrl:
-      'https://images.unsplash.com/photo-1609137144820-2211f4407b46?q=80&w=900&auto=format&fit=crop',
-  },
-  {
     id: 'gal-4',
     title: 'Arsitektur Kubah Megah Hagia Sophia',
     location: 'Istanbul, Turki',
@@ -576,51 +568,43 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     imageUrl:
       'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=900&auto=format&fit=crop',
   },
-  {
-    id: 'gal-6',
-    title: 'Keindahan Danau & Puncak Salju Swiss',
-    location: 'Interlaken, Swiss',
-    category: 'Wisata Dunia',
-    imageUrl:
-      'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=900&auto=format&fit=crop',
-  },
 ];
 
 export const TESTIMONIALS_DATA: Testimonial[] = [
   {
     id: 'test-1',
-    name: 'Prof. Dr. Ir. H. Bambang Suryanto',
-    location: 'Surabaya, Jawa Timur',
+    name: 'Ibu Indah',
+    location: 'Jemaah Asal Bekasi',
     avatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
-    packageTaken: 'Umroh VIP Ramadhan Bintang 5',
+      '/src/assets/images/jamaah_testimoni_1_1788378556890.jpg',
+    packageTaken: 'Umroh & Haji Khusus Arminareka',
     rating: 5,
     review:
-      'Pelayanan dari Ibu Hj. Triana Indrian SE dan tim Arminareka sungguh luar biasa istimewa. Hotel benar-benar selangkah dari pelataran Masjidil Haram, makanan lezat dan melimpah, muthawif sangat berilmu dan sabar. Ibadah sekeluarga menjadi sangat khusyuk dan tak terlupakan.',
-    year: 'Maret 2025',
+      'Hanya Arminareka yang dapat memberikan muhasabah di Padang Arafah dengan rasa khusyuk, pelayanan yang luar biasa, dan bimbingan ibadah yang begitu berkesan di hati.',
+    year: '2024',
   },
   {
     id: 'test-2',
-    name: 'Hj. Ratna Dewi & Keluarga',
-    location: 'Jakarta Selatan',
+    name: 'M. Ihsan',
+    location: 'Jemaah Asal Bandung',
     avatar:
-      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop',
-    packageTaken: 'Turki Tulip Festival & Cappadocia',
+      '/src/assets/images/jamaah_testimoni_2_1788378640007.jpg',
+    packageTaken: 'Paket Umroh Reguler Arminareka',
     rating: 5,
     review:
-      'Tour keliling Turki selama 10 hari bersama Bu Triana berjalan sangat teratur. Makanan selalu halal terjamin, hotel cave di Cappadocia sangat mewah, dan bimbingan nilai-nilai sejarah Islamnya sangat membuka wawasan anak-anak kami. Recommended sekali!',
-    year: 'Mei 2025',
+      'Selama ini mutawifnya selalu membimbing dengan baik, mulai dari pelaksanaan ibadah hingga kunjungan ke Jabal Uhud dan kebun kurma. Saya sangat puas dengan pelayanannya!',
+    year: '2024',
   },
   {
     id: 'test-3',
-    name: 'H. Achmad Fauzan, M.M.',
-    location: 'Bandung, Jawa Barat',
+    name: 'Steven Indra Wibowo (Almarhum)',
+    location: 'Pendiri Mualaf Center Indonesia',
     avatar:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
-    packageTaken: 'Haji Khusus Furoda VIP',
+      '/src/assets/images/jamaah_testimoni_3_1788378764610.jpg',
+    packageTaken: 'Perjalanan Umroh & Dakwah',
     rating: 5,
     review:
-      'Komitmen dan kejujuran adalah hal nomor satu di Arminareka. Dari kepengurusan visa Furoda yang lancar tanpa kendala, tenda ber-AC di Mina yang sangat nyaman, hingga kepulangan ke tanah air semuanya diurus dengan prima oleh Ibu Triana Indrian.',
-    year: 'Musim Haji 2024',
+      'Alhamdulillah, sampai hari ini tidak ada satu pun jemaah yang mengalami kesulitan. Pengurus dan petugas begitu sigap serta menjalankan tugas dengan sangat baik. Saya sangat puas.',
+    year: '2023',
   },
 ];

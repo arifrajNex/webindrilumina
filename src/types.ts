@@ -74,3 +74,17 @@ export interface WhyChooseUsFeature {
   iconName: string;
   highlight: string;
 }
+
+export interface PosterItem {
+  id: string;
+  title: string;
+  category: 'Umroh' | 'Haji' | 'Wisata Halal' | 'Panduan';
+  format: 'JPG' | 'PDF';
+  fileSize: string;
+  uploadDate: string;
+  description: string;
+  thumbnailUrl: string;
+  downloadUrl?: string;
+  fileName: string;
+  isDummy?: boolean;
+}
