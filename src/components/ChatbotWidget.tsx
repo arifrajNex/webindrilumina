@@ -23,11 +23,11 @@ type WidgetTab = 'voice' | 'chat';
 
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<WidgetTab>('chat');
+  const [activeTab, setActiveTab] = useState<WidgetTab>('voice');
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      text: "Assalamu'alaikum! Aku Ka Lila, Asisten AI Cerdas resmi Arminareka mewakili Mba Indri (Kancab 09 Tangerang). Ada yang bisa Ka Lila bantu untuk rencana ibadah suci Anda hari ini?",
+      text: "Assalamualaikum Ka.. Aku Ka Lila. Asisten AI Cerdas resmi Arminareka. Ada yang bisa Lila bantu untuk rencana ibadah suci Kakak hari ini?",
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -48,10 +48,28 @@ export default function ChatbotWidget() {
       loadVoices();
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
+
+    // Global listener for the Hero "Bicara dengan Ka Lila" CTA button
+    const handleOpenVoice = () => {
+      setIsOpen(true);
+      setActiveTab('voice');
+      setTimeout(() => {
+        startVoiceCall();
+      }, 100);
+    };
+
+    window.addEventListener('open-ka-lila-voice', handleOpenVoice);
+    return () => {
+      window.removeEventListener('open-ka-lila-voice', handleOpenVoice);
+    };
   }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const liveWsRef = useRef<WebSocket | null>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
+  const micProcessorRef = useRef<ScriptProcessorNode | null>(null);
+  const nextStartTimeRef = useRef<number>(0);
 
   const quickQuestions = [
     'Berapa biaya Paket Umroh 2026?',
@@ -97,62 +115,308 @@ export default function ChatbotWidget() {
     setIsSpeaking(false);
   };
 
-  // Browser SpeechSynthesis Fallback
+  // Browser SpeechSynthesis with Humanized Multi-Sentence Prosody (25yo Female)
   const speakWithBrowserSpeech = (text: string, onFinish?: () => void) => {
     if (!voiceEnabled || !('speechSynthesis' in window)) {
       if (onFinish) onFinish();
       return;
     }
     window.speechSynthesis.cancel();
-
-    const clean = text
-      .replace(/[*#_`~-]/g, ' ')
-      .replace(/Rp\s?(\d+)/g, '$1 Rupiah')
-      .replace(/(\d+)\s?jt/gi, '$1 Juta')
-      .replace(/bln/gi, 'bulan')
-      .replace(/(\d+)\s?rb/gi, '$1 Ribu')
-      .replace(/(\d+)\s?k/gi, '$1 Ribu')
-      .replace(/(\d+)\/(\d+)/g, '$1 per $2')
-      .replace(/\byg\b/gi, 'yang')
-      .replace(/\bsdh\b/gi, 'sudah')
-      .replace(/\butk\b/gi, 'untuk')
-      .replace(/\bbgt\b/gi, 'banget')
-      .replace(/\bsy\b/gi, 'saya')
-      .replace(/\btdk\b/gi, 'tidak')
-      .replace(/\bdr\b/gi, 'dari')
-      .replace(/\.\.\./g, ', ') // Replace triple dots with comma for natural pause
-      .replace(/\s+/g, ' ')
-      .trim();
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.lang = 'id-ID';
-    utterance.rate = 0.92; // Slightly slower for more human-like pacing
-    utterance.pitch = 1.1; // Gentle, warmer and slightly more feminine tone
-
-    let bestVoice = availableVoices.find(v => v.name === 'Google Bahasa Indonesia');
-    if (!bestVoice) {
-      bestVoice = availableVoices.find(v => v.lang.startsWith('id') && v.name.toLowerCase().includes('female'));
-    }
-    if (!bestVoice) {
-      bestVoice = availableVoices.find(v => v.lang.startsWith('id') || v.name.toLowerCase().includes('indonesia'));
-    }
-    if (bestVoice) {
-      utterance.voice = bestVoice;
+    try {
+      window.speechSynthesis.resume();
+    } catch {
+      // ignore
     }
 
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      if (onFinish) onFinish();
+    // Comprehensive phonetic Indonesian normalization
+    const humanizeIndonesianText = (raw: string) => {
+      let t = raw
+        .replace(/[*#_`~-]/g, ' ')
+        // Convert prices & numbers
+        .replace(/Rp\.?\s?(\d+)\.?(\d+)?\.?(\d+)?/gi, (_, g1, g2, g3) => {
+          if (g3) return `${g1} juta rupiah`;
+          if (g2) return `${g1} ribu rupiah`;
+          return `${g1} rupiah`;
+        })
+        .replace(/(\d+)\s?jt/gi, '$1 juta rupiah')
+        .replace(/(\d+)\s?rb/gi, '$1 ribu rupiah')
+        .replace(/(\d+)\s?k\b/gi, '$1 ribu')
+        .replace(/\bbln\b/gi, 'bulan')
+        .replace(/\bthn\b/gi, 'tahun')
+        .replace(/(\d+)\/(\d+)/g, '$1 per $2')
+        .replace(/\b1\b/g, 'satu')
+        .replace(/\b2\b/g, 'dua')
+        .replace(/\b3\b/g, 'tiga')
+        .replace(/\b4\b/g, 'empat')
+        .replace(/\b5\b/g, 'lima')
+        .replace(/\b6\b/g, 'enam')
+        .replace(/\b7\b/g, 'tujuh')
+        .replace(/\b8\b/g, 'delapan')
+        .replace(/\b9\b/g, 'sembilan')
+        .replace(/\b10\b/g, 'sepuluh')
+        .replace(/\b12\b/g, 'dua belas')
+        .replace(/\b16\b/g, 'enam belas')
+        // Common abbreviations & terms
+        .replace(/\byg\b/gi, 'yang')
+        .replace(/\bsdh\b/gi, 'sudah')
+        .replace(/\butk\b/gi, 'untuk')
+        .replace(/\bbgt\b/gi, 'banget')
+        .replace(/\bsy\b/gi, 'Lila')
+        .replace(/\btdk\b/gi, 'nggak')
+        .replace(/\bgak\b/gi, 'nggak')
+        .replace(/\bgk\b/gi, 'nggak')
+        .replace(/\bdr\b/gi, 'dari')
+        .replace(/\bgmn\b/gi, 'gimana')
+        .replace(/\bjkt\b/gi, 'Jakarta')
+        .replace(/\bCS\b/gi, 'Kastemer Servis')
+        .replace(/\bAI\b/gi, 'Ei-Ai')
+        .replace(/\bDP\b/gi, 'De-Pe')
+        .replace(/\bVIP\b/gi, 'Vi-Ai-Pi')
+        .replace(/\bseat\b/gi, 'sit')
+        .replace(/\bbooking\b/gi, 'buking')
+        .replace(/\bhotel\b/gi, 'hotel')
+        .replace(/\bwebsite\b/gi, 'websait')
+        .replace(/\bfeature\b/gi, 'fitur')
+        .replace(/\bKancab\b/gi, 'Kantor Cabang')
+        .replace(/\bKa\b/gi, 'Kak')
+        .replace(/\bMba\b/gi, 'Mbak')
+        .replace(/MasyaAllah/gi, 'Masya Allah')
+        .replace(/InsyaAllah/gi, 'Insya Allah')
+        .replace(/Alhamdulillah/gi, 'Alhamdulillah')
+        .replace(/Assalamualaikum/gi, "Assalamu'alaikum")
+        .replace(/\.{3,}/g, ', ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return t;
     };
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-      if (onFinish) onFinish();
+
+    const cleanText = humanizeIndonesianText(text);
+
+    // Split text into natural conversational sentence chunks for dynamic human prosody
+    const rawChunks = cleanText.split(/([.!?]+|\n+)/g).filter(Boolean);
+    const sentenceChunks: { text: string; type: 'question' | 'exclamation' | 'statement' }[] = [];
+
+    for (let i = 0; i < rawChunks.length; i += 2) {
+      const sentenceText = rawChunks[i]?.trim();
+      const punct = rawChunks[i + 1]?.trim() || '.';
+      if (!sentenceText) continue;
+
+      let type: 'question' | 'exclamation' | 'statement' = 'statement';
+      if (punct.includes('?')) type = 'question';
+      else if (punct.includes('!')) type = 'exclamation';
+
+      sentenceChunks.push({
+        text: `${sentenceText}${punct.includes('?') ? '?' : punct.includes('!') ? '!' : '.'}`,
+        type,
+      });
+    }
+
+    if (sentenceChunks.length === 0) {
+      sentenceChunks.push({ text: cleanText, type: 'statement' });
+    }
+
+    const currentVoices =
+      availableVoices.length > 0
+        ? availableVoices
+        : window.speechSynthesis.getVoices() || [];
+
+    // Prioritized search for natural, neural female Indonesian voices
+    let bestVoice = currentVoices.find(
+      (v) =>
+        v.lang.startsWith('id') &&
+        (v.name.toLowerCase().includes('gadis') ||
+          v.name.toLowerCase().includes('natural') ||
+          v.name.toLowerCase().includes('online'))
+    );
+
+    if (!bestVoice) {
+      bestVoice = currentVoices.find(
+        (v) =>
+          v.lang.startsWith('id') &&
+          (v.name.toLowerCase().includes('damayanti') ||
+            v.name.toLowerCase().includes('female') ||
+            v.name.toLowerCase().includes('siti') ||
+            v.name.toLowerCase().includes('wanita') ||
+            v.name.toLowerCase().includes('wavenet'))
+      );
+    }
+
+    if (!bestVoice) {
+      bestVoice = currentVoices.find(
+        (v) => v.name === 'Google Bahasa Indonesia'
+      );
+    }
+
+    if (!bestVoice) {
+      bestVoice = currentVoices.find((v) => v.lang.startsWith('id'));
+    }
+
+    let currentIndex = 0;
+    setIsSpeaking(true);
+
+    const speakNextChunk = () => {
+      if (currentIndex >= sentenceChunks.length) {
+        setIsSpeaking(false);
+        if (onFinish) onFinish();
+        return;
+      }
+
+      const chunk = sentenceChunks[currentIndex];
+      const utterance = new SpeechSynthesisUtterance(chunk.text);
+      utterance.lang = 'id-ID';
+
+      if (bestVoice) {
+        utterance.voice = bestVoice;
+      }
+
+      // Dynamic prosody according to 25yo cheerful female tone
+      if (chunk.type === 'question') {
+        utterance.pitch = 1.16; // Cheerful upward inflection
+        utterance.rate = 1.0;
+      } else if (chunk.type === 'exclamation') {
+        utterance.pitch = 1.14; // Enthusiastic and smiling
+        utterance.rate = 1.02;
+      } else {
+        utterance.pitch = 1.11; // Warm, friendly, soothing
+        utterance.rate = 0.98; // Relaxed human cadence
+      }
+
+      utterance.onend = () => {
+        currentIndex++;
+        // Natural micro-breath pause (70ms) between sentences
+        setTimeout(() => {
+          speakNextChunk();
+        }, 70);
+      };
+
+      utterance.onerror = () => {
+        currentIndex++;
+        speakNextChunk();
+      };
+
+      window.speechSynthesis.speak(utterance);
     };
 
-    window.speechSynthesis.speak(utterance);
+    speakNextChunk();
   };
 
-  // Play text via Gemini Flash TTS (with instant fallback)
+  // Helper: PCM Float32 to Base64 PCM Int16
+  const pcmToBase64 = (float32Array: Float32Array) => {
+    const int16Array = new Int16Array(float32Array.length);
+    for (let i = 0; i < float32Array.length; i++) {
+      int16Array[i] = Math.max(-1, Math.min(1, float32Array[i])) * 0x7fff;
+    }
+    const buffer = int16Array.buffer;
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  };
+
+  // Helper: Play Base64 PCM Int16 at 24kHz
+  const playAudioChunk = async (base64Data: string) => {
+    if (!audioContextRef.current) return;
+    const ctx = audioContextRef.current;
+    
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const int16Array = new Int16Array(bytes.buffer);
+    const float32Array = new Float32Array(int16Array.length);
+    for (let i = 0; i < int16Array.length; i++) {
+      float32Array[i] = int16Array[i] / 32768.0;
+    }
+
+    const buffer = ctx.createBuffer(1, float32Array.length, 24000);
+    buffer.copyToChannel(float32Array, 0);
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+    if (nextStartTimeRef.current < now) {
+      nextStartTimeRef.current = now + 0.1;
+    }
+    
+    source.start(nextStartTimeRef.current);
+    nextStartTimeRef.current += buffer.duration;
+    
+    setIsSpeaking(true);
+    source.onended = () => {
+      if (ctx.currentTime >= nextStartTimeRef.current - 0.1) {
+        setIsSpeaking(false);
+      }
+    };
+  };
+
+  // Start Gemini Live Voice Call
+  const startLiveVoiceCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micStreamRef.current = stream;
+
+      // Initialize Audio Context for both Mic (16k) and Output (24k)
+      // Note: Live API expects 16k input
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const inputCtx = new AudioContextClass({ sampleRate: 16000 });
+      audioContextRef.current = new AudioContextClass({ sampleRate: 24000 });
+      
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${protocol}//${window.location.host}/api/live`);
+      liveWsRef.current = ws;
+
+      ws.onopen = () => {
+        console.log("Connected to Ka Lila Live");
+        setIsVoiceCallActive(true);
+        setActiveTab('voice');
+        
+        // Setup Mic Processor
+        const source = inputCtx.createMediaStreamSource(stream);
+        const processor = inputCtx.createScriptProcessor(4096, 1, 1);
+        micProcessorRef.current = processor;
+        
+        source.connect(processor);
+        processor.connect(inputCtx.destination);
+
+        processor.onaudioprocess = (e) => {
+          if (ws.readyState === WebSocket.OPEN && !isSpeaking) {
+            const base64 = pcmToBase64(e.inputBuffer.getChannelData(0));
+            ws.send(JSON.stringify({ type: 'audio', data: base64 }));
+            setIsListening(true);
+          } else {
+            setIsListening(false);
+          }
+        };
+      };
+
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        if (msg.type === 'audio') {
+          playAudioChunk(msg.data);
+        } else if (msg.type === 'interrupted') {
+          // Handle interruption: clear playback queue
+          nextStartTimeRef.current = 0;
+          setIsSpeaking(false);
+        }
+      };
+
+      ws.onclose = () => {
+        endVoiceCall();
+      };
+
+    } catch (err) {
+      console.error("Live Voice Call Error:", err);
+      alert("Gagal memulai panggilan suara. Pastikan mikrofon diizinkan.");
+      setIsVoiceCallActive(false);
+    }
+  };
+
+  // Play text via Gemini Neural TTS with Kore Voice (with instant fallback)
   const speakText = async (text: string, onFinish?: () => void) => {
     if (!voiceEnabled) {
       if (onFinish) onFinish();
@@ -161,7 +425,20 @@ export default function ChatbotWidget() {
     stopAudioPlayback();
 
     try {
-      // Call backend Gemini Flash TTS
+      // Ensure AudioContext exists and is running
+      if (!audioContextRef.current) {
+        const AudioContextClass =
+          window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          audioContextRef.current = new AudioContextClass({ sampleRate: 24000 });
+        }
+      }
+      const ctx = audioContextRef.current;
+      if (ctx && ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
+      // Call backend Gemini TTS endpoint
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -169,54 +446,57 @@ export default function ChatbotWidget() {
       });
 
       const data = await res.json();
-      if (data.audio && data.format === 'pcm') {
-        // Decode 24kHz raw PCM little endian from Gemini Flash TTS
+      if (data.audio && ctx) {
         const binaryString = atob(data.audio);
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
         for (let i = 0; i < len; i++) {
           bytes[i] = binaryString.charCodeAt(i);
         }
-        const int16Array = new Int16Array(bytes.buffer);
-        const float32Array = new Float32Array(int16Array.length);
-        for (let i = 0; i < int16Array.length; i++) {
-          float32Array[i] = int16Array[i] / 32768.0;
+
+        let audioBuffer: AudioBuffer | null = null;
+
+        // Try standard decodeAudioData first
+        try {
+          audioBuffer = await ctx.decodeAudioData(bytes.buffer.slice(0));
+        } catch {
+          // If headerless raw PCM 24kHz Int16:
+          try {
+            const int16Array = new Int16Array(bytes.buffer);
+            const float32Array = new Float32Array(int16Array.length);
+            for (let i = 0; i < int16Array.length; i++) {
+              float32Array[i] = int16Array[i] / 32768.0;
+            }
+            const buf = ctx.createBuffer(1, float32Array.length, 24000);
+            buf.copyToChannel(float32Array, 0);
+            audioBuffer = buf;
+          } catch (pcmErr) {
+            console.warn("PCM decode error:", pcmErr);
+          }
         }
 
-        if (!audioContextRef.current) {
-          const AudioContextClass =
-            window.AudioContext || (window as any).webkitAudioContext;
-          audioContextRef.current = new AudioContextClass({ sampleRate: 24000 });
+        if (audioBuffer) {
+          const source = ctx.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(ctx.destination);
+
+          source.onended = () => {
+            setIsSpeaking(false);
+            setAudioSourceNode(null);
+            if (onFinish) onFinish();
+          };
+
+          setIsSpeaking(true);
+          setAudioSourceNode(source);
+          source.start(0);
+          return;
         }
-
-        const ctx = audioContextRef.current;
-        if (ctx.state === 'suspended') {
-          await ctx.resume();
-        }
-
-        const buffer = ctx.createBuffer(1, float32Array.length, 24000);
-        buffer.copyToChannel(float32Array, 0);
-
-        const source = ctx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(ctx.destination);
-
-        source.onended = () => {
-          setIsSpeaking(false);
-          setAudioSourceNode(null);
-          if (onFinish) onFinish();
-        };
-
-        setIsSpeaking(true);
-        setAudioSourceNode(source);
-        source.start(0);
-        return;
       }
     } catch (err: any) {
-      console.log(`TTS API fetch fallback to browser SpeechSynthesis (Status: ${err?.message || 'Unknown'})`);
+      console.log(`TTS API fetch fallback to browser SpeechSynthesis (${err?.message || 'Unknown'})`);
     }
 
-    // Fallback to browser SpeechSynthesis
+    // Fallback to optimized 25yo Indonesian female SpeechSynthesis
     speakWithBrowserSpeech(text, onFinish);
   };
 
@@ -317,7 +597,7 @@ export default function ChatbotWidget() {
       const data = await response.json();
       const replyText =
         data.reply ||
-        "Alhamdulillah, terima kasih atas pertanyaannya. Ka Lila siap membantu memberikan info terbaik seputar Umroh & Haji Khusus Arminareka.";
+        "MasyaAllah, Iya baik ini jadi catatan Buat Ka Lila biar di konfirmasi ke Mba Indri agar Ka Lila bisa memberikan info terbaik seputar Umroh & Haji Khusus Arminareka.";
 
       setMessages((prev) => [...prev, { role: 'model', text: replyText }]);
 
@@ -343,21 +623,55 @@ export default function ChatbotWidget() {
     }
   };
 
-  // Voice Call Mode Toggle
-  const startVoiceCall = () => {
-    setActiveTab('voice');
+  // Voice Call Mode Toggle & Start (Direct Gemini Live Kore Voice Stream)
+  const startVoiceCall = async () => {
     setIsVoiceCallActive(true);
-    const greeting =
-      "Assalamu'alaikum! Mode panggilan suara aktif bersama Ka Lila. Silakan bicara langsung, Ka Lila mendengarkan.";
-    speakText(greeting, () => {
-      startListening();
-    });
+    setActiveTab('voice');
+
+    if (!audioContextRef.current) {
+      const AudioContextClass =
+        window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContextClass) {
+        audioContextRef.current = new AudioContextClass({ sampleRate: 24000 });
+      }
+    }
+    if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+      try {
+        await audioContextRef.current.resume();
+      } catch (e) {
+        console.warn("AudioContext resume error:", e);
+      }
+    }
+
+    startLiveVoiceCall();
   };
 
   const endVoiceCall = () => {
     setIsVoiceCallActive(false);
-    stopAudioPlayback();
     setIsListening(false);
+    setIsSpeaking(false);
+    stopAudioPlayback();
+
+    if (liveWsRef.current) {
+      try {
+        liveWsRef.current.close();
+      } catch (e) {
+        // ignore
+      }
+      liveWsRef.current = null;
+    }
+
+    if (micStreamRef.current) {
+      micStreamRef.current.getTracks().forEach((t) => t.stop());
+      micStreamRef.current = null;
+    }
+
+    if (micProcessorRef.current) {
+      micProcessorRef.current.disconnect();
+      micProcessorRef.current = null;
+    }
+
+    nextStartTimeRef.current = 0;
   };
 
   const scrollToBottom = () => {
@@ -382,7 +696,11 @@ export default function ChatbotWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 select-none">
+    <motion.div 
+      drag 
+      dragMomentum={false}
+      className="fixed bottom-6 right-6 z-50 select-none"
+    >
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -390,10 +708,10 @@ export default function ChatbotWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="absolute bottom-20 right-0 w-[94vw] sm:w-[420px] md:w-[450px] h-[600px] max-h-[85vh] liquid-glass bg-slate-950/95 border border-amber-400/40 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden text-white backdrop-blur-xl"
+            className="absolute bottom-20 right-0 w-[94vw] sm:w-[420px] md:w-[450px] h-[600px] max-h-[85vh] liquid-glass bg-slate-950/40 border border-amber-400/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden text-white backdrop-blur-2xl"
           >
             {/* Header with Mode Switcher Tabs */}
-            <div className="px-4 py-3 bg-gradient-to-r from-amber-600/30 via-slate-900 to-slate-950 border-b border-white/10 shrink-0">
+            <div className="px-4 py-3 bg-white/5 border-b border-white/10 shrink-0 backdrop-blur-md">
               <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-2.5">
                   <div className="relative">
@@ -412,30 +730,16 @@ export default function ChatbotWidget() {
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
-                      Ka Lila AI Assistant
+                      Ka Lila • CS Arminareka
                     </h4>
                     <p className="text-[11px] text-amber-300/80">
-                      Asisten Cerdas Arminareka (Mba Indri)
+                      Customer Service Konsultan Umroh &amp; Haji
                     </p>
                   </div>
                 </div>
 
                 {/* Right Controls */}
                 <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => {
-                      setVoiceEnabled(!voiceEnabled);
-                      if (isSpeaking) stopAudioPlayback();
-                    }}
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                      voiceEnabled
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30'
-                        : 'bg-white/10 text-white/40'
-                    }`}
-                    title={voiceEnabled ? 'Suara Aktif' : 'Suara Dimatikan'}
-                  >
-                    {voiceEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
-                  </button>
                   <button
                     onClick={() => {
                       stopAudioPlayback();
@@ -462,8 +766,8 @@ export default function ChatbotWidget() {
                       : 'text-slate-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <PhoneCall size={14} className={isVoiceCallActive ? 'animate-pulse text-slate-950' : ''} />
-                  <span>🎙️ Voice Call</span>
+                  <Mic size={14} className={isVoiceCallActive ? 'animate-pulse' : ''} />
+                  <span>AI Talk</span>
                 </button>
 
                 <button
@@ -475,19 +779,15 @@ export default function ChatbotWidget() {
                   }`}
                 >
                   <MessageCircle size={14} />
-                  <span>💬 Chat Bot</span>
+                  <span>Chat Bot</span>
                 </button>
               </div>
             </div>
 
             {/* TAB 1: 🎙️ AI VOICE ASSISTANT (Live 2-Way Voice Call Interface) */}
             {activeTab === 'voice' && (
-              <div className="flex-1 flex flex-col items-center justify-between p-6 bg-gradient-to-b from-slate-950 via-slate-900 to-black text-center overflow-y-auto">
-                <div className="w-full flex justify-between items-center text-xs text-amber-300/80 px-2">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-                    Gemini Flash TTS Active
-                  </span>
+              <div className="flex-1 flex flex-col items-center justify-between p-6 bg-black/20 text-center overflow-y-auto">
+                <div className="w-full flex justify-end items-center text-xs text-amber-300/80 px-2">
                   <span className="font-mono bg-black/40 px-2 py-0.5 rounded-full border border-white/10">
                     {formatTimer(callDuration)}
                   </span>
@@ -527,42 +827,23 @@ export default function ChatbotWidget() {
                   </div>
 
                   <h3 className="text-lg font-bold text-white mb-1">
-                    Ka Lila • AI Voice Call
+                    Konsultasi Suara • Ka Lila CS
                   </h3>
                   <p className="text-xs text-amber-300 font-medium mb-3">
                     {isSpeaking
-                      ? '🔊 Ka Lila sedang berbicara...'
+                      ? '🔊 Ka Lila sedang menjelaskan solusi...'
                       : isListening
-                      ? '🎙️ Mendengarkan suara Anda...'
+                      ? '🎙️ Mendengarkan pertanyaan Kakak...'
                       : isLoading
-                      ? '⚡ Memproses jawaban...'
+                      ? '⚡ Menyiapkan rekomendasi paket...'
                       : isVoiceCallActive
-                      ? 'Siap mendengarkan, silakan bicara...'
-                      : 'Panggilan siap dimulai'}
+                      ? 'Ka Lila siap melayani, silakan bicara...'
+                      : 'Tekan tombol untuk mulai konsultasi'}
                   </p>
-
-                  {/* Last spoken transcript / response banner */}
-                  <div className="w-full max-w-sm px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-slate-200 leading-relaxed max-h-24 overflow-y-auto">
-                    {messages.length > 1
-                      ? `"${messages[messages.length - 1].text}"`
-                      : '"Assalamu\'alaikum! Silakan tanyakan seputar Paket Umroh, Hotel Bintang 5, atau Haji Furoda."'}
-                  </div>
                 </div>
 
                 {/* Call Control Action Bar */}
                 <div className="w-full pt-4 border-t border-white/10 flex items-center justify-center gap-4">
-                  <button
-                    onClick={toggleListening}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-lg ${
-                      isListening
-                        ? 'bg-rose-500 text-white animate-pulse shadow-rose-500/50'
-                        : 'bg-white/10 hover:bg-white/20 text-amber-300 border border-white/20'
-                    }`}
-                    title={isListening ? 'Hentikan Mendengarkan' : 'Bicara Sekarang'}
-                  >
-                    {isListening ? <MicOff size={20} /> : <Mic size={20} />}
-                  </button>
-
                   <button
                     onClick={() => {
                       if (isVoiceCallActive) {
@@ -571,23 +852,14 @@ export default function ChatbotWidget() {
                         startVoiceCall();
                       }
                     }}
-                    className={`px-6 py-3 rounded-full flex items-center gap-2 font-bold text-xs transition-all cursor-pointer shadow-xl ${
+                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xl ${
                       isVoiceCallActive
                         ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/40'
                         : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/40'
                     }`}
+                    title={isVoiceCallActive ? 'Akhiri Panggilan' : 'Mulai Panggilan'}
                   >
-                    {isVoiceCallActive ? (
-                      <>
-                        <PhoneOff size={16} />
-                        <span>Akhiri Panggilan</span>
-                      </>
-                    ) : (
-                      <>
-                        <PhoneCall size={16} />
-                        <span>Mulai Panggilan</span>
-                      </>
-                    )}
+                    {isVoiceCallActive ? <PhoneOff size={24} /> : <PhoneCall size={24} />}
                   </button>
 
                   <button
@@ -631,16 +903,20 @@ export default function ChatbotWidget() {
                           }`}
                         >
                           {msg.text}
+                          {msg.role === 'model' && (
+                            <div className="mt-1.5 pt-1 border-t border-white/5 flex items-center justify-between">
+                              <button
+                                type="button"
+                                onClick={() => speakText(msg.text)}
+                                className="inline-flex items-center gap-1 text-[10px] text-amber-300/80 hover:text-amber-300 font-medium transition-colors cursor-pointer"
+                                title="Dengarkan Suara Ka Lila"
+                              >
+                                <Volume2 size={12} />
+                                <span>Dengarkan Suara</span>
+                              </button>
+                            </div>
+                          )}
                         </div>
-                        {msg.role === 'model' && (
-                          <button
-                            onClick={() => speakText(msg.text)}
-                            className="absolute -right-8 bottom-1 p-1.5 rounded-full bg-slate-800/80 text-amber-300 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-amber-500 hover:text-slate-950"
-                            title="Dengarkan Suara Ka Lila"
-                          >
-                            <Volume2 size={12} />
-                          </button>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -732,16 +1008,19 @@ export default function ChatbotWidget() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-bold rounded-full shadow-[0_8px_30px_rgba(245,158,11,0.5)] border border-amber-300/60 cursor-pointer shrink-0"
+          className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-slate-950/30 backdrop-blur-2xl text-amber-400 font-bold rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-amber-400/30 cursor-pointer shrink-0 overflow-hidden"
           aria-label="Buka Ka Lila AI Assistant"
         >
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-200 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-slate-950"></span>
+          {/* Subtle inner glow */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/10 to-transparent opacity-50"></div>
+          
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 z-10">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400/30 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500/40 backdrop-blur-sm border-2 border-slate-950/50 shadow-[0_0_10px_rgba(16,185,129,0.3)]"></span>
           </span>
-          <Bot size={28} className="text-slate-950" />
+          <Bot size={28} className="text-amber-400" />
         </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -293,6 +293,24 @@ export default function App() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-wrap items-center justify-center gap-4"
             >
+              {/* Primary Voice Agent Direct Button */}
+              <motion.button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-ka-lila-voice'));
+                }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative group inline-flex items-center gap-3 px-8 py-3.5 rounded-full text-slate-950 font-bold bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-sm md:text-base transition-all shadow-[0_0_30px_rgba(251,191,36,0.5)] cursor-pointer overflow-hidden border border-amber-200/50"
+              >
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-slate-950"></span>
+                </span>
+                <span className="tracking-wide">Konsultasi CS Ka Lila</span>
+                <Sparkles size={17} className="text-slate-950 animate-pulse" />
+              </motion.button>
+
               <motion.a
                 href="#konsultasi"
                 whileHover={{ scale: 1.05, y: -2 }}
@@ -310,7 +328,7 @@ export default function App() {
                 href="#paket-unggulan"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-black font-bold bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-sm transition-all shadow-lg shadow-amber-500/25 cursor-pointer"
+                className="liquid-glass inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-amber-300 font-semibold hover:text-white hover:bg-white/10 text-sm transition-all border border-amber-400/30 cursor-pointer"
               >
                 <Compass size={16} />
                 <span>Lihat Paket &amp; Jadwal</span>
