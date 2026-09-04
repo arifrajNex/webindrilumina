@@ -39,33 +39,8 @@ import PackageModal from './components/PackageModal';
 import ChatbotWidget from './components/ChatbotWidget';
 
 import { Destination, TravelPackage } from './types';
-import LanguageDropdown from './components/LanguageDropdown';
-import { SupportedLanguageCode, NAV_LANGUAGES, TRANSLATIONS } from './data/translations';
 
 export default function App() {
-  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguageCode>(() => {
-    try {
-      const saved = localStorage.getItem('arminareka_language') as SupportedLanguageCode;
-      if (saved && NAV_LANGUAGES.some((l) => l.code === saved)) {
-        return saved;
-      }
-    } catch {
-      // ignore
-    }
-    return 'id';
-  });
-
-  const handleSelectLanguage = (code: SupportedLanguageCode) => {
-    setCurrentLanguage(code);
-    try {
-      localStorage.setItem('arminareka_language', code);
-    } catch {
-      // ignore
-    }
-  };
-
-  const t = TRANSLATIONS[currentLanguage] || TRANSLATIONS.id;
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<TravelPackage | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
@@ -112,13 +87,13 @@ export default function App() {
   };
 
   const navLinks = [
-    { label: t.nav.paket, href: '#paket-unggulan' },
-    { label: t.nav.jadwal, href: '#jadwal-umroh' },
-    { label: t.nav.keunggulan, href: '#keunggulan-layanan' },
-    { label: t.nav.profil, href: '#profil-konsultan' },
-    { label: t.nav.galeri, href: '#galeri-dokumentasi' },
-    { label: t.nav.poster, href: '#poster-resmi' },
-    { label: t.nav.testimoni, href: '#testimoni-jamaah' },
+    { label: 'Paket & Jadwal', href: '#paket-unggulan' },
+    { label: 'Jadwal Desember', href: '#jadwal-umroh' },
+    { label: 'Keunggulan', href: '#keunggulan-layanan' },
+    { label: 'Profil Leader', href: '#profil-konsultan' },
+    { label: 'Galeri', href: '#galeri-dokumentasi' },
+    { label: 'Poster & Brosur', href: '#poster-resmi' },
+    { label: 'Testimoni', href: '#testimoni-jamaah' },
   ];
 
   const umrohLinks = [
@@ -212,19 +187,13 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Action Button & Language Dropdown & Music Toggle & Mobile Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Multilingual Language Dropdown */}
-            <LanguageDropdown
-              currentLanguage={currentLanguage}
-              onSelectLanguage={handleSelectLanguage}
-            />
-
+          {/* Action Button & Music Toggle & Mobile Toggle */}
+          <div className="flex items-center gap-3">
             {/* Transparent Music Toggle Icon Button */}
             <button
               onClick={toggleMusic}
               aria-label="Toggle Background Music"
-              className="liquid-glass bg-slate-950/40 border border-amber-500/30 hover:border-amber-400 text-amber-300 p-2 sm:p-2.5 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(251,191,36,0.1)] transition-all duration-300 hover:scale-105 group relative"
+              className="liquid-glass bg-slate-950/40 border border-amber-500/30 hover:border-amber-400 text-amber-300 p-2.5 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(251,191,36,0.1)] transition-all duration-300 hover:scale-105 group relative"
             >
               <div className="relative flex items-center justify-center w-4 h-4">
                 {isPlayingMusic ? (
@@ -243,10 +212,10 @@ export default function App() {
 
             <a
               href="#konsultasi"
-              className="text-[10px] sm:text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold shadow-md shadow-amber-500/20 transition-all flex flex-col items-center justify-center text-center leading-tight shrink-0"
+              className="text-[10px] sm:text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold shadow-md shadow-amber-500/20 transition-all flex flex-col items-center justify-center text-center leading-tight mx-auto"
             >
-              <span className="block text-center w-full">{t.nav.konsultasi}</span>
-              <span className="block text-center w-full">{t.nav.free}</span>
+              <span className="block text-center w-full">Konsultasi</span>
+              <span className="block text-center w-full">Free</span>
             </a>
 
             <button
@@ -262,17 +231,7 @@ export default function App() {
 
         {/* Mobile Dropdown Nav */}
         {mobileMenuOpen && (
-          <div className="lg:hidden w-full liquid-glass rounded-2xl p-5 mb-8 border border-white/15 flex flex-col gap-3 text-sm text-white/90">
-            <div className="pb-3 border-b border-white/10 flex items-center justify-between">
-              <span className="text-xs font-semibold text-amber-300 flex items-center gap-1.5">
-                <Globe size={14} /> Pilih Bahasa:
-              </span>
-              <LanguageDropdown
-                currentLanguage={currentLanguage}
-                onSelectLanguage={handleSelectLanguage}
-                compact
-              />
-            </div>
+          <div className="lg:hidden w-full liquid-glass rounded-2xl p-6 mb-8 border border-white/15 flex flex-col gap-3 text-sm text-white/90">
             {navLinks.map((item) => (
               <a
                 key={item.label}
@@ -313,7 +272,7 @@ export default function App() {
                 Hj. Triana Indrian SE
               </span>
               <span className="block text-2xl sm:text-4xl md:text-5xl font-light text-white/95">
-                {t.hero.tagline}
+                Antara Anda &amp; Baitullah
               </span>
             </motion.h1>
 
@@ -324,7 +283,7 @@ export default function App() {
               transition={{ duration: 0.8, delay: 0.45, ease: 'easeOut' }}
               className="text-base sm:text-lg md:text-xl text-white/90 font-normal max-w-2xl mb-10 leading-relaxed"
             >
-              {t.hero.subtext}
+              Menyajikan pelayanan umroh dan haji plus dengan mengedepankan kualitas, kenyamanan hotel bintang 5, serta kepuasan jamaah dalam menjelajahi keindahan peradaban dunia.
             </motion.p>
 
             {/* Hero CTA Buttons */}
@@ -345,7 +304,7 @@ export default function App() {
                 className="liquid-glass inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-amber-300 font-semibold hover:text-white hover:bg-white/10 text-sm transition-all border border-amber-400/30 cursor-pointer"
               >
                 <Sparkles size={16} className="text-amber-300 animate-pulse" />
-                <span className="tracking-wide">{t.hero.btnVoice}</span>
+                <span className="tracking-wide">Konsultasi CS Ka Lila</span>
               </motion.button>
 
               <motion.a
@@ -355,7 +314,7 @@ export default function App() {
                 className="liquid-glass inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-amber-300 font-semibold hover:text-white hover:bg-white/10 text-sm transition-all border border-amber-400/30 cursor-pointer"
               >
                 <Compass size={16} />
-                <span>{t.hero.btnPackages}</span>
+                <span>Lihat Paket &amp; Jadwal</span>
               </motion.a>
             </motion.div>
           </motion.div>
@@ -541,7 +500,7 @@ export default function App() {
       />
 
       {/* Floating AI Chatbot Assistant Ka Lila */}
-      <ChatbotWidget currentLanguage={currentLanguage} />
+      <ChatbotWidget />
     </main>
   );
 }

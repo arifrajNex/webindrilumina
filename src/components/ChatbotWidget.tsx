@@ -12,7 +12,6 @@ import {
   PhoneCall,
   PhoneOff,
 } from 'lucide-react';
-import { SupportedLanguageCode, NAV_LANGUAGES, TRANSLATIONS } from '../data/translations';
 
 interface Message {
   role: 'user' | 'model';
@@ -21,21 +20,13 @@ interface Message {
 
 type WidgetTab = 'voice' | 'chat';
 
-interface ChatbotWidgetProps {
-  currentLanguage?: SupportedLanguageCode;
-}
-
-export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetProps) {
-  const activeLangOption =
-    NAV_LANGUAGES.find((lang) => lang.code === currentLanguage) || NAV_LANGUAGES[0];
-  const t = TRANSLATIONS[currentLanguage] || TRANSLATIONS.id;
-
+export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<WidgetTab>('voice');
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      text: t.chatbot.greeting,
+      text: "Assalamualaikum Ka.. Aku Ka Lila. Asisten AI Cerdas resmi Arminareka. Ada yang bisa Lila bantu untuk rencana ibadah suci Kakak hari ini?",
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -81,16 +72,6 @@ export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetP
       window.removeEventListener('open-ka-lila-voice', handleOpenVoice);
     };
   }, []);
-
-  // Update initial greeting when language changes if no conversation has started yet
-  useEffect(() => {
-    setMessages((prev) => {
-      if (prev.length <= 1) {
-        return [{ role: 'model', text: t.chatbot.greeting }];
-      }
-      return prev;
-    });
-  }, [currentLanguage]);
 
   const quickQuestions = [
     'Berapa biaya Paket Umroh 2026?',
@@ -260,22 +241,14 @@ export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetP
         ? availableVoices
         : window.speechSynthesis.getVoices() || [];
 
-    // Prioritized search for natural, neural female voices matching current language
-    const langPrefix = (activeLangOption.speechCode || 'id').split('-')[0].toLowerCase();
+    // Prioritized search for natural, neural female Indonesian voices
     let bestVoice = currentVoices.find(
       (v) =>
-        v.lang.toLowerCase().startsWith(langPrefix) &&
+        v.lang.startsWith('id') &&
         (v.name.toLowerCase().includes('gadis') ||
           v.name.toLowerCase().includes('natural') ||
-          v.name.toLowerCase().includes('online') ||
-          v.name.toLowerCase().includes('female'))
+          v.name.toLowerCase().includes('online'))
     );
-
-    if (!bestVoice) {
-      bestVoice = currentVoices.find((v) =>
-        v.lang.toLowerCase().startsWith(langPrefix)
-      );
-    }
 
     if (!bestVoice) {
       bestVoice = currentVoices.find(
@@ -290,7 +263,13 @@ export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetP
     }
 
     if (!bestVoice) {
-      bestVoice = currentVoices.find((v) => v.lang.startsWith('id')) || currentVoices[0];
+      bestVoice = currentVoices.find(
+        (v) => v.name === 'Google Bahasa Indonesia'
+      );
+    }
+
+    if (!bestVoice) {
+      bestVoice = currentVoices.find((v) => v.lang.startsWith('id'));
     }
 
     let currentIndex = 0;
@@ -308,7 +287,7 @@ export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetP
 
       const chunk = sentenceChunks[currentIndex];
       const utterance = new SpeechSynthesisUtterance(chunk.text);
-      utterance.lang = activeLangOption.speechCode || 'id-ID';
+      utterance.lang = 'id-ID';
 
       if (bestVoice) {
         utterance.voice = bestVoice;
@@ -623,7 +602,7 @@ export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetP
 
     try {
       const recognition = new SpeechRecognitionClass();
-      recognition.lang = activeLangOption.speechCode || 'id-ID';
+      recognition.lang = 'id-ID';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
@@ -692,7 +671,6 @@ export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetP
         body: JSON.stringify({
           message: userText,
           history: newMessages.slice(0, -1),
-          languagePreference: activeLangOption.label,
         }),
       });
 
