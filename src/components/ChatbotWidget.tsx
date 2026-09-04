@@ -12,7 +12,35 @@ import {
   VolumeX,
   PhoneCall,
   PhoneOff,
+  Globe,
+  Languages,
+  Check,
+  Search,
+  Sparkles,
+  ChevronDown,
 } from 'lucide-react';
+import {
+  REGIONAL_LANGUAGES,
+  REGION_GROUPS,
+  RegionalLanguage,
+} from '../data/regionalLanguages';
+import {
+  WORLD_LANGUAGES_DATA,
+  WorldLanguage,
+  LanguageCategory,
+} from '../data/worldLanguages';
+
+// Unified language interface for modal selection
+export interface SelectableLanguage {
+  id: string;
+  name: string;
+  category: string;
+  subCategory?: string;
+  speakersOrRegion: string;
+  sampleGreeting: string;
+  quickPrompt?: string;
+  isWorldLanguage?: boolean;
+}
 
 interface Message {
   role: 'user' | 'model';
@@ -37,8 +65,49 @@ export default function ChatbotWidget() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [isVoiceCallActive, setIsVoiceCallActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const [audioSourceNode, setAudioSourceNode] = useState<AudioBufferSourceNode | null>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [micPermissionDenied, setMicPermissionDenied] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<SelectableLanguage | null>(null);
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [searchLangQuery, setSearchLangQuery] = useState('');
+  const [activeRegionFilter, setActiveRegionFilter] = useState<string>('Semua');
+
+  // Combined selectable languages (World & Regional Nusantara)
+  const allSelectableLanguages = React.useMemo<SelectableLanguage[]>(() => {
+    const worldList: SelectableLanguage[] = WORLD_LANGUAGES_DATA.map((w) => ({
+      id: `world-${w.id}`,
+      name: w.name,
+      category: w.category,
+      subCategory: w.regionOrFamily,
+      speakersOrRegion: w.speakersInfo || w.regionOrFamily,
+      sampleGreeting: w.sampleGreeting,
+      quickPrompt: w.sampleReply,
+      isWorldLanguage: true,
+    }));
+
+    const regionalList: SelectableLanguage[] = REGIONAL_LANGUAGES.map((r) => ({
+      id: `reg-${r.id}`,
+      name: r.name,
+      category: 'Nusantara',
+      subCategory: r.region,
+      speakersOrRegion: `${r.region}${r.subregion ? ` (${r.subregion})` : ''}`,
+      sampleGreeting: r.sampleGreeting,
+      quickPrompt: r.quickPrompt,
+      isWorldLanguage: false,
+    }));
+
+    return [...worldList, ...regionalList];
+  }, []);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const liveWsRef = useRef<WebSocket | null>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
+  const micProcessorRef = useRef<ScriptProcessorNode | null>(null);
+  const nextStartTimeRef = useRef<number>(0);
+  const activeBufferSourcesRef = useRef<AudioBufferSourceNode[]>([]);
+  const speechSessionIdRef = useRef<number>(0);
+  const isVoiceConnectingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if ('speechSynthesis' in window) {
@@ -63,13 +132,6 @@ export default function ChatbotWidget() {
       window.removeEventListener('open-ka-lila-voice', handleOpenVoice);
     };
   }, []);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const liveWsRef = useRef<WebSocket | null>(null);
-  const micStreamRef = useRef<MediaStream | null>(null);
-  const micProcessorRef = useRef<ScriptProcessorNode | null>(null);
-  const nextStartTimeRef = useRef<number>(0);
 
   const quickQuestions = [
     'Berapa biaya Paket Umroh 2026?',
@@ -99,19 +161,34 @@ export default function ChatbotWidget() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Stop any currently playing audio
+  // Stop any currently playing audio instantly with full guarantee of no overlap
   const stopAudioPlayback = () => {
-    if (audioSourceNode) {
-      try {
-        audioSourceNode.stop();
-      } catch (e) {
-        // ignore already stopped
-      }
-      setAudioSourceNode(null);
+    // Invalidate any ongoing speech sessions
+    speechSessionIdRef.current++;
+
+    // Stop all Web Audio buffer sources
+    if (activeBufferSourcesRef.current.length > 0) {
+      activeBufferSourcesRef.current.forEach((source) => {
+        try {
+          source.stop();
+          source.disconnect();
+        } catch {
+          // ignore
+        }
+      });
+      activeBufferSourcesRef.current = [];
     }
+
+    // Cancel browser speech synthesis
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try {
+        window.speechSynthesis.cancel();
+      } catch {
+        // ignore
+      }
     }
+
+    nextStartTimeRef.current = 0;
     setIsSpeaking(false);
   };
 
@@ -121,7 +198,11 @@ export default function ChatbotWidget() {
       if (onFinish) onFinish();
       return;
     }
-    window.speechSynthesis.cancel();
+
+    // Stop previous audio and register new unique session ID
+    stopAudioPlayback();
+    const currentSessionId = speechSessionIdRef.current;
+
     try {
       window.speechSynthesis.resume();
     } catch {
@@ -255,6 +336,9 @@ export default function ChatbotWidget() {
     setIsSpeaking(true);
 
     const speakNextChunk = () => {
+      // Bail out if another speech session has taken over
+      if (speechSessionIdRef.current !== currentSessionId) return;
+
       if (currentIndex >= sentenceChunks.length) {
         setIsSpeaking(false);
         if (onFinish) onFinish();
@@ -282,14 +366,18 @@ export default function ChatbotWidget() {
       }
 
       utterance.onend = () => {
+        if (speechSessionIdRef.current !== currentSessionId) return;
         currentIndex++;
         // Natural micro-breath pause (70ms) between sentences
         setTimeout(() => {
-          speakNextChunk();
+          if (speechSessionIdRef.current === currentSessionId) {
+            speakNextChunk();
+          }
         }, 70);
       };
 
       utterance.onerror = () => {
+        if (speechSessionIdRef.current !== currentSessionId) return;
         currentIndex++;
         speakNextChunk();
       };
@@ -315,10 +403,22 @@ export default function ChatbotWidget() {
     return btoa(binary);
   };
 
-  // Helper: Play Base64 PCM Int16 at 24kHz
+  // Helper: Play Base64 PCM Int16 at 24kHz with gapless single-stream tracking
   const playAudioChunk = async (base64Data: string) => {
+    // Silence any browser speech synthesis to ensure 100% pure single neural voice
+    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
+
     if (!audioContextRef.current) return;
     const ctx = audioContextRef.current;
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch {
+        // ignore
+      }
+    }
     
     const binaryString = atob(base64Data);
     const bytes = new Uint8Array(binaryString.length);
@@ -337,10 +437,11 @@ export default function ChatbotWidget() {
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     source.connect(ctx.destination);
+    activeBufferSourcesRef.current.push(source);
 
     const now = ctx.currentTime;
     if (nextStartTimeRef.current < now) {
-      nextStartTimeRef.current = now + 0.1;
+      nextStartTimeRef.current = now + 0.04;
     }
     
     source.start(nextStartTimeRef.current);
@@ -348,20 +449,34 @@ export default function ChatbotWidget() {
     
     setIsSpeaking(true);
     source.onended = () => {
-      if (ctx.currentTime >= nextStartTimeRef.current - 0.1) {
+      activeBufferSourcesRef.current = activeBufferSourcesRef.current.filter((s) => s !== source);
+      if (activeBufferSourcesRef.current.length === 0 && ctx.currentTime >= nextStartTimeRef.current - 0.05) {
         setIsSpeaking(false);
       }
     };
   };
 
-  // Start Gemini Live Voice Call
+  // Start Gemini Live Voice Call (Ursa Voice Profile - 25yo mature female)
   const startLiveVoiceCall = async () => {
+    if (isVoiceConnectingRef.current) return;
+    isVoiceConnectingRef.current = true;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Clear any running audio first to ensure single pure sound stream
+      stopAudioPlayback();
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 16000,
+        },
+      });
+      setMicPermissionDenied(false);
       micStreamRef.current = stream;
 
       // Initialize Audio Context for both Mic (16k) and Output (24k)
-      // Note: Live API expects 16k input
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       const inputCtx = new AudioContextClass({ sampleRate: 16000 });
       audioContextRef.current = new AudioContextClass({ sampleRate: 24000 });
@@ -371,11 +486,20 @@ export default function ChatbotWidget() {
       liveWsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("Connected to Ka Lila Live");
+        isVoiceConnectingRef.current = false;
         setIsVoiceCallActive(true);
         setActiveTab('voice');
+
+        // Send active regional language if selected
+        if (selectedLanguage) {
+          try {
+            ws.send(JSON.stringify({ type: 'set_language', language: selectedLanguage.name }));
+          } catch (e) {
+            console.warn("Live language setup notice:", e);
+          }
+        }
         
-        // Setup Mic Processor
+        // Setup Mic Processor with echo suppression
         const source = inputCtx.createMediaStreamSource(stream);
         const processor = inputCtx.createScriptProcessor(4096, 1, 1);
         micProcessorRef.current = processor;
@@ -384,8 +508,10 @@ export default function ChatbotWidget() {
         processor.connect(inputCtx.destination);
 
         processor.onaudioprocess = (e) => {
-          if (ws.readyState === WebSocket.OPEN && !isSpeaking) {
-            const base64 = pcmToBase64(e.inputBuffer.getChannelData(0));
+          // Do not send mic audio while Ka Lila is speaking to eliminate speaker loopback
+          if (ws.readyState === WebSocket.OPEN && !isSpeaking && activeBufferSourcesRef.current.length === 0) {
+            const inputData = e.inputBuffer.getChannelData(0);
+            const base64 = pcmToBase64(inputData);
             ws.send(JSON.stringify({ type: 'audio', data: base64 }));
             setIsListening(true);
           } else {
@@ -395,34 +521,51 @@ export default function ChatbotWidget() {
       };
 
       ws.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        if (msg.type === 'audio') {
-          playAudioChunk(msg.data);
-        } else if (msg.type === 'interrupted') {
-          // Handle interruption: clear playback queue
-          nextStartTimeRef.current = 0;
-          setIsSpeaking(false);
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === 'audio') {
+            playAudioChunk(msg.data);
+          } else if (msg.type === 'interrupted') {
+            // Handle interruption: clear playback queue immediately
+            stopAudioPlayback();
+          }
+        } catch (err) {
+          console.error("WS parse error:", err);
         }
       };
 
+      ws.onerror = (err) => {
+        console.warn("Live Voice WebSocket Notice:", err);
+        isVoiceConnectingRef.current = false;
+      };
+
       ws.onclose = () => {
+        isVoiceConnectingRef.current = false;
         endVoiceCall();
       };
 
-    } catch (err) {
-      console.error("Live Voice Call Error:", err);
-      alert("Gagal memulai panggilan suara. Pastikan mikrofon diizinkan.");
-      setIsVoiceCallActive(false);
+    } catch (err: any) {
+      isVoiceConnectingRef.current = false;
+      console.warn("Microphone access notice (fallback to Voice Narration Mode):", err?.message || err);
+      setMicPermissionDenied(true);
+      setIsVoiceCallActive(true);
+      setActiveTab('voice');
+
+      // Greet user with Ka Lila's voice so they still get the natural voice experience immediately!
+      const greeting =
+        "Assalamualaikum Ka.. Aku Ka Lila! Senang sekali bisa menyapa Kakak. Silakan pilih atau ketik pertanyaan di bawah, Ka Lila siap bantu jelaskan paket Umroh dan Haji Arminareka.";
+      speakText(greeting);
     }
   };
 
-  // Play text via Gemini Neural TTS with Kore Voice (with instant fallback)
+  // Play text via Gemini Neural TTS with Ursa Voice (with single-channel guarantee)
   const speakText = async (text: string, onFinish?: () => void) => {
     if (!voiceEnabled) {
       if (onFinish) onFinish();
       return;
     }
     stopAudioPlayback();
+    const currentSessionId = speechSessionIdRef.current;
 
     try {
       // Ensure AudioContext exists and is running
@@ -446,6 +589,8 @@ export default function ChatbotWidget() {
       });
 
       const data = await res.json();
+      if (speechSessionIdRef.current !== currentSessionId) return;
+
       if (data.audio && ctx) {
         const binaryString = atob(data.audio);
         const len = binaryString.length;
@@ -475,19 +620,23 @@ export default function ChatbotWidget() {
           }
         }
 
-        if (audioBuffer) {
+        if (audioBuffer && speechSessionIdRef.current === currentSessionId) {
           const source = ctx.createBufferSource();
           source.buffer = audioBuffer;
           source.connect(ctx.destination);
+          activeBufferSourcesRef.current.push(source);
 
           source.onended = () => {
-            setIsSpeaking(false);
-            setAudioSourceNode(null);
-            if (onFinish) onFinish();
+            activeBufferSourcesRef.current = activeBufferSourcesRef.current.filter((s) => s !== source);
+            if (activeBufferSourcesRef.current.length === 0) {
+              setIsSpeaking(false);
+            }
+            if (speechSessionIdRef.current === currentSessionId && onFinish) {
+              onFinish();
+            }
           };
 
           setIsSpeaking(true);
-          setAudioSourceNode(source);
           source.start(0);
           return;
         }
@@ -496,19 +645,19 @@ export default function ChatbotWidget() {
       console.log(`TTS API fetch fallback to browser SpeechSynthesis (${err?.message || 'Unknown'})`);
     }
 
-    // Fallback to optimized 25yo Indonesian female SpeechSynthesis
-    speakWithBrowserSpeech(text, onFinish);
+    if (speechSessionIdRef.current === currentSessionId) {
+      speakWithBrowserSpeech(text, onFinish);
+    }
   };
 
   // Speech Recognition (Voice Input)
   const startListening = async (onResultCallback?: (transcript: string) => void) => {
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (permErr) {
-      console.warn("Microphone permission denied:", permErr);
-      alert(
-        "Akses mikrofon diperlukan untuk berbicara dengan Ka Lila. Silakan klik izinkan (Allow) pada browser Anda."
-      );
+      setMicPermissionDenied(false);
+    } catch (permErr: any) {
+      console.warn("Microphone access notice:", permErr?.message || permErr);
+      setMicPermissionDenied(true);
       setIsListening(false);
       return;
     }
@@ -516,7 +665,7 @@ export default function ChatbotWidget() {
     const SpeechRecognitionClass =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognitionClass) {
-      alert("Browser Anda belum mendukung input suara. Gunakan Google Chrome untuk pengalaman terbaik.");
+      console.warn("SpeechRecognition not supported on current browser engine");
       return;
     }
 
@@ -547,7 +696,7 @@ export default function ChatbotWidget() {
         console.warn("Speech recognition error:", event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
-          setIsVoiceCallActive(false);
+          setMicPermissionDenied(true);
         } else if (isVoiceCallActive && !isSpeaking && !isLoading) {
           setTimeout(() => {
             if (isVoiceCallActive) startListening();
@@ -561,7 +710,7 @@ export default function ChatbotWidget() {
 
       recognition.start();
     } catch (err) {
-      console.error("Recognition start error:", err);
+      console.warn("Recognition start notice:", err);
       setIsListening(false);
     }
   };
@@ -571,6 +720,42 @@ export default function ChatbotWidget() {
       setIsListening(false);
     } else {
       startListening();
+    }
+  };
+
+  // Switch or Reset Language (World or Regional)
+  const handleSelectLanguage = (lang: SelectableLanguage | null) => {
+    setSelectedLanguage(lang);
+    setIsLanguageModalOpen(false);
+
+    if (lang) {
+      const greetingMsg = lang.sampleGreeting;
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'model',
+          text: `[🌐 ${lang.name}]: ${greetingMsg}`,
+        },
+      ]);
+
+      // If live call is connected, notify Live API
+      if (liveWsRef.current && liveWsRef.current.readyState === WebSocket.OPEN) {
+        try {
+          liveWsRef.current.send(JSON.stringify({ type: 'set_language', language: lang.name }));
+        } catch (e) {
+          console.warn("WS set_language notice:", e);
+        }
+      }
+
+      // Speak greeting with Ursa voice
+      speakText(greetingMsg);
+    } else {
+      const resetMsg = "Assalamualaikum Ka.. Lila siap melayani Kakak dalam Bahasa Indonesia, bahasa daerah Nusantara, dan seluruh bahasa di dunia!";
+      setMessages((prev) => [
+        ...prev,
+        { role: 'model', text: resetMsg },
+      ]);
+      speakText(resetMsg);
     }
   };
 
@@ -591,6 +776,7 @@ export default function ChatbotWidget() {
         body: JSON.stringify({
           message: userText,
           history: newMessages.slice(0, -1),
+          languagePreference: selectedLanguage ? selectedLanguage.name : undefined,
         }),
       });
 
@@ -623,7 +809,7 @@ export default function ChatbotWidget() {
     }
   };
 
-  // Voice Call Mode Toggle & Start (Direct Gemini Live Kore Voice Stream)
+  // Voice Call Mode Toggle & Start (Direct Gemini Live Ursa Voice Stream - 25yo mature female)
   const startVoiceCall = async () => {
     setIsVoiceCallActive(true);
     setActiveTab('voice');
@@ -695,6 +881,24 @@ export default function ChatbotWidget() {
     await sendSpecificMessage(text);
   };
 
+  const filteredLanguages = allSelectableLanguages.filter((l) => {
+    const matchesFilter =
+      activeRegionFilter === 'Semua' ||
+      l.category === activeRegionFilter ||
+      l.subCategory === activeRegionFilter ||
+      (activeRegionFilter === 'Global' && l.isWorldLanguage) ||
+      (activeRegionFilter === 'Nusantara' && !l.isWorldLanguage);
+
+    const matchesSearch =
+      searchLangQuery.trim() === '' ||
+      l.name.toLowerCase().includes(searchLangQuery.toLowerCase()) ||
+      l.category.toLowerCase().includes(searchLangQuery.toLowerCase()) ||
+      (l.subCategory && l.subCategory.toLowerCase().includes(searchLangQuery.toLowerCase())) ||
+      (l.speakersOrRegion && l.speakersOrRegion.toLowerCase().includes(searchLangQuery.toLowerCase()));
+
+    return matchesFilter && matchesSearch;
+  });
+
   return (
     <motion.div 
       drag 
@@ -712,7 +916,7 @@ export default function ChatbotWidget() {
           >
             {/* Header with Mode Switcher Tabs */}
             <div className="px-4 py-3 bg-white/5 border-b border-white/10 shrink-0 backdrop-blur-md">
-              <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2.5">
                   <div className="relative">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-bold shadow-md">
@@ -738,8 +942,25 @@ export default function ChatbotWidget() {
                   </div>
                 </div>
 
-                {/* Right Controls */}
+                {/* Right Controls: Regional Language & Close */}
                 <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsLanguageModalOpen(true)}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border cursor-pointer ${
+                      selectedLanguage
+                        ? 'bg-amber-500 text-slate-950 border-amber-300 font-bold shadow-sm'
+                        : 'bg-white/10 text-slate-200 hover:text-white hover:bg-white/15 border-white/10'
+                    }`}
+                    title="Pilih Bahasa Daerah se-Indonesia"
+                  >
+                    <Globe size={13} className={selectedLanguage ? 'text-slate-950' : 'text-amber-400'} />
+                    <span className="truncate max-w-[95px]">
+                      {selectedLanguage ? selectedLanguage.name.replace('Bahasa ', '') : 'Bahasa'}
+                    </span>
+                    <ChevronDown size={11} className="opacity-70" />
+                  </button>
+
                   <button
                     onClick={() => {
                       stopAudioPlayback();
@@ -752,6 +973,26 @@ export default function ChatbotWidget() {
                   </button>
                 </div>
               </div>
+
+              {/* Active Language Notification Banner */}
+              {selectedLanguage && (
+                <div className="flex items-center justify-between text-[11px] px-2.5 py-1 mb-2 bg-amber-500/15 border border-amber-400/30 rounded-xl text-amber-200">
+                  <span className="flex items-center gap-1.5 font-medium truncate">
+                    <Sparkles size={12} className="text-amber-400 shrink-0" />
+                    <span className="truncate">
+                      Bahasa: <strong className="text-amber-300">{selectedLanguage.name}</strong> ({selectedLanguage.speakersOrRegion})
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectLanguage(null)}
+                    className="text-slate-300 hover:text-white text-[10px] ml-2 px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 cursor-pointer shrink-0"
+                    title="Kembali ke Bahasa Indonesia Standar"
+                  >
+                    Reset
+                  </button>
+                </div>
+              )}
 
               {/* 2 Main Mode Navigation Tabs: Voice Call & Chat Bot */}
               <div className="grid grid-cols-2 gap-1.5 bg-black/50 p-1 rounded-xl border border-white/10 text-xs font-medium">
@@ -837,9 +1078,38 @@ export default function ChatbotWidget() {
                       : isLoading
                       ? '⚡ Menyiapkan rekomendasi paket...'
                       : isVoiceCallActive
-                      ? 'Ka Lila siap melayani, silakan bicara...'
+                      ? micPermissionDenied
+                        ? 'Ka Lila siap menjawab pertanyaan Kakak!'
+                        : 'Ka Lila siap melayani, silakan bicara...'
                       : 'Tekan tombol untuk mulai konsultasi'}
                   </p>
+
+                  {micPermissionDenied && (
+                    <div className="w-full max-w-sm my-2 p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-left">
+                      <div className="flex items-start gap-2 text-xs text-amber-200 mb-2">
+                        <MicOff size={15} className="text-amber-400 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-amber-300">Suara Ka Lila Aktif (Mode Panduan Suara)</p>
+                          <p className="text-[11px] text-amber-200/80 leading-relaxed mt-0.5">
+                            Izin mikrofon browser belum aktif. Kakak tetap bisa mendengar suara Ka Lila dengan memilih topik di bawah:
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {quickQuestions.slice(0, 3).map((q, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => sendSpecificMessage(q)}
+                            className="text-[11px] bg-slate-900/80 hover:bg-amber-500 hover:text-slate-950 text-amber-200 border border-amber-400/30 px-2.5 py-1 rounded-full transition-all cursor-pointer text-left"
+                          >
+                            💬 {q}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Call Control Action Bar */}
@@ -936,6 +1206,56 @@ export default function ChatbotWidget() {
                   <div ref={messagesEndRef} />
                 </div>
 
+                {/* Quick Indonesian Regional Language Switcher Bar */}
+                <div className="px-3 py-1.5 bg-slate-950/90 border-t border-white/5 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] shrink-0">
+                  <span className="font-semibold text-amber-400 shrink-0 flex items-center gap-1">
+                    🇮🇩 Daerah:
+                  </span>
+                  {[
+                    { label: 'Jawa', id: 'reg-jawa-halus' },
+                    { label: 'Sunda', id: 'reg-sunda' },
+                    { label: 'Minang', id: 'reg-minangkabau' },
+                    { label: 'Batak', id: 'reg-batak-toba' },
+                    { label: 'Bugis', id: 'reg-bugis' },
+                    { label: 'Banjar', id: 'reg-banjar' },
+                    { label: 'Ambon', id: 'reg-melayu-ambon' },
+                    { label: 'Papua', id: 'reg-biak' },
+                    { label: 'Bali', id: 'reg-bali' },
+                    { label: 'Sasak', id: 'reg-sasak' },
+                    { label: 'Dayak', id: 'reg-dayak-ngaju' },
+                    { label: 'Aceh', id: 'reg-aceh' },
+                  ].map((quick) => {
+                    const isCur = selectedLanguage?.id === quick.id;
+                    return (
+                      <button
+                        key={quick.id}
+                        type="button"
+                        onClick={() => {
+                          const target = allSelectableLanguages.find((l) => l.id === quick.id);
+                          if (target) handleSelectLanguage(isCur ? null : target);
+                        }}
+                        className={`px-2 py-0.5 rounded-md whitespace-nowrap transition-all border cursor-pointer shrink-0 text-[10px] ${
+                          isCur
+                            ? 'bg-amber-500 text-slate-950 font-bold border-amber-300'
+                            : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
+                        }`}
+                      >
+                        {quick.label}
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveRegionFilter('Nusantara');
+                      setIsLanguageModalOpen(true);
+                    }}
+                    className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/40 hover:bg-amber-500/30 whitespace-nowrap cursor-pointer shrink-0 font-medium text-[10px]"
+                  >
+                    55+ Bahasa Daerah Lainnya →
+                  </button>
+                </div>
+
                 {/* Quick Suggestion Pills */}
                 <div className="px-3 py-2 bg-slate-950/80 border-t border-white/10 flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] shrink-0">
                   {quickQuestions.map((q, idx) => (
@@ -991,6 +1311,168 @@ export default function ChatbotWidget() {
                 </form>
               </>
             )}
+
+            {/* GLOBAL & REGIONAL LANGUAGE SELECTION DRAWER */}
+            <AnimatePresence>
+              {isLanguageModalOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 30 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-2xl flex flex-col p-4 text-white overflow-hidden"
+                >
+                  {/* Drawer Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
+                        <Globe size={18} />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm text-white flex items-center gap-1.5">
+                          Kemampuan Bahasa Dunia &amp; Daerah
+                        </h3>
+                        <p className="text-[11px] text-amber-300/80">
+                          Ka Lila menguasai 100+ bahasa global, fiksi, dan Nusantara
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsLanguageModalOpen(false)}
+                      className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="relative my-3 shrink-0">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={searchLangQuery}
+                      onChange={(e) => setSearchLangQuery(e.target.value)}
+                      placeholder="Cari bahasa (English, Mandarin, Sunda, Klingon, Jawa...)"
+                      className="w-full bg-black/50 border border-white/15 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-400"
+                    />
+                    {searchLangQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchLangQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Filter Categories */}
+                  <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-2 shrink-0 text-[11px]">
+                    {[
+                      { id: 'Semua', label: 'Semua' },
+                      { id: 'Nusantara', label: '🇮🇩 Nusantara (Semua Daerah)' },
+                      { id: 'Sumatra', label: 'Sumatra' },
+                      { id: 'Jawa', label: 'Jawa' },
+                      { id: 'Bali & Nusa Tenggara', label: 'Bali & Nusa Tenggara' },
+                      { id: 'Kalimantan', label: 'Kalimantan' },
+                      { id: 'Sulawesi', label: 'Sulawesi' },
+                      { id: 'Maluku', label: 'Maluku' },
+                      { id: 'Papua', label: 'Papua' },
+                      { id: 'Global', label: '🌍 Global (Dunia)' },
+                      { id: 'Global Terbanyak', label: 'Penutur Terbanyak' },
+                      { id: 'Asia Timur & Tenggara', label: 'Asia Timur & Tenggara' },
+                      { id: 'Asia Selatan & Tengah', label: 'Asia Selatan & Tengah' },
+                      { id: 'Timur Tengah & Afrika Utara', label: 'Timur Tengah & Afrika' },
+                      { id: 'Afrika Sub-Sahara', label: 'Afrika Sub-Sahara' },
+                      { id: 'Eropa', label: 'Eropa' },
+                      { id: 'Amerika', label: 'Amerika' },
+                      { id: 'Oseania & Pasifik', label: 'Oseania & Pasifik' },
+                      { id: 'Bahasa Buatan / Fiksi', label: 'Bahasa Buatan / Fiksi' },
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setActiveRegionFilter(cat.id)}
+                        className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors border cursor-pointer ${
+                          activeRegionFilter === cat.id
+                            ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-sm'
+                            : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Current Active Language Indicator & Reset Option */}
+                  <div className="mb-2 p-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs shrink-0">
+                    <div className="flex items-center gap-1.5 text-[11px] truncate">
+                      <span className="text-slate-400">Status:</span>
+                      <span className="font-semibold text-amber-300 truncate">
+                        {selectedLanguage ? `${selectedLanguage.name} (${selectedLanguage.speakersOrRegion})` : 'Bahasa Indonesia (Standar)'}
+                      </span>
+                    </div>
+                    {selectedLanguage && (
+                      <button
+                        type="button"
+                        onClick={() => handleSelectLanguage(null)}
+                        className="text-[10px] px-2 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 cursor-pointer shrink-0 font-medium"
+                      >
+                        Reset ke Standar
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Languages List */}
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-1.5 no-scrollbar">
+                    {filteredLanguages.length === 0 ? (
+                      <div className="text-center py-8 text-xs text-slate-400">
+                        Bahasa tidak ditemukan. Coba ketik nama negara, pulau, atau nama bahasa lain.
+                      </div>
+                    ) : (
+                      filteredLanguages.map((lang) => {
+                        const isSelected = selectedLanguage?.id === lang.id;
+                        return (
+                          <div
+                            key={lang.id}
+                            className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 ${
+                              isSelected
+                                ? 'bg-amber-500/20 border-amber-400/60 shadow-sm'
+                                : 'bg-white/5 hover:bg-white/10 border-white/10'
+                            }`}
+                            onClick={() => handleSelectLanguage(isSelected ? null : lang)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-xs text-white">
+                                  {lang.name}
+                                </span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-medium truncate max-w-[140px]">
+                                  {lang.speakersOrRegion}
+                                </span>
+                              </div>
+                              {isSelected ? (
+                                <span className="flex items-center gap-1 text-[11px] text-amber-400 font-bold">
+                                  <Check size={13} /> Aktif
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-slate-400 hover:text-amber-300">
+                                  Pilih bahasa →
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-slate-300 italic line-clamp-1">
+                              &ldquo;{lang.sampleGreeting}&rdquo;
+                            </p>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
