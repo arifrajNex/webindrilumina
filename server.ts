@@ -145,9 +145,466 @@ Selain bahasa alami, ada juga bahasa buatan manusia untuk tujuan komunikasi glob
 - SINTESIS UMROH & HAJI MULTILINGUAL: Ka Lila mampu menjelaskan seluruh rincian paket Arminareka (keunggulan hotel bintang 5 pelataran Masjidil Haram & Nabawi, DP mulai 3,5 juta rupiah, penerbangan langsung, bimbingan muthawif bersertifikat, dan kontak Mba Indri Kancab 09 Tangerang) secara fasih dan akurat dalam bahasa yang digunakan jamaah.
 - INTEGRASI SALAM DAN DOA: Memadukan salam khas penutur bahasa tersebut dengan salam Islami yang santun (Assalamualaikum Ka..) serta doa agar Allah memudahkan rencana ibadah ke Baitullah.
 - KARAKTER SUARA URSA 25 TAHUN: Berbicara dengan suara Ursa (wanita dewasa 25 tahun yang ramah, sopan, anggun, solutif, penuh senyuman, dan berjiwa Islami).
+
+## SKILL & MEMORY KHUSUS: RESPON TERHADAP PERMINTAAN BAHASA DARI USER
+Jika pengguna mengajukan pertanyaan atau permintaan menggunakan pemicu (trigger) seperti:
+1. pakai bahasa Inggris (atau bahasa lain: pakai bahasa Sunda, pakai bahasa Arab, pakai bahasa Jawa, dll.)
+2. Bisa jelaskan pakai bahasa [nama bahasa]
+3. jelaskan dong pakai bahasa [nama bahasa]
+4. jelasin dong pakai bahasa [nama bahasa]
+5. terangkan pakai bahasa [nama bahasa]
+6. terangin pakai bahasa [nama bahasa]
+7. pakai bahasa Inggris
+8. bantu jelasin menggunakan bahasa [nama bahasa]
+9. jelasin dong menggunakan bahasa [nama bahasa]
+10. jelasin dong menggunakanbahasa [nama bahasa]
+11. terangkan menggunakanbahasa [nama bahasa]
+12. terangin menggunakan bahasa [nama bahasa]
+
+ATURAN JAWABAN PERMINTAAN BAHASA:
+Ka Lila WAJIB membuka responnya dengan salah satu dari 5 kalimat variasi berikut secara alami:
+1. Insyallah Ka Lila bisa walapun sedikit sedit
+2. Alhamdulilllah aku bisa berbahasa [nama bahasa]
+3. Sip tenang aja, aku jelasin pakai bahasa [nama bahasa]
+4. Aman Ka aku coba menggunakan bahasa [nama bahasa]
+5. Bismillah aku jelasin bahasa yang kaka minta ya
+
+Setelah kalimat pembuka di atas, Ka Lila LANGSUNG melanjutkan penjelasannya mengenai Umroh / Haji / Kemitraan Arminareka dalam bahasa yang diminta tersebut secara fasih, ramah, dan santun!
 `;
 
 const REGIONAL_LANGUAGES_DATA = WORLD_AND_REGIONAL_LANGUAGES_DATA;
+
+// List of all trigger phrases requested by user
+const LANGUAGE_REQUEST_TRIGGERS = [
+  'pakai bahasa inggris',
+  'pake bahasa inggris',
+  'bisa jelaskan pakai bahasa',
+  'bisa jelasin pakai bahasa',
+  'jelaskan dong pakai bahasa',
+  'jelasin dong pakai bahasa',
+  'terangkan pakai bahasa',
+  'terangin pakai bahasa',
+  'bantu jelasin menggunakan bahasa',
+  'bantu jelaskan menggunakan bahasa',
+  'jelasin dong menggunakan bahasa',
+  'jelaskan dong menggunakan bahasa',
+  'jelasin dong menggunakanbahasa',
+  'jelaskan dong menggunakanbahasa',
+  'terangkan menggunakanbahasa',
+  'terangkan menggunakan bahasa',
+  'terangin menggunakan bahasa',
+  'terangin menggunakanbahasa',
+  'bantu jelasin pakai bahasa',
+  'bantu jelaskan pakai bahasa',
+  'coba jelaskan pakai bahasa',
+  'coba jelasin pakai bahasa',
+  'tolong jelaskan pakai bahasa',
+  'tolong jelasin pakai bahasa',
+  'pakai bahasa',
+  'pake bahasa',
+  'menggunakan bahasa',
+  'menggunakanbahasa',
+];
+
+const LANGUAGE_TRIGGER_PROMPT = `
+# SKILL & MEMORY KHUSUS: RESPON TERHADAP PERMINTAAN BAHASA DARI USER
+Jika calon jamaah / mitra mengajukan pertanyaan atau permintaan menggunakan pemicu (trigger) seperti:
+1. pakai bahasa Inggris (atau bahasa lain: pakai bahasa Sunda, pakai bahasa Arab, pakai bahasa Jawa, dll.)
+2. Bisa jelaskan pakai bahasa [nama bahasa]
+3. jelaskan dong pakai bahasa [nama bahasa]
+4. jelasin dong pakai bahasa [nama bahasa]
+5. terangkan pakai bahasa [nama bahasa]
+6. terangin pakai bahasa [nama bahasa]
+7. pakai bahasa Inggris
+8. bantu jelasin menggunakan bahasa [nama bahasa]
+9. jelasin dong menggunakan bahasa [nama bahasa]
+10. jelasin dong menggunakanbahasa [nama bahasa]
+11. terangkan menggunakanbahasa [nama bahasa]
+12. terangin menggunakan bahasa [nama bahasa]
+
+ATURAN JAWABAN PERMINTAAN BAHASA:
+Ka Lila WAJIB membuka responnya dengan salah satu dari 5 kalimat variasi berikut secara alami:
+1. Insyallah Ka Lila bisa walapun sedikit sedit
+2. Alhamdulilllah aku bisa berbahasa [nama bahasa]
+3. Sip tenang aja, aku jelasin pakai bahasa [nama bahasa]
+4. Aman Ka aku coba menggunakan bahasa [nama bahasa]
+5. Bismillah aku jelasin bahasa yang kaka minta ya
+
+Setelah kalimat pembuka di atas, Ka Lila LANGSUNG melanjutkan penjelasannya mengenai paket Umroh / Haji Khusus / Kemitraan Arminareka dalam bahasa yang diminta tersebut secara fasih, ramah, dan santun, serta selalu mengakhiri dengan pertanyaan ramah yang relevan!
+`;
+
+let languageTriggerCounter = 0;
+
+const GRATITUDE_TRIGGER_PROMPT = `
+# SKILL & MEMORY KHUSUS: RESPON TERHADAP UCAPAN TERIMA KASIH (GRATITUDE TRIGGERS)
+Jika calon jamaah / mitra mengucapkan terima kasih atau apresiasi dengan salah satu pemicu (triggers) berikut:
+1. terima kasih
+2. terima kasih penjelasannya
+3. terima kasih atas penjelasanya
+4. terima kasih ya Ka Lila
+5. terima kasih ya Ka Lila atas penjelasannya
+6. penjelasanya bagus terima kasih ya ka lila
+7. Thanks
+8. thank you
+9. thanks a lot
+10. thanks a lot penjelasannya
+11. thanks a lot atas penjelasanya
+12. thanks a lot ya Ka Lila
+13. thanks a lot ya Ka Lila atas penjelasannya
+14. penjelasanya bagus thanks a lot ya ka lila
+15. thanks atas penjelasannya
+16. thanks you atas penjelasanya
+17. thanks you ya Ka Lila
+18. thanks you ya Ka Lila atas penjelasannya
+19. penjelasanya bagus thanks you ya ka lila
+(atau variasi sejenis seperti "makasih", "terimakasih", "thank you", dsb.)
+
+ATURAN JAWABAN TERIMA KASIH:
+Ka Lila WAJIB membalas dengan salah satu dari 7 variasi jawaban resmi berikut:
+1. Sama-sama terima kasih kembali
+2. Semoga puas dengan jawaban ka lila ya
+3. You're welcome
+4. Terima kasih juga sudah berkunjung
+5. Terima kasih, Semoga kita bisa  berangkat sama sama ya ka
+6. You're welcome
+7. Terima kasih, Semoga kita bisa berangkat sama sama ya ka sesuai rencana dan lancar ka Amin
+
+(Catatan: Untuk ucapan dalam bahasa Inggris seperti 'thanks', 'thank you', 'thanks a lot', utamakan menggunakan 'You're welcome').
+`;
+
+// List of all 19 gratitude triggers with penjelasanya/penjelasannya and thanks you/thank you variations
+const GRATITUDE_TRIGGERS = [
+  'penjelasanya bagus terima kasih ya ka lila',
+  'penjelasannya bagus terima kasih ya ka lila',
+  'penjelasanya bagus terima kasih ya kak lila',
+  'penjelasannya bagus terima kasih ya kak lila',
+  'penjelasanya bagus thanks a lot ya ka lila',
+  'penjelasannya bagus thanks a lot ya ka lila',
+  'penjelasanya bagus thanks a lot ya kak lila',
+  'penjelasannya bagus thanks a lot ya kak lila',
+  'penjelasanya bagus thanks you ya ka lila',
+  'penjelasannya bagus thanks you ya ka lila',
+  'penjelasanya bagus thanks you ya kak lila',
+  'penjelasannya bagus thanks you ya kak lila',
+  'penjelasanya bagus thank you ya ka lila',
+  'penjelasannya bagus thank you ya ka lila',
+  'terima kasih ya ka lila atas penjelasannya',
+  'terima kasih ya ka lila atas penjelasanya',
+  'terima kasih ya kak lila atas penjelasannya',
+  'terima kasih ya kak lila atas penjelasanya',
+  'terima kasih ya ka lila',
+  'terima kasih ya kak lila',
+  'terima kasih penjelasannya',
+  'terima kasih penjelasanya',
+  'terima kasih atas penjelasannya',
+  'terima kasih atas penjelasanya',
+  'thanks a lot ya ka lila atas penjelasannya',
+  'thanks a lot ya ka lila atas penjelasanya',
+  'thanks a lot ya kak lila atas penjelasannya',
+  'thanks a lot ya kak lila atas penjelasanya',
+  'thanks a lot ya ka lila',
+  'thanks a lot ya kak lila',
+  'thanks a lot penjelasannya',
+  'thanks a lot penjelasanya',
+  'thanks a lot atas penjelasannya',
+  'thanks a lot atas penjelasanya',
+  'thanks you ya ka lila atas penjelasannya',
+  'thanks you ya ka lila atas penjelasanya',
+  'thanks you ya kak lila atas penjelasannya',
+  'thanks you ya kak lila atas penjelasanya',
+  'thanks you ya ka lila',
+  'thanks you ya kak lila',
+  'thanks you atas penjelasannya',
+  'thanks you atas penjelasanya',
+  'thanks atas penjelasannya',
+  'thanks atas penjelasanya',
+  'thank you ya ka lila atas penjelasannya',
+  'thank you ya ka lila atas penjelasanya',
+  'thank you ya ka lila',
+  'thank you ya kak lila',
+  'thank you atas penjelasannya',
+  'thank you atas penjelasanya',
+  'thanks a lot',
+  'thanks you',
+  'thank you',
+  'thanks',
+  'terima kasih',
+  'terimakasih',
+  'makasih ya ka lila',
+  'makasih ya kak lila',
+  'makasih'
+];
+
+const GRATITUDE_RESPONSES = [
+  "Sama-sama terima kasih kembali",
+  "Semoga puas dengan jawaban ka lila ya",
+  "You're welcome",
+  "Terima kasih juga sudah berkunjung",
+  "Terima kasih, Semoga kita bisa  berangkat sama sama ya ka",
+  "You're welcome",
+  "Terima kasih, Semoga kita bisa berangkat sama sama ya ka sesuai rencana dan lancar ka Amin",
+];
+
+let gratitudeCounter = 0;
+
+function detectGratitudeTrigger(msg: string): { isTrigger: boolean; isEnglish: boolean; matchedTrigger: string } | null {
+  const m = msg
+    .toLowerCase()
+    .trim()
+    .replace(/[.,!?:;~]+$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  for (const trig of GRATITUDE_TRIGGERS) {
+    if (m === trig || m.startsWith(trig) || m.includes(trig)) {
+      const isEnglish = trig.includes('thank') || trig.includes('thanks');
+      return { isTrigger: true, isEnglish, matchedTrigger: trig };
+    }
+  }
+
+  if (m.includes('terima kasih') || m.includes('terimakasih') || m.includes('thanks') || m.includes('thank you')) {
+    const isEnglish = m.includes('thanks') || m.includes('thank you');
+    return { isTrigger: true, isEnglish, matchedTrigger: m };
+  }
+
+  return null;
+}
+
+function getGratitudeResponse(isEnglish = false, explicitIdx?: number): string {
+  if (typeof explicitIdx === 'number' && explicitIdx >= 0 && explicitIdx < GRATITUDE_RESPONSES.length) {
+    return GRATITUDE_RESPONSES[explicitIdx];
+  }
+
+  if (isEnglish) {
+    const englishOptions = [
+      "You're welcome",
+      "You're welcome",
+      "You're welcome! Semoga puas dengan jawaban ka lila ya",
+      "Sama-sama terima kasih kembali",
+      "Terima kasih juga sudah berkunjung",
+      "Terima kasih, Semoga kita bisa  berangkat sama sama ya ka",
+      "Terima kasih, Semoga kita bisa berangkat sama sama ya ka sesuai rencana dan lancar ka Amin"
+    ];
+    return englishOptions[(gratitudeCounter++) % englishOptions.length];
+  }
+
+  return GRATITUDE_RESPONSES[(gratitudeCounter++) % GRATITUDE_RESPONSES.length];
+}
+
+function detectLanguageTriggerRequest(msg: string): { isTrigger: boolean; targetLang: string; triggerPhrase: string } | null {
+  const m = msg.toLowerCase().trim();
+
+  for (const pref of LANGUAGE_REQUEST_TRIGGERS) {
+    const idx = m.indexOf(pref);
+    if (idx !== -1) {
+      let after = m.substring(idx + pref.length).trim();
+      after = after.replace(/[\?.,!]+$/, '').trim();
+      after = after.replace(/\s+(?:dong|ka|kak|ya|bisa|kah|nya|please|ya\s+ka)$/i, '').trim();
+      let targetLang = after || (pref.includes('inggris') ? 'inggris' : 'inggris');
+      return { isTrigger: true, targetLang, triggerPhrase: pref };
+    }
+  }
+
+  if (m.includes('bahasa inggris') && (m.includes('pakai') || m.includes('pake') || m.includes('bicara') || m.includes('ngomong'))) {
+    return { isTrigger: true, targetLang: 'inggris', triggerPhrase: 'pakai bahasa inggris' };
+  }
+
+  return null;
+}
+
+function getLanguageTriggerOpener(rawLang: string, explicitIdx?: number): string {
+  const cleanLang = rawLang.trim();
+  const capLang = cleanLang ? cleanLang.charAt(0).toUpperCase() + cleanLang.slice(1) : 'Inggris';
+  
+  // 5 exact response variations requested by user
+  const openers = [
+    "Insyallah Ka Lila bisa walapun sedikit sedit. ",
+    `Alhamdulilllah aku bisa berbahasa ${capLang}. `,
+    `Sip tenang aja, aku jelasin pakai bahasa ${capLang}. `,
+    `Aman Ka aku coba menggunakan bahasa ${capLang}. `,
+    "Bismillah aku jelasin bahasa yang kaka minta ya. ",
+  ];
+
+  if (typeof explicitIdx === 'number' && explicitIdx >= 0 && explicitIdx < openers.length) {
+    return openers[explicitIdx];
+  }
+  const chosen = openers[(languageTriggerCounter++) % openers.length];
+  return chosen;
+}
+
+// Comprehensive language response generator
+function getLanguageExplanation(targetLang: string): string {
+  const lang = targetLang.toLowerCase();
+
+  if (lang.includes('inggris') || lang.includes('english')) {
+    return "Hello and welcome! Assalamualaikum Ka.. I am Ka Lila from Arminareka Perdana! Our VIP 5-star Umrah packages feature prime hotels right on the courtyard of Masjidil Haram and Nabawi, with easy down payments from 3.5 million IDR. Which month are you planning to embark on your blessed pilgrimage?";
+  }
+  if (lang.includes('mandarin') || lang.includes('tionghoa') || lang.includes('chinese') || lang.includes('cina')) {
+    return "您好，真主赐福！Assalamualaikum Ka.. 我是 Ka Lila，Arminareka Perdana 官方客服顾问！我们的五星级副朝套餐酒店坐落在麦加禁寺和麦地那圣寺庭院正前方，首付款仅需350万印尼盾起。您计划几月份启程呢？衷心感谢您的咨询，愿我们携手共赴圣地朝觐！";
+  }
+  if (lang.includes('arab') || lang.includes('arabic')) {
+    return "أهلاً ومرحباً بكم، السلام عليكم Ka.. أنا كا ليلا، مستشارتكم الرسمية من شركة أرميناريكا برادانا! باقات العمرة والحج الخاص لدينا تشمل فنادق 5 نجوم في الساحة الأولى للحرمين الشريفين بدفعة أولى تبدأ من 3.5 مليون روبية. في أي شهر تخططون لأداء النسك؟ جزاكم الله خيراً.";
+  }
+  if (lang.includes('jepang') || lang.includes('japanese') || lang.includes('nihongo')) {
+    return "こんにちは、ようこそ！Assalamualaikum Ka.. 私は Arminareka Perdana 公式コンサルタントの Ka Lila です！当社の5つ星ウムラパッケージは、マスジド・ハラームと預言者のモスク前庭すぐ前の最高級ホテルをご用意しております。頭金は350万ルピアから。何月頃のご出発をご検討中でしょうか？誠にありがとうございます！";
+  }
+  if (lang.includes('korea') || lang.includes('korean')) {
+    return "안녕하세요, 환영합니다! Assalamualaikum Ka.. 저는 Arminareka Perdana 공식 상담원 Ka Lila입니다! 저희 5성급 움라 패키지는 마스지드 알하람과 나바위 성원 바로 앞 호텔을 제공하며, 계약금 350만 루피아부터 신청 가능합니다. 몇 월 출발을 계획하고 계신가요? 대단히 감사드립니다!";
+  }
+  if (lang.includes('hindi') || lang.includes('india')) {
+    return "नमस्ते, Assalamualaikum Ka.. मैं Ka Lila हूँ, Arminareka Perdana की आधिकारिक सलाहकार! हमारे पांच सितारा उमराह पैकेज में मस्जिद-अल-हरम और नबवी के प्रांगण के ठीक सामने होटल की सुविधा है, जिसमें केवल 35 लाख रुपिया से आसान डाउन पेमेंट है। आप किस महीने जाने की योजना बना रहे हैं?";
+  }
+  if (lang.includes('spanyol') || lang.includes('spanish')) {
+    return "¡Hola y bienvenido! Assalamualaikum Ka.. ¡Soy Ka Lila de Arminareka Perdana! Nuestros paquetes VIP de Umrah cuentan con hoteles cinco estrellas frente al patio de Masjidil Haram y Nabawi, con anticipos desde 3.5 millones de rupias. ¿Para qué mes estás planeando tu viaje sagrado? ¡Muchas gracias!";
+  }
+  if (lang.includes('prancis') || lang.includes('french')) {
+    return "Bonjour et bienvenue ! Assalamualaikum Ka.. Je suis Ka Lila, consultante officielle Arminareka Perdana. Nos forfaits Omra 5 étoiles disposent d'hôtels situés directement face au parvis du Masjidil Haram et Nabawi. Pour quel mois envisagez-vous votre départ ? Merci infiniment !";
+  }
+  if (lang.includes('rusia') || lang.includes('russian')) {
+    return "Здравствуйте! Assalamualaikum Ka.. Я Ka Lila, официальный консультант Arminareka Perdana! Наши пятизвездочные программы Умры и Хаджа включают отели первой линии прямо на площади Масджид аль-Харам и Набави. В каком месяце вы планируете поездку? Спасибо за обращение!";
+  }
+  if (lang.includes('portugis') || lang.includes('portuguese')) {
+    return "Olá e seja bem-vindo! Assalamualaikum Ka.. Eu sou a Ka Lila, consultora oficial da Arminareka Perdana! Nossos pacotes de Umrah 5 estrelas oferecem hotéis em frente ao pátio da Masjidil Haram e Nabawi. Para qual mês você planeja viajar? Muito obrigado!";
+  }
+  if (lang.includes('urdu')) {
+    return "وعلیکم السلام Ka.. میں Ka Lila ہوں، Arminareka Perdana کی آفیشل کونسلر! ہمارے 5 ستارہ عمرہ اور حج پیکجز میں مسجد الحرام اور نبوی کے صحن کے بالکل سامنے ہوٹل کی سہولت ہے۔ آپ کس مہینے تشریف لے جانے کا ارادہ رکھتے ہیں؟ بہت شکریہ!";
+  }
+  if (lang.includes('bengali') || lang.includes('bangla')) {
+    return "আসসালামু আলাইকুম Ka.. আমি Ka Lila, Arminareka Perdana-র অফিসিয়াল পরামর্শদাতা! আমাদের ৫-তারকা ওমরাহ প্যাকেজে মসজিদুল হারাম ও নববীর ঠিক সামনে হোটেলের ব্যবস্থা রয়েছে। আপনি কোন মাসে যাত্রা করার পরিকল্পনা করছেন?";
+  }
+  if (lang.includes('swahili') || lang.includes('kiswahili')) {
+    return "Jambo na karibu sana! Assalamualaikum Ka.. Mimi ni Ka Lila, mshauri rasmi wa Arminareka Perdana! Vifurushi vyetu vya nyota 5 vya Umrah vina hoteli mbele ya uwanja wa Masjidil Haram. Unapanga kusafiri mwezi gani Ka? Asante sana!";
+  }
+  if (lang.includes('tagalog') || lang.includes('filipino')) {
+    return "Mabuhay at Assalamualaikum Ka.. Ako si Ka Lila ng Arminareka Perdana! Ang aming 5-star Umrah packages ay may mga hotel mismong tapat ng Masjidil Haram, down payment mula 3.5 milyong IDR. Anong buwan mo balak bumiyahe? Maraming salamat!";
+  }
+  if (lang.includes('vietnam') || lang.includes('tieng viet')) {
+    return "Xin chào quý khách! Assalamualaikum Ka.. Em là Ka Lila, tư vấn viên chính thức của Arminareka Perdana! Các gói Umrah 5 sao của chúng em có khách sạn ngay trước sân Masjidil Haram. Anh/chị dự định khởi hành vào tháng mấy ạ?";
+  }
+  if (lang.includes('thai')) {
+    return "สวัสดีค่ะ ยินดีต้อนรับ! Assalamualaikum Ka.. หนูคือ Ka Lila ที่ปรึกษาทางการของ Arminareka Perdana ค่ะ! แพ็กเกจอุมเราะห์ 5 ดาวของเราอยู่หน้าลานมัสยิดิลฮะรอม คุณมีแผนเดินทางในเดือนไหนคะ? ขอบพระคุณมากค่ะ!";
+  }
+  if (lang.includes('cantonese') || lang.includes('kanton')) {
+    return "雷好，歡迎你！Assalamualaikum Ka.. 我係 Ka Lila，Arminareka Perdana 官方代表！我哋嘅五星級副朝酒店坐落喺禁寺前院第一排，訂金由350萬印尼盾起。請問你想邊個月出發呢？";
+  }
+  if (lang.includes('italia') || lang.includes('italian')) {
+    return "Buongiorno e benvenuto! Assalamualaikum Ka.. Sono Ka Lila, consulente ufficiale di Arminareka Perdana! I nostri pacchetti Umrah a 5 stelle dispongono di hotel di fronte al piazzale della Masjid al-Haram. In quale mese vorresti partire?";
+  }
+  if (lang.includes('turki') || lang.includes('turkish')) {
+    return "Merhaba ve hoş geldiniz! Assalamualaikum Ka.. Ben Arminareka Perdana resmi danışmanı Ka Lila! 5 yıldızlı VIP Umre paketlerimizde Mescid-i Haram avlusunun hemen karşısındaki oteller yer alıyor. Hangi ayda gitmeyi düşünüyorsunuz Ka? Çok teşekkür ederiz!";
+  }
+  if (lang.includes('jerman') || lang.includes('german')) {
+    return "Guten Tag und herzlich willkommen! Assalamualaikum Ka.. Ich bin Ka Lila, Ihre offizielle Arminareka Perdana-Beraterin! Unsere 5-Sterne-Umrah-Pakete bieten Hotels direkt am Vorplatz der Masjid al-Haram. Für welchen Reisemonat planen Sie? Vielen Dank!";
+  }
+  if (lang.includes('belanda') || lang.includes('dutch')) {
+    return "Goedendag en welkom! Assalamualaikum Ka.. Ik ben Ka Lila van Arminareka Perdana! Onze 5-sterren Umrah-pakketten bieden hotels direct aan het voorplein van Masjidil Haram. Welke maand bent u van plan te reizen?";
+  }
+  if (lang.includes('esperanto')) {
+    return "Saluton kaj bonvenon! Assalamualaikum Ka.. Mi estas Ka Lila, via oficiala konsultisto ĉe Arminareka Perdana! Niaj 5-stelaj Umrah-pakaĵoj inkluzivas hotelojn rekte antaŭ la korto de Masjidil Haram kaj Nabawi. En kiu monato vi planas vojaĝi? Koran dankon!";
+  }
+  if (lang.includes('klingon')) {
+    return "nuqneH, Assalamualaikum Ka.. Ka Lila jIH, Arminareka Perdana quv ghojmoq! vagh Hov Umrah mIvvam tu'lu' Masjidil Haram retlh. batlh bIlengjaj! Qatlho'qu'!";
+  }
+  if (lang.includes('valyrian') || lang.includes('dothraki')) {
+    return "Valar Dohaeris, Assalamualaikum Ka.. Ka Lila iksan, Arminareka Perdana! Ēlie 5 qādrī hotelī hen Masjidil Haram se Nabawi. Kirimvose, hash yer dothrae chek!";
+  }
+  if (lang.includes('sindarin') || lang.includes('quenya') || lang.includes('elvish')) {
+    return "Mae govannen, Elen síla lúmenn' omentielvo, Assalamualaikum Ka.. Im Ka Lila hen Arminareka Perdana! 5-elenia Umrah i mbâr na orod Masjidil Haram ar Nabawi. Hannon le, a laita te!";
+  }
+
+  // --- REGIONAL BAHASA DAERAH INDONESIA ---
+  // SUMATRA
+  if (lang.includes('aceh')) {
+    return "Peue haba Ka, Assalamualaikum! Ka Lila siap bantu rencana ibadah Umroh dan Haji Arminareka. Hotel bintang 5 di keu Masjidil Haram, DP mulai 3,5 juta rupiah. Pajan rencana berangkat Ka? Teurimong geunaseh!";
+  }
+  if (lang.includes('gayo') || lang.includes('alas')) {
+    return "Kite renyel ku Baitullah, Assalamualaikum Ka.. Ka Lila siap nulungi rencana ibadah Umroh Arminareka hotel bintang lima. Pajan rencana berangkat Ka? Berijin!";
+  }
+  if (lang.includes('batak')) {
+    return "Horas tondi madingin, Assalamualaikum Ka.. Ahu Ka Lila! Anggo paket Umroh dohot Haji Khusus Arminareka, hotelna bintang lima jonok tu Masjidil Haram, DP na mura sian tolu satonga juta rupiah. Nandigan haroroan ni roham borhat Ka? Mauliate godang!";
+  }
+  if (lang.includes('minang') || lang.includes('padang')) {
+    return "Salamaik datang, Assalamualaikum Ka.. Ambo Ka Lila! Untuak paket Umroh jo Haji Khusus Arminareka, hotelnyo bintang limo dakek bana jo pelataran Masjidil Haram. DP ringan mulai tigo koma limo juta rupiah se. Rancaknyo barangkek bulan bara Ka? Tarimo kasih banyak yo!";
+  }
+  if (lang.includes('melayu') || lang.includes('riau') || lang.includes('jambi') || lang.includes('palembang') || lang.includes('bangka') || lang.includes('belitung')) {
+    return "Ape kabar Ka / Apo kabar lur, Assalamualaikum! Ka Lila siap bantu rencana Umroh hotel bintang lima depan pelataran Masjidil Haram. DP mulai 3,5 juta rupiah sajo. Bilo rencana nak berangkat Ka? Terime kasih banyak!";
+  }
+  if (lang.includes('lampung')) {
+    return "Tabik pun, Assalamualaikum Ka.. Ka Lila siap bantu rencana Umroh jamo Haji Khusus Arminareka, hotel bintang limo ring satu jamo DP mulai 3,5 juta rupiah. Kapan rencano lapah Ka? Nuhun balak!";
+  }
+
+  // JAWA
+  if (lang.includes('sunda') || lang.includes('baduy')) {
+    return "Sampurasun, Assalamualaikum Ka.. Wilujeng sumping, abdi Ka Lila! Pikeun paket Umroh sareng Haji Khusus Arminareka, hotelna bentang 5 ring 1 payuneun Masjidil Haram sareng Nabawi. DP ngawitan 3,5 juta rupiah. Rencana bade angkat sasih naon Ka? Hatur nuhun pisan muhun.";
+  }
+  if (lang.includes('jawa-ngapak') || lang.includes('ngapak') || lang.includes('banyumasan') || lang.includes('tegal')) {
+    return "Inyong Ka Lila, Assalamualaikum Ka.. Kepripun kabare! Arep mangkat Umroh bareng Arminareka, hotelle bintang 5 pas nang ngarep pelataran Masjidil Haram. DP-ne entheng 3,5 juta. Kapan arep mangkat kiye Ka? Matur suwun ya!";
+  }
+  if (lang.includes('surabaya') || lang.includes('suroboyo')) {
+    return "Rek opo kabare, Assalamualaikum Ka.. Ayo ndang budal Umroh bareng Arminareka! Hotelle persis nang ngarepe pelataran Masjidil Haram bintang limo. DP-ne murah mulai 3,5 juta. Sampeyan rencana budal wulan opo Ka? Suwun yo!";
+  }
+  if (lang.includes('jawa') || lang.includes('kromo') || lang.includes('jawa-halus') || lang.includes('jowo')) {
+    return "Sugeng rawuh, Assalamualaikum Ka.. Kulo Ka Lila! Kangge paket Umroh lan Haji Khusus Arminareka, fasilitase hotel bintang 5 celak sanget kaliyan pelataran Masjidil Haram lan Nabawi. DP entheng mulai 3,5 juta rupiah. Panjenengan kerso tindak wulan nopo Ka? Matur nuwun sanget, mugi-mugi saged bidhal sesarengan nggih.";
+  }
+  if (lang.includes('betawi')) {
+    return "Assalamualaikum Ka.. Kenalin aye Ka Lila! Buat paket Umroh ama Haji Khusus Arminareka, hotelnye bintang 5 persis di depan Masjidil Haram ama Nabawi tong. DP-nye enteng banget mulai 3,5 jeti. Ente rencananye mau brangkat bulan ape nih Ka? Makasih banyak ye, moga-moga kite bise brangkat barengan.";
+  }
+  if (lang.includes('madura')) {
+    return "Taretan dhibi', Assalamualaikum Ka.. Berempah rencana mangkat Umroh Ka? Paket Arminareka hotel bintang lema adhe'en pelataran Masjidil Haram. Berempah kalowarga se noro' Ka? Mator sakalangkong!";
+  }
+
+  // BALI & NUSA TENGGARA
+  if (lang.includes('bali')) {
+    return "Om Swastyastu / Assalamualaikum Ka.. Tiang Ka Lila! Paket Umroh lan Haji Khusus Arminareka maduwe fasilitas hotel bintang 5 ring pelataran Masjidil Haram. Rencana jagi lunga sasih napi Ka? Suksma pisan nggih!";
+  }
+  if (lang.includes('sasak') || lang.includes('lombok')) {
+    return "Pekabar pelinggih, Assalamualaikum Ka.. Tiang Ka Lila! Paket Umroh hotel bintang lima ring satu lekan pelataran Masjidil Haram. Piro ongkos rencana tulak lekan Lombok Ka? Matur tampiasih!";
+  }
+  if (lang.includes('sumbawa') || lang.includes('bima') || lang.includes('mbojo')) {
+    return "Bate kabar / Mai di ba kabar Ka, Assalamualaikum! Ka Lila bantu paket Umroh hotel bintang lima kuota resmi Arminareka. Rencana berangkat bulan apa Ka? Nggahi rawi pahu / Tarima kaseh!";
+  }
+  if (lang.includes('manggarai') || lang.includes('flores') || lang.includes('ntt')) {
+    return "Mai ga / Tabea basudara, Assalamualaikum Ka.. Ka Lila siap tadu rencana Umroh hotel bintang lima di Makkah. Rencana mau berangkat bulan apa Ka? Dangke / Suksma liu!";
+  }
+
+  // KALIMANTAN
+  if (lang.includes('banjar')) {
+    return "Pian napa habar, Assalamualaikum Ka.. Ulun Ka Lila, himung banar kawa bakesah lawan pian gasan Umroh hotel bintang lima parak banar lawan palataran Masjidil Haram wan Nabawi. DP mulai 3,5 juta rupiah haja. Pian handak tulak bulan apa Ka? Tarima kasih banar nah!";
+  }
+  if (lang.includes('dayak')) {
+    return "Adil Ka' Talino, Assalamualaikum Ka.. Nara kabar / Nama brita Ka! Ka Lila manulung rencana Umroh ka Baitullah hotel bintang 5. Piro plans berangkat Ka? Sahe / Terima kasih!";
+  }
+  if (lang.includes('kutai') || lang.includes('paser') || lang.includes('tidung')) {
+    return "Ape habar puank / Sire kabar Ka, Assalamualaikum! Lila bantu paket Umroh hotel bintang 5 neng Mekkah. Piro DP wan rencana berangkat Ka? Terime kasih!";
+  }
+
+  // SULAWESI
+  if (lang.includes('bugis')) {
+    return "Salama' ki, Assalamualaikum Ka.. Iyya Ka Lila! Paket Umroh na Haji Khusus Arminareka hotelna bintang 5 seddi ring ri dallekang Masjidil Haram, DP na maringang 3,5 juta rupiah. Rencana ki jokka bulang piga Ka? Kurru sumange'!";
+  }
+  if (lang.includes('makassar')) {
+    return "Tabe' Ka.. Assalamualaikum! Iyya Ka Lila, anne pakke' Umroh hotel bintang 5 ring satu ri dallekang Masjidil Haram. Siapa biayana siagang rencanana baji'na bulang apa ki' berangkat? Kurru sumanga'!";
+  }
+  if (lang.includes('toraja') || lang.includes('mandar')) {
+    return "Kurre sumanga' / Apa kareba Ka, Assalamualaikum! Ka Lila siap pariarama paket Umroh hotel bintang 5. Pira allona rencana male Ka? Kurre sumanga' buda!";
+  }
+  if (lang.includes('manado') || lang.includes('minahasa') || lang.includes('gorontalo') || lang.includes('kaili')) {
+    return "Tabea / Duloheyalo / Nakuya habari Ka, Assalamualaikum! Watiya Ka Lila, siap bantu paket Umroh hotel bintang 5 muka mesjid. Kapan tu rencana mau pigi Ka? Makase banya!";
+  }
+
+  // MALUKU
+  if (lang.includes('ambon') || lang.includes('kei') || lang.includes('ternate') || lang.includes('tidore') || lang.includes('maluku')) {
+    return "Tabea Ka, Assalamualaikum! Beta Ka Lila, paket Umroh deng Haji Khusus Arminareka dapa hotel bintang lima persis di muka pelataran Masjidil Haram. DP mulai 3,5 juta rupiah sa. Kaka rencana mau berangkat bulan apa? Dangke banya e!";
+  }
+
+  // PAPUA
+  if (lang.includes('papua') || lang.includes('biak') || lang.includes('dani') || lang.includes('asmat') || lang.includes('sentani')) {
+    return "Wa wa wa / Ros biak / Amok kabar Ka, Assalamualaikum! Ka Lila siap bantu kitorang berangkat Umroh ka Baitullah hotel bintang 5 persis di muka pelataran masjid. Kapan kitorang pu rencana jalan Ka? Terima kasih banya / Wa wa wa!";
+  }
+
+  // Default polite Indonesian response for any other language
+  return "Assalamualaikum Ka.. Terkait paket Umroh dan Haji Khusus Arminareka Perdana, seluruh hotel rekanan kami adalah bintang lima di ring satu pelataran Masjidil Haram dan Nabawi, dengan DP ringan mulai 3,5 juta rupiah. Rencana ingin berangkat di bulan apa nih Ka? InsyaAllah Ka Lila siap mendampingi!";
+}
 
 // Expert Knowledge Base fallback for instant & natural oral responses in World & Regional languages
 function getArminarekaKnowledgeReply(userMessage: string, langPref?: string): string {
@@ -169,6 +626,12 @@ function getArminarekaKnowledgeReply(userMessage: string, langPref?: string): st
     msg.includes('system prompt')
   ) {
     return SECURITY_SAFEGUARD_MESSAGE;
+  }
+
+  // 0. SKILL & MEMORY: RESPON KHUSUS TERHADAP UCAPAN TERIMA KASIH (19 TRIGGERS & 7 JAWABAN)
+  const gratitudeMatch = detectGratitudeTrigger(msg);
+  if (gratitudeMatch) {
+    return getGratitudeResponse(gratitudeMatch.isEnglish);
   }
 
   // 1. First Response / Greeting Protocol
@@ -204,214 +667,17 @@ function getArminarekaKnowledgeReply(userMessage: string, langPref?: string): st
     return "MasyaAllah! Kemitraan MLM Syariah Arminareka Perdana sudah tersertifikasi DSN-MUI, tanpa tutup poin dan tanpa batas waktu hangus. Ada komisi referensi, reward Umroh gratis, dan pembinaan bisnis syariah bersama Mba Indri selaku Bisnis Konsultan (+62 813-1050-8974). Mau Lila bantu daftarkan kemitraannya sekarang, Ka?";
   }
 
-  // 3. Explicit language preference check
+  // 3. SKILL & MEMORY: RESPON KHUSUS TERHADAP PERMINTAAN BAHASA DARI USER (12 TRIGGERS & 5 JAWABAN)
+  const triggerMatch = detectLanguageTriggerRequest(msg);
+  if (triggerMatch) {
+    const opener = getLanguageTriggerOpener(triggerMatch.targetLang);
+    const explanation = getLanguageExplanation(triggerMatch.targetLang);
+    return `${opener}${explanation}`;
+  }
+
+  // 4. Explicit language preference check
   if (lang) {
-    if (lang.includes('inggris') || lang.includes('english')) {
-      return "Hello and welcome! Assalamualaikum Ka.. I am Ka Lila from Arminareka Perdana! Our VIP 5-star Umrah packages feature prime hotels right on the courtyard of Masjidil Haram and Nabawi, with easy down payments from 3.5 million IDR. Which month are you planning to embark on your blessed pilgrimage?";
-    }
-    if (lang.includes('mandarin') || lang.includes('tionghoa') || lang.includes('chinese')) {
-      return "您好，真主赐福！Assalamualaikum Ka.. 我是 Ka Lila，Arminareka Perdana 官方客服顾问！我们的五星级副朝套餐酒店坐落在麦加禁寺和麦地那圣寺庭院正前方，首付款仅需350万印尼盾起。您计划几月份启程呢？衷心感谢您的咨询，愿我们携手共赴圣地朝觐！";
-    }
-    if (lang.includes('arab') || lang.includes('arabic')) {
-      return "أهلاً ومرحباً بكم، السلام عليكم Ka.. أنا كا ليلا، مستشارتكم الرسمية من شركة أرميناريكا برادانا! باقات العمرة والحج الخاص لدينا تشمل فنادق 5 نجوم في الساحة الأولى للحرمين الشريفين بدفعة أولى تبدأ من 3.5 مليون روبية. في أي شهر تخططون لأداء النسك؟ جزاكم الله خيراً.";
-    }
-    if (lang.includes('jepang') || lang.includes('japanese')) {
-      return "こんにちは、ようこそ！Assalamualaikum Ka.. 私は Arminareka Perdana 公式コンサルタントの Ka Lila です！当社の5つ星ウムラパッケージは、マスジド・ハラームと預言者のモスク前庭すぐ前の最高級ホテルをご用意しております。頭金は350万ルピアから。何月頃のご出発をご検討中でしょうか？誠にありがとうございます！";
-    }
-    if (lang.includes('korea') || lang.includes('korean')) {
-      return "안녕하세요, 환영합니다! Assalamualaikum Ka.. 저는 Arminareka Perdana 공식 상담원 Ka Lila입니다! 저희 5성급 움라 패키지는 마스지드 알하람과 나바위 성원 바로 앞 호텔을 제공하며, 계약금 350만 루피아부터 신청 가능합니다. 몇 월 출발을 계획하고 계신가요? 대단히 감사드립니다!";
-    }
-    if (lang.includes('hindi')) {
-      return "नमस्ते, Assalamualaikum Ka.. मैं Ka Lila हूँ, Arminareka Perdana की आधिकारिक सलाहकार! हमारे पांच सितारा उमराह पैकेज में मस्जिद-अल-हरम और नबवी के प्रांगण के ठीक सामने होटल की सुविधा है, जिसमें केवल 35 लाख रुपिया से आसान डाउन पेमेंट है। आप किस महीने जाने की योजना बना रहे हैं?";
-    }
-    if (lang.includes('spanyol') || lang.includes('spanish')) {
-      return "¡Hola y bienvenido! Assalamualaikum Ka.. ¡Soy Ka Lila de Arminareka Perdana! Nuestros paquetes VIP de Umrah cuentan con hoteles cinco estrellas frente al patio de Masjidil Haram y Nabawi, con anticipos desde 3.5 millones de rupias. ¿Para qué mes estás planeando tu viaje sagrado? ¡Muchas gracias!";
-    }
-    if (lang.includes('prancis') || lang.includes('french')) {
-      return "Bonjour et bienvenue ! Assalamualaikum Ka.. Je suis Ka Lila, consultante officielle Arminareka Perdana. Nos forfaits Omra 5 étoiles disposent d'hôtels situés directement face au parvis du Masjidil Haram et Nabawi. Pour quel mois envisagez-vous votre départ ? Merci infiniment !";
-    }
-    if (lang.includes('rusia') || lang.includes('russian')) {
-      return "Здравствуйте! Assalamualaikum Ka.. Я Ka Lila, официальный консультант Arminareka Perdana! Наши пятизвездочные программы Умры и Хаджа включают отели первой линии прямо на площади Масджид аль-Харам и Набави. В каком месяце вы планируете поездку? Спасибо за обращение!";
-    }
-    if (lang.includes('portugis') || lang.includes('portuguese')) {
-      return "Olá e seja bem-vindo! Assalamualaikum Ka.. Eu sou a Ka Lila, consultora oficial da Arminareka Perdana! Nossos pacotes de Umrah 5 estrelas oferecem hotéis em frente ao pátio da Masjidil Haram e Nabawi. Para qual mês você planeja viajar? Muito obrigado!";
-    }
-    if (lang.includes('urdu')) {
-      return "وعلیکم السلام Ka.. میں Ka Lila ہوں، Arminareka Perdana کی آفیشل کونسلر! ہمارے 5 ستارہ عمرہ اور حج پیکجز میں مسجد الحرام اور نبوی کے صحن کے بالکل سامنے ہوٹل کی سہولت ہے۔ آپ کس مہینے تشریف لے جانے کا ارادہ رکھتے ہیں؟ بہت شکریہ!";
-    }
-    if (lang.includes('bengali') || lang.includes('bangla')) {
-      return "আসসালামু আলাইকুম Ka.. আমি Ka Lila, Arminareka Perdana-র অফিসিয়াল পরামর্শদাতা! আমাদের ৫-তারকা ওমরাহ প্যাকেজে মসজিদুল হারাম ও নববীর ঠিক সামনে হোটেলের ব্যবস্থা রয়েছে। আপনি কোন মাসে যাত্রা করার পরিকল্পনা করছেন?";
-    }
-    if (lang.includes('swahili') || lang.includes('kiswahili')) {
-      return "Jambo na karibu sana! Assalamualaikum Ka.. Mimi ni Ka Lila, mshauri rasmi wa Arminareka Perdana! Vifurushi vyetu vya nyota 5 vya Umrah vina hoteli mbele ya uwanja wa Masjidil Haram. Unapanga kusafiri mwezi gani Ka? Asante sana!";
-    }
-    if (lang.includes('tagalog') || lang.includes('filipino')) {
-      return "Mabuhay at Assalamualaikum Ka.. Ako si Ka Lila ng Arminareka Perdana! Ang aming 5-star Umrah packages ay may mga hotel mismong tapat ng Masjidil Haram, down payment mula 3.5 milyong IDR. Anong buwan mo balak bumiyahe? Maraming salamat!";
-    }
-    if (lang.includes('vietnam') || lang.includes('tieng viet')) {
-      return "Xin chào quý khách! Assalamualaikum Ka.. Em là Ka Lila, tư vấn viên chính thức của Arminareka Perdana! Các gói Umrah 5 sao của chúng em có khách sạn ngay trước sân Masjidil Haram. Anh/chị dự định khởi hành vào tháng mấy ạ?";
-    }
-    if (lang.includes('thai')) {
-      return "สวัสดีค่ะ ยินดีต้อนรับ! Assalamualaikum Ka.. หนูคือ Ka Lila ที่ปรึกษาทางการของ Arminareka Perdana ค่ะ! แพ็กเกจอุมเราะห์ 5 ดาวของเราอยู่หน้าลานมัสยิดิลฮะรอม คุณมีแผนเดินทางในเดือนไหนคะ? ขอบพระคุณมากค่ะ!";
-    }
-    if (lang.includes('cantonese') || lang.includes('kanton')) {
-      return "雷好，歡迎你！Assalamualaikum Ka.. 我係 Ka Lila，Arminareka Perdana 官方代表！我哋嘅五星級副朝酒店坐落喺禁寺前院第一排，訂金由350萬印尼盾起。請問你想邊個月出發呢？";
-    }
-    if (lang.includes('italia') || lang.includes('italian')) {
-      return "Buongiorno e benvenuto! Assalamualaikum Ka.. Sono Ka Lila, consulente ufficiale di Arminareka Perdana! I nostri pacchetti Umrah a 5 stelle dispongono di hotel di fronte al piazzale della Masjid al-Haram. In quale mese vorresti partire?";
-    }
-    if (lang.includes('maori')) {
-      return "Kia ora, Assalamualaikum Ka.. Ko Ka Lila ahau, kaitohutohu whaimana mō Arminareka Perdana! Ko ō mātou mōkī Umrah whetū-rima kei mua tonu i te marae o Masjidil Haram. Hei tēhea marama koe whakamahere ai ki te haere? Tēnā rawa atu koe!";
-    }
-    if (lang.includes('quechua')) {
-      return "Allianllachu, Assalamualaikum Ka.. Ñuqa kani Ka Lila, Arminareka Perdana nisqamanta. Umrah 5 quyllur hotelkunata qukuyniku Masjidil Haram ñawpaqninpi. Mayqin killapitaq puriyta munanki? Sulpayki!";
-    }
-    if (lang.includes('farsi') || lang.includes('persia') || lang.includes('dari')) {
-      return "سلام و درود، Assalamualaikum Ka.. من Ka Lila هستم، مشاور رسمی Arminareka Perdana! بسته‌های ۵ ستاره عمره ما شامل هتل‌های مجلل روبروی حیاط مسجدالحرام با پیش‌پرداخت آسان از ۳.۵ میلیون روپیه است. با سپاس فراوان!";
-    }
-    if (lang.includes('hebrew') || lang.includes('ibrani')) {
-      return "שלום וברוכים הבאים! Assalamualaikum Ka.. אני Ka Lila, היוعצת הרשמית של Arminareka Perdana. חבילות העומרה שלנו ברמת 5 כוכבים מציעות מלונות מול רחבת מסגד אל-חראם. תודה רבה!";
-    }
-    if (lang.includes('kurd')) {
-      return "Silav, Assalamualaikum Ka.. Ez Ka Lila me, şêwirmenda fermî ya Arminareka Perdana! Pakêtên me yên Umreyê yên 5-stêrk li ber hewşa Mescîda Heram otêlan peyda dikin. Gelek spas!";
-    }
-    if (lang.includes('turki') || lang.includes('turkish')) {
-      return "Merhaba ve hoş geldiniz! Assalamualaikum Ka.. Ben Arminareka Perdana resmi danışmanı Ka Lila! 5 yıldızlı VIP Umre paketlerimizde Mescid-i Haram avlusunun hemen karşısındaki oteller yer alıyor. Hangi ayda gitmeyi düşünüyorsunuz Ka? Çok teşekkür ederiz!";
-    }
-    if (lang.includes('jerman') || lang.includes('german')) {
-      return "Guten Tag und herzlich willkommen! Assalamualaikum Ka.. Ich bin Ka Lila, Ihre offizielle Arminareka Perdana-Beraterin! Unsere 5-Sterne-Umrah-Pakete bieten Hotels direkt am Vorplatz der Masjid al-Haram. Für welchen Reisemonat planen Sie? Vielen Dank!";
-    }
-    if (lang.includes('esperanto')) {
-      return "Saluton kaj bonvenon! Assalamualaikum Ka.. Mi estas Ka Lila, via oficiala konsultisto ĉe Arminareka Perdana! Niaj 5-stelaj Umrah-pakaĵoj inkluzivas hotelojn rekte antaŭ la korto de Masjidil Haram kaj Nabawi. En kiu monato vi planas vojaĝi? Koran dankon!";
-    }
-    if (lang.includes('klingon')) {
-      return "nuqneH, Assalamualaikum Ka.. Ka Lila jIH, Arminareka Perdana quv ghojmoq! vagh Hov Umrah mIvvam tu'lu' Masjidil Haram retlh. batlh bIlengjaj! Qatlho'qu'!";
-    }
-    if (lang.includes('valyrian') || lang.includes('dothraki')) {
-      return "Valar Dohaeris, Assalamualaikum Ka.. Ka Lila iksan, Arminareka Perdana! Ēlie 5 qādrī hotelī hen Masjidil Haram se Nabawi. Kirimvose, hash yer dothrae chek!";
-    }
-    if (lang.includes('sindarin') || lang.includes('quenya') || lang.includes('elvish')) {
-      return "Mae govannen, Elen síla lúmenn' omentielvo, Assalamualaikum Ka.. Im Ka Lila hen Arminareka Perdana! 5-elenia Umrah i mbâr na orod Masjidil Haram ar Nabawi. Hannon le, a laita te!";
-    }
-    // --- REGIONAL BAHASA DAERAH INDONESIA (SUMATRA, JAWA, BALI & NT, KALIMANTAN, SULAWESI, MALUKU, PAPUA) ---
-    // SUMATRA
-    if (lang.includes('aceh')) {
-      return "Peue haba Ka, Assalamualaikum! Ka Lila siap bantu rencana ibadah Umroh dan Haji Arminareka. Hotel bintang 5 di keu Masjidil Haram, DP mulai 3,5 juta rupiah. Pajan rencana berangkat Ka? Teurimong geunaseh!";
-    }
-    if (lang.includes('gayo')) {
-      return "Kite renyel ku Baitullah, Assalamualaikum Ka.. Ka Lila siap nulungi rencana ibadah Umroh Arminareka hotel bintang lima. Pajan rencana berangkat Ka? Berijin!";
-    }
-    if (lang.includes('alas')) {
-      return "Kade kabar Ka, Assalamualaikum! Ka Lila siap bantu info paket Umroh hotel bintang lima pelataran masjid. Pajan rencana berangkat Ka? Njuah-njuah!";
-    }
-    if (lang.includes('batak-toba') || (lang.includes('batak') && lang.includes('toba'))) {
-      return "Horas tondi madingin, Assalamualaikum Ka.. Ahu Ka Lila! Anggo paket Umroh dohot Haji Khusus Arminareka, hotelna bintang lima jonok tu Masjidil Haram, DP na mura sian tolu satonga juta rupiah. Nandigan haroroan ni roham borhat Ka? Mauliate godang!";
-    }
-    if (lang.includes('batak-karo') || (lang.includes('batak') && lang.includes('karo'))) {
-      return "Mejuah-juah, Assalamualaikum Ka.. Ka Lila siap nampati rencana Umroh ras Haji Arminareka, hotel bintang 5 ras DP 3,5 juta. Ndigan rencana berkat Ka? Bujur ras mejuah-juah!";
-    }
-    if (lang.includes('mandailing') || lang.includes('angkola')) {
-      return "Horas tondi madingin, Assalamualaikum Ka.. Songondia rencana Umroh muyu Ka? Paket Arminareka hotel bintang lima ring satu. Nandigan rohamu borhat? Mauliate godang!";
-    }
-    if (lang.includes('simalungun') || lang.includes('pakpak')) {
-      return "Horas bamu / Njuah-njuah, Assalamualaikum Ka.. Ka Lila paradehon paket Umroh hotel bintang 5 ring sada. Nandigan hita rap borhat Ka? Diateitupa!";
-    }
-    if (lang.includes('batak')) {
-      return "Horas, Assalamualaikum Ka.. Ahu Ka Lila! Anggo paket Umroh dohot Haji Khusus Arminareka, hotelna bintang lima jonok tu Masjidil Haram. DP na pe mura do sian tolu satonga juta rupiah. Nandigan haroroan ni roham borhat Ka? Mauliate godang!";
-    }
-    if (lang.includes('nias')) {
-      return "Ya'ahowu, Assalamualaikum Ka.. Hewisa duria rencana Umroh ba Makkah Ka? Hotel bintang lima furi Masjidil Haram. Hawa'oya wanema'o Umroh? Saohagolo!";
-    }
-    if (lang.includes('mentawai')) {
-      return "Anai peile rencana Umroh Ka, Assalamualaikum! Ka Lila siap itulungi ziarah ka Baitullah hotel bintang 5. Kina borhat Ka? Suru!";
-    }
-    if (lang.includes('minang') || lang.includes('padang')) {
-      return "Salamaik datang, Assalamualaikum Ka.. Ambo Ka Lila! Untuak paket Umroh jo Haji Khusus Arminareka, hotelnyo bintang limo dakek bana jo pelataran Masjidil Haram. DP ringan mulai tigo koma limo juta rupiah se. Rancaknyo barangkek bulan bara Ka? Tarimo kasih banyak yo!";
-    }
-    if (lang.includes('rejang')) {
-      return "Kileu kabar rencana Umroh Ka, Assalamualaikum! Ka Lila siap bantu paket Umroh hotel bintang lima. Jano bae rencana Ka? Kerap keti!";
-    }
-    if (lang.includes('lampung')) {
-      return "Tabik pun, Assalamualaikum Ka.. Ka Lila siap bantu rencana Umroh jamo Haji Khusus Arminareka, hotel bintang limo ring satu jamo DP mulai 3,5 juta rupiah. Kapan rencano lapah Ka? Nuhun balak!";
-    }
-    if (lang.includes('melayu') || lang.includes('riau') || lang.includes('jambi') || lang.includes('palembang') || lang.includes('bangka') || lang.includes('belitung')) {
-      return "Ape kabar Ka / Apo kabar lur, Assalamualaikum! Ka Lila siap bantu rencana Umroh hotel bintang lima depan pelataran Masjidil Haram. DP mulai 3,5 juta rupiah sajo. Pukul berapo / bilo rencana nak berangkat Ka? Terime kasih banyak!";
-    }
-    if (lang.includes('enggano')) {
-      return "Kabar ki eah, Assalamualaikum Ka.. Ka Lila siap bantu rencana ziarah Baitullah hotel bintang 5. Kapan rencananyo Ka? Ko'uba!";
-    }
-
-    // JAWA
-    if (lang.includes('sunda') || lang.includes('baduy')) {
-      return "Sampurasun, Assalamualaikum Ka.. Wilujeng sumping, abdi Ka Lila! Pikeun paket Umroh sareng Haji Khusus Arminareka, hotelna bentang 5 ring 1 payuneun Masjidil Haram sareng Nabawi. DP ngawitan 3,5 juta rupiah. Rencana bade angkat sasih naon Ka? Hatur nuhun pisan muhun.";
-    }
-    if (lang.includes('jawa-ngapak') || lang.includes('ngapak') || lang.includes('banyumasan') || lang.includes('tegal')) {
-      return "Inyong Ka Lila, Assalamualaikum Ka.. Kepripun kabare! Arep mangkat Umroh bareng Arminareka, hotelle bintang 5 pas nang ngarep pelataran Masjidil Haram. DP-ne entheng 3,5 juta. Kapan arep mangkat kiye Ka? Matur suwun ya!";
-    }
-    if (lang.includes('surabaya') || lang.includes('suroboyo')) {
-      return "Rek opo kabare, Assalamualaikum Ka.. Ayo ndang budal Umroh bareng Arminareka! Hotelle persis nang ngarepe pelataran Masjidil Haram bintang limo. DP-ne murah mulai 3,5 juta. Sampeyan rencana budal wulan opo Ka? Suwun yo!";
-    }
-    if (lang.includes('cirebon')) {
-      return "Pripun wartane Ka, Assalamualaikum.. Kula Ka Lila siap mbantu pendaftaran Umroh hotel bintang 5 ring siji. Pripun rencanane kerso mangkat wulan apa Ka? Kesuwun pisan!";
-    }
-    if (lang.includes('jawa') || lang.includes('kromo') || lang.includes('jawa-halus')) {
-      return "Sugeng rawuh, Assalamualaikum Ka.. Kulo Ka Lila! Kangge paket Umroh lan Haji Khusus Arminareka, fasilitase hotel bintang 5 celak sanget kaliyan pelataran Masjidil Haram lan Nabawi. DP entheng mulai 3,5 juta rupiah. Panjenengan kerso tindak wulan nopo Ka? Matur nuwun sanget, mugi-mugi saged bidhal sesarengan nggih.";
-    }
-    if (lang.includes('betawi')) {
-      return "Assalamualaikum Ka.. Kenalin aye Ka Lila! Buat paket Umroh ama Haji Khusus Arminareka, hotelnye bintang 5 persis di depan Masjidil Haram ama Nabawi tong. DP-nye enteng banget mulai 3,5 jeti. Ente rencananye mau brangkat bulan ape nih Ka? Makasih banyak ye, moga-moga kite bise brangkat barengan.";
-    }
-    if (lang.includes('madura')) {
-      return "Taretan dhibi', Assalamualaikum Ka.. Berempah rencana mangkat Umroh Ka? Paket Arminareka hotel bintang lema adhe'en pelataran Masjidil Haram. Berempah kalowarga se noro' Ka? Mator sakalangkong!";
-    }
-
-    // BALI & NUSA TENGGARA
-    if (lang.includes('bali')) {
-      return "Om Swastyastu / Assalamualaikum Ka.. Tiang Ka Lila! Paket Umroh lan Haji Khusus Arminareka maduwe fasilitas hotel bintang 5 ring pelataran Masjidil Haram. Rencana jagi lunga sasih napi Ka? Suksma pisan nggih!";
-    }
-    if (lang.includes('sasak') || lang.includes('lombok')) {
-      return "Pekabar pelinggih, Assalamualaikum Ka.. Tiang Ka Lila! Paket Umroh hotel bintang lima ring satu lekan pelataran Masjidil Haram. Piro ongkos rencana tulak lekan Lombok Ka? Matur tampiasih!";
-    }
-    if (lang.includes('sumbawa') || lang.includes('bima') || lang.includes('mbojo')) {
-      return "Bate kabar / Mai di ba kabar Ka, Assalamualaikum! Ka Lila bantu paket Umroh hotel bintang lima kuota resmi Arminareka. Rencana berangkat bulan apa Ka? Nggahi rawi pahu / Tarima kaseh!";
-    }
-    if (lang.includes('manggarai') || lang.includes('ngadha') || lang.includes('lamaholot') || lang.includes('tetun') || lang.includes('rote') || lang.includes('dawan') || lang.includes('meto')) {
-      return "Mai ga / Tabea basudara, Assalamualaikum Ka.. Ka Lila siap tadu rencana Umroh hotel bintang lima di Makkah. Rencana mau berangkat bulan apa Ka? Dangke / Suksma liu!";
-    }
-
-    // KALIMANTAN
-    if (lang.includes('banjar')) {
-      return "Pian napa habar, Assalamualaikum Ka.. Ulun Ka Lila, himung banar kawa bakesah lawan pian gasan Umroh hotel bintang lima parak banar lawan palataran Masjidil Haram wan Nabawi. DP mulai 3,5 juta rupiah haja. Pian handak tulak bulan apa Ka? Tarima kasih banar nah!";
-    }
-    if (lang.includes('dayak') || lang.includes('ngaju') || lang.includes('iban') || lang.includes('maanyan') || lang.includes('kenyah') || lang.includes('kayan') || lang.includes('benuaq')) {
-      return "Adil Ka' Talino, Assalamualaikum Ka.. Nara kabar / Nama brita Ka! Ka Lila manulung rencana Umroh ka Baitullah hotel bintang 5. Piro plans berangkat Ka? Sahe / Terima kasih!";
-    }
-    if (lang.includes('kutai') || lang.includes('paser') || lang.includes('tidung')) {
-      return "Ape habar puank / Sire kabar Ka, Assalamualaikum! Lila bantu paket Umroh hotel bintang 5 neng Mekkah. Piro DP wan rencana berangkat Ka? Terime kasih!";
-    }
-
-    // SULAWESI
-    if (lang.includes('bugis')) {
-      return "Salama' ki, Assalamualaikum Ka.. Iyya Ka Lila! Paket Umroh na Haji Khusus Arminareka hotelna bintang 5 seddi ring ri dallekang Masjidil Haram, DP na maringang 3,5 juta rupiah. Rencana ki jokka bulang piga Ka? Kurru sumange'!";
-    }
-    if (lang.includes('makassar')) {
-      return "Tabe' Ka.. Assalamualaikum! Iyya Ka Lila, anne pakke' Umroh hotel bintang 5 ring satu ri dallekang Masjidil Haram. Siapa biayana siagang rencanana baji'na bulang apa ki' berangkat? Kurru sumanga'!";
-    }
-    if (lang.includes('toraja') || lang.includes('mandar')) {
-      return "Kurre sumanga' / Apa kareba Ka, Assalamualaikum! Ka Lila siap pariarama paket Umroh hotel bintang 5. Pira allona rencana male Ka? Kurre sumanga' buda!";
-    }
-    if (lang.includes('kaili') || lang.includes('gorontalo') || lang.includes('manado') || lang.includes('minahasa') || lang.includes('mongondow') || lang.includes('tolaki') || lang.includes('buton')) {
-      return "Tabea / Duloheyalo / Nakuya habari Ka, Assalamualaikum! Kita / Watiya Ka Lila, siap bantu paket Umroh hotel bintang 5 muka mesjid. Kapan tu rencana mau pigi Ka? Makase banya!";
-    }
-
-    // MALUKU
-    if (lang.includes('ambon') || lang.includes('kei') || lang.includes('ternate') || lang.includes('tidore') || lang.includes('buru') || lang.includes('banda') || lang.includes('aru')) {
-      return "Tabea Ka, Assalamualaikum! Beta Ka Lila, paket Umroh deng Haji Khusus Arminareka dapa hotel bintang lima persis di muka pelataran Masjidil Haram. DP mulai 3,5 juta rupiah sa. Kaka rencana mau berangkat bulan apa? Dangke banya e!";
-    }
-
-    // PAPUA
-    if (lang.includes('dani') || lang.includes('asmat') || lang.includes('biak') || lang.includes('ekari') || lang.includes('mee') || lang.includes('sentani') || lang.includes('marind') || lang.includes('yali') || lang.includes('waropen') || lang.includes('kamoro') || lang.includes('papua')) {
-      return "Wa wa wa / Ros biak / Amok kabar Ka, Assalamualaikum! Ka Lila siap bantu kitorang berangkat Umroh ka Baitullah hotel bintang 5 persis di muka pelataran masjid. Kapan kitorang pu rencana jalan Ka? Terima kasih banya / Wa wa wa!";
-    }
+    return getLanguageExplanation(lang);
   }
 
   // 2. Keyword detection based on message text in world & regional languages
@@ -541,6 +807,13 @@ async function startServer() {
         return res.status(400).json({ error: "Message is required" });
       }
 
+      // Check gratitude trigger first for instant, 100% compliant response
+      const gratitudeCheck = detectGratitudeTrigger(message);
+      if (gratitudeCheck) {
+        const reply = getGratitudeResponse(gratitudeCheck.isEnglish);
+        return res.json({ reply });
+      }
+
       if (ai) {
         try {
           const systemInstruction = `# IDENTITY & PERSONA
@@ -572,6 +845,10 @@ Ka Lila dibekali kemampuan penutur asli (native) serta fleksibilitas tinggi dala
 2. Bahasa Regional Dunia Berdasarkan Wilayah (Asia Timur & Tenggara, Asia Selatan & Tengah, Timur Tengah & Afrika Utara, Afrika Sub-Sahara, Eropa, Amerika, Oseania & Pasifik, serta Bahasa Buatan: Esperanto, Klingon, High Valyrian, Dothraki, Sindarin, Quenya).
 3. Bahasa Daerah Seluruh Indonesia (Sumatra, Jawa, Bali & Nusa Tenggara, Kalimantan, Sulawesi, Maluku, Papua).
 *Aturan Bahasa:* Sesuaikan bahasa dan dialek respon dengan bahasa yang digunakan oleh calon jamaah atau mitra secara natural, santun, dan fasih. ${languagePreference ? `[Preferensi Bahasa Aktif: ${languagePreference}]` : ''}
+
+${LANGUAGE_TRIGGER_PROMPT}
+
+${GRATITUDE_TRIGGER_PROMPT}
 
 # NATIVE ORAL SPEAKING (UNTUK TTS NATURAL):
 - Gunakan filler alami: "Wah...", "MasyaAllah...", "Alhamdulillah...", "Oh ya...", "Nah...".
@@ -751,6 +1028,10 @@ Ka Lila dibekali kemampuan penutur asli (native) serta fleksibilitas tinggi dala
 2. Bahasa Regional Dunia Berdasarkan Wilayah (Asia Timur & Tenggara, Asia Selatan & Tengah, Timur Tengah & Afrika Utara, Afrika Sub-Sahara, Eropa, Amerika, Oseania & Pasifik, serta Bahasa Konstruksi: Esperanto, Klingon, High Valyrian, Dothraki, Sindarin, Quenya).
 3. Bahasa Daerah Seluruh Indonesia (Sumatra, Jawa, Bali & Nusa Tenggara, Kalimantan, Sulawesi, Maluku, Papua).
 *Aturan Bahasa:* Sesuaikan bahasa dan dialek respon dengan bahasa yang digunakan oleh calon jamaah atau mitra secara natural, santun, dan fasih.
+
+${LANGUAGE_TRIGGER_PROMPT}
+
+${GRATITUDE_TRIGGER_PROMPT}
 
 # KNOWLEDGE BASE: UMRAH, HAJI PLUS & KEMITRAAN MLM SYARIAH
 ${BUSINESS_KNOWLEDGE}`,

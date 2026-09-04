@@ -9,38 +9,10 @@ import {
   Mic,
   MicOff,
   Volume2,
-  VolumeX,
   PhoneCall,
   PhoneOff,
-  Globe,
-  Languages,
-  Check,
-  Search,
-  Sparkles,
-  ChevronDown,
 } from 'lucide-react';
-import {
-  REGIONAL_LANGUAGES,
-  REGION_GROUPS,
-  RegionalLanguage,
-} from '../data/regionalLanguages';
-import {
-  WORLD_LANGUAGES_DATA,
-  WorldLanguage,
-  LanguageCategory,
-} from '../data/worldLanguages';
-
-// Unified language interface for modal selection
-export interface SelectableLanguage {
-  id: string;
-  name: string;
-  category: string;
-  subCategory?: string;
-  speakersOrRegion: string;
-  sampleGreeting: string;
-  quickPrompt?: string;
-  isWorldLanguage?: boolean;
-}
+import { SupportedLanguageCode, NAV_LANGUAGES, TRANSLATIONS } from '../data/translations';
 
 interface Message {
   role: 'user' | 'model';
@@ -49,13 +21,21 @@ interface Message {
 
 type WidgetTab = 'voice' | 'chat';
 
-export default function ChatbotWidget() {
+interface ChatbotWidgetProps {
+  currentLanguage?: SupportedLanguageCode;
+}
+
+export default function ChatbotWidget({ currentLanguage = 'id' }: ChatbotWidgetProps) {
+  const activeLangOption =
+    NAV_LANGUAGES.find((lang) => lang.code === currentLanguage) || NAV_LANGUAGES[0];
+  const t = TRANSLATIONS[currentLanguage] || TRANSLATIONS.id;
+
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<WidgetTab>('voice');
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      text: "Assalamualaikum Ka.. Aku Ka Lila. Asisten AI Cerdas resmi Arminareka. Ada yang bisa Lila bantu untuk rencana ibadah suci Kakak hari ini?",
+      text: t.chatbot.greeting,
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -67,37 +47,6 @@ export default function ChatbotWidget() {
   const [callDuration, setCallDuration] = useState(0);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [micPermissionDenied, setMicPermissionDenied] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<SelectableLanguage | null>(null);
-  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
-  const [searchLangQuery, setSearchLangQuery] = useState('');
-  const [activeRegionFilter, setActiveRegionFilter] = useState<string>('Semua');
-
-  // Combined selectable languages (World & Regional Nusantara)
-  const allSelectableLanguages = React.useMemo<SelectableLanguage[]>(() => {
-    const worldList: SelectableLanguage[] = WORLD_LANGUAGES_DATA.map((w) => ({
-      id: `world-${w.id}`,
-      name: w.name,
-      category: w.category,
-      subCategory: w.regionOrFamily,
-      speakersOrRegion: w.speakersInfo || w.regionOrFamily,
-      sampleGreeting: w.sampleGreeting,
-      quickPrompt: w.sampleReply,
-      isWorldLanguage: true,
-    }));
-
-    const regionalList: SelectableLanguage[] = REGIONAL_LANGUAGES.map((r) => ({
-      id: `reg-${r.id}`,
-      name: r.name,
-      category: 'Nusantara',
-      subCategory: r.region,
-      speakersOrRegion: `${r.region}${r.subregion ? ` (${r.subregion})` : ''}`,
-      sampleGreeting: r.sampleGreeting,
-      quickPrompt: r.quickPrompt,
-      isWorldLanguage: false,
-    }));
-
-    return [...worldList, ...regionalList];
-  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -132,6 +81,16 @@ export default function ChatbotWidget() {
       window.removeEventListener('open-ka-lila-voice', handleOpenVoice);
     };
   }, []);
+
+  // Update initial greeting when language changes if no conversation has started yet
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length <= 1) {
+        return [{ role: 'model', text: t.chatbot.greeting }];
+      }
+      return prev;
+    });
+  }, [currentLanguage]);
 
   const quickQuestions = [
     'Berapa biaya Paket Umroh 2026?',
@@ -301,14 +260,22 @@ export default function ChatbotWidget() {
         ? availableVoices
         : window.speechSynthesis.getVoices() || [];
 
-    // Prioritized search for natural, neural female Indonesian voices
+    // Prioritized search for natural, neural female voices matching current language
+    const langPrefix = (activeLangOption.speechCode || 'id').split('-')[0].toLowerCase();
     let bestVoice = currentVoices.find(
       (v) =>
-        v.lang.startsWith('id') &&
+        v.lang.toLowerCase().startsWith(langPrefix) &&
         (v.name.toLowerCase().includes('gadis') ||
           v.name.toLowerCase().includes('natural') ||
-          v.name.toLowerCase().includes('online'))
+          v.name.toLowerCase().includes('online') ||
+          v.name.toLowerCase().includes('female'))
     );
+
+    if (!bestVoice) {
+      bestVoice = currentVoices.find((v) =>
+        v.lang.toLowerCase().startsWith(langPrefix)
+      );
+    }
 
     if (!bestVoice) {
       bestVoice = currentVoices.find(
@@ -323,13 +290,7 @@ export default function ChatbotWidget() {
     }
 
     if (!bestVoice) {
-      bestVoice = currentVoices.find(
-        (v) => v.name === 'Google Bahasa Indonesia'
-      );
-    }
-
-    if (!bestVoice) {
-      bestVoice = currentVoices.find((v) => v.lang.startsWith('id'));
+      bestVoice = currentVoices.find((v) => v.lang.startsWith('id')) || currentVoices[0];
     }
 
     let currentIndex = 0;
@@ -347,7 +308,7 @@ export default function ChatbotWidget() {
 
       const chunk = sentenceChunks[currentIndex];
       const utterance = new SpeechSynthesisUtterance(chunk.text);
-      utterance.lang = 'id-ID';
+      utterance.lang = activeLangOption.speechCode || 'id-ID';
 
       if (bestVoice) {
         utterance.voice = bestVoice;
@@ -489,15 +450,6 @@ export default function ChatbotWidget() {
         isVoiceConnectingRef.current = false;
         setIsVoiceCallActive(true);
         setActiveTab('voice');
-
-        // Send active regional language if selected
-        if (selectedLanguage) {
-          try {
-            ws.send(JSON.stringify({ type: 'set_language', language: selectedLanguage.name }));
-          } catch (e) {
-            console.warn("Live language setup notice:", e);
-          }
-        }
         
         // Setup Mic Processor with echo suppression
         const source = inputCtx.createMediaStreamSource(stream);
@@ -671,7 +623,7 @@ export default function ChatbotWidget() {
 
     try {
       const recognition = new SpeechRecognitionClass();
-      recognition.lang = 'id-ID';
+      recognition.lang = activeLangOption.speechCode || 'id-ID';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
@@ -723,42 +675,6 @@ export default function ChatbotWidget() {
     }
   };
 
-  // Switch or Reset Language (World or Regional)
-  const handleSelectLanguage = (lang: SelectableLanguage | null) => {
-    setSelectedLanguage(lang);
-    setIsLanguageModalOpen(false);
-
-    if (lang) {
-      const greetingMsg = lang.sampleGreeting;
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'model',
-          text: `[🌐 ${lang.name}]: ${greetingMsg}`,
-        },
-      ]);
-
-      // If live call is connected, notify Live API
-      if (liveWsRef.current && liveWsRef.current.readyState === WebSocket.OPEN) {
-        try {
-          liveWsRef.current.send(JSON.stringify({ type: 'set_language', language: lang.name }));
-        } catch (e) {
-          console.warn("WS set_language notice:", e);
-        }
-      }
-
-      // Speak greeting with Ursa voice
-      speakText(greetingMsg);
-    } else {
-      const resetMsg = "Assalamualaikum Ka.. Lila siap melayani Kakak dalam Bahasa Indonesia, bahasa daerah Nusantara, dan seluruh bahasa di dunia!";
-      setMessages((prev) => [
-        ...prev,
-        { role: 'model', text: resetMsg },
-      ]);
-      speakText(resetMsg);
-    }
-  };
-
   // Send message to backend
   const sendSpecificMessage = async (text: string) => {
     if (isLoading) return;
@@ -776,7 +692,7 @@ export default function ChatbotWidget() {
         body: JSON.stringify({
           message: userText,
           history: newMessages.slice(0, -1),
-          languagePreference: selectedLanguage ? selectedLanguage.name : undefined,
+          languagePreference: activeLangOption.label,
         }),
       });
 
@@ -881,30 +797,8 @@ export default function ChatbotWidget() {
     await sendSpecificMessage(text);
   };
 
-  const filteredLanguages = allSelectableLanguages.filter((l) => {
-    const matchesFilter =
-      activeRegionFilter === 'Semua' ||
-      l.category === activeRegionFilter ||
-      l.subCategory === activeRegionFilter ||
-      (activeRegionFilter === 'Global' && l.isWorldLanguage) ||
-      (activeRegionFilter === 'Nusantara' && !l.isWorldLanguage);
-
-    const matchesSearch =
-      searchLangQuery.trim() === '' ||
-      l.name.toLowerCase().includes(searchLangQuery.toLowerCase()) ||
-      l.category.toLowerCase().includes(searchLangQuery.toLowerCase()) ||
-      (l.subCategory && l.subCategory.toLowerCase().includes(searchLangQuery.toLowerCase())) ||
-      (l.speakersOrRegion && l.speakersOrRegion.toLowerCase().includes(searchLangQuery.toLowerCase()));
-
-    return matchesFilter && matchesSearch;
-  });
-
   return (
-    <motion.div 
-      drag 
-      dragMomentum={false}
-      className="fixed bottom-6 right-6 z-50 select-none"
-    >
+    <div className="fixed bottom-6 right-6 z-50 select-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -942,57 +836,18 @@ export default function ChatbotWidget() {
                   </div>
                 </div>
 
-                {/* Right Controls: Regional Language & Close */}
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setIsLanguageModalOpen(true)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border cursor-pointer ${
-                      selectedLanguage
-                        ? 'bg-amber-500 text-slate-950 border-amber-300 font-bold shadow-sm'
-                        : 'bg-white/10 text-slate-200 hover:text-white hover:bg-white/15 border-white/10'
-                    }`}
-                    title="Pilih Bahasa Daerah se-Indonesia"
-                  >
-                    <Globe size={13} className={selectedLanguage ? 'text-slate-950' : 'text-amber-400'} />
-                    <span className="truncate max-w-[95px]">
-                      {selectedLanguage ? selectedLanguage.name.replace('Bahasa ', '') : 'Bahasa'}
-                    </span>
-                    <ChevronDown size={11} className="opacity-70" />
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      stopAudioPlayback();
-                      setIsOpen(false);
-                    }}
-                    className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer"
-                    aria-label="Tutup"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
+                {/* Right Controls: Close Button */}
+                <button
+                  onClick={() => {
+                    stopAudioPlayback();
+                    setIsOpen(false);
+                  }}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  aria-label="Tutup"
+                >
+                  <X size={16} />
+                </button>
               </div>
-
-              {/* Active Language Notification Banner */}
-              {selectedLanguage && (
-                <div className="flex items-center justify-between text-[11px] px-2.5 py-1 mb-2 bg-amber-500/15 border border-amber-400/30 rounded-xl text-amber-200">
-                  <span className="flex items-center gap-1.5 font-medium truncate">
-                    <Sparkles size={12} className="text-amber-400 shrink-0" />
-                    <span className="truncate">
-                      Bahasa: <strong className="text-amber-300">{selectedLanguage.name}</strong> ({selectedLanguage.speakersOrRegion})
-                    </span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectLanguage(null)}
-                    className="text-slate-300 hover:text-white text-[10px] ml-2 px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 cursor-pointer shrink-0"
-                    title="Kembali ke Bahasa Indonesia Standar"
-                  >
-                    Reset
-                  </button>
-                </div>
-              )}
 
               {/* 2 Main Mode Navigation Tabs: Voice Call & Chat Bot */}
               <div className="grid grid-cols-2 gap-1.5 bg-black/50 p-1 rounded-xl border border-white/10 text-xs font-medium">
@@ -1206,56 +1061,6 @@ export default function ChatbotWidget() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Quick Indonesian Regional Language Switcher Bar */}
-                <div className="px-3 py-1.5 bg-slate-950/90 border-t border-white/5 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] shrink-0">
-                  <span className="font-semibold text-amber-400 shrink-0 flex items-center gap-1">
-                    🇮🇩 Daerah:
-                  </span>
-                  {[
-                    { label: 'Jawa', id: 'reg-jawa-halus' },
-                    { label: 'Sunda', id: 'reg-sunda' },
-                    { label: 'Minang', id: 'reg-minangkabau' },
-                    { label: 'Batak', id: 'reg-batak-toba' },
-                    { label: 'Bugis', id: 'reg-bugis' },
-                    { label: 'Banjar', id: 'reg-banjar' },
-                    { label: 'Ambon', id: 'reg-melayu-ambon' },
-                    { label: 'Papua', id: 'reg-biak' },
-                    { label: 'Bali', id: 'reg-bali' },
-                    { label: 'Sasak', id: 'reg-sasak' },
-                    { label: 'Dayak', id: 'reg-dayak-ngaju' },
-                    { label: 'Aceh', id: 'reg-aceh' },
-                  ].map((quick) => {
-                    const isCur = selectedLanguage?.id === quick.id;
-                    return (
-                      <button
-                        key={quick.id}
-                        type="button"
-                        onClick={() => {
-                          const target = allSelectableLanguages.find((l) => l.id === quick.id);
-                          if (target) handleSelectLanguage(isCur ? null : target);
-                        }}
-                        className={`px-2 py-0.5 rounded-md whitespace-nowrap transition-all border cursor-pointer shrink-0 text-[10px] ${
-                          isCur
-                            ? 'bg-amber-500 text-slate-950 font-bold border-amber-300'
-                            : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
-                        }`}
-                      >
-                        {quick.label}
-                      </button>
-                    );
-                  })}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveRegionFilter('Nusantara');
-                      setIsLanguageModalOpen(true);
-                    }}
-                    className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/40 hover:bg-amber-500/30 whitespace-nowrap cursor-pointer shrink-0 font-medium text-[10px]"
-                  >
-                    55+ Bahasa Daerah Lainnya →
-                  </button>
-                </div>
-
                 {/* Quick Suggestion Pills */}
                 <div className="px-3 py-2 bg-slate-950/80 border-t border-white/10 flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] shrink-0">
                   {quickQuestions.map((q, idx) => (
@@ -1311,198 +1116,46 @@ export default function ChatbotWidget() {
                 </form>
               </>
             )}
-
-            {/* GLOBAL & REGIONAL LANGUAGE SELECTION DRAWER */}
-            <AnimatePresence>
-              {isLanguageModalOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 30 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-2xl flex flex-col p-4 text-white overflow-hidden"
-                >
-                  {/* Drawer Header */}
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-400/30">
-                        <Globe size={18} />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-sm text-white flex items-center gap-1.5">
-                          Kemampuan Bahasa Dunia &amp; Daerah
-                        </h3>
-                        <p className="text-[11px] text-amber-300/80">
-                          Ka Lila menguasai 100+ bahasa global, fiksi, dan Nusantara
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsLanguageModalOpen(false)}
-                      className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <X size={15} />
-                    </button>
-                  </div>
-
-                  {/* Search Bar */}
-                  <div className="relative my-3 shrink-0">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={searchLangQuery}
-                      onChange={(e) => setSearchLangQuery(e.target.value)}
-                      placeholder="Cari bahasa (English, Mandarin, Sunda, Klingon, Jawa...)"
-                      className="w-full bg-black/50 border border-white/15 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-400"
-                    />
-                    {searchLangQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setSearchLangQuery('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Filter Categories */}
-                  <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-2 shrink-0 text-[11px]">
-                    {[
-                      { id: 'Semua', label: 'Semua' },
-                      { id: 'Nusantara', label: '🇮🇩 Nusantara (Semua Daerah)' },
-                      { id: 'Sumatra', label: 'Sumatra' },
-                      { id: 'Jawa', label: 'Jawa' },
-                      { id: 'Bali & Nusa Tenggara', label: 'Bali & Nusa Tenggara' },
-                      { id: 'Kalimantan', label: 'Kalimantan' },
-                      { id: 'Sulawesi', label: 'Sulawesi' },
-                      { id: 'Maluku', label: 'Maluku' },
-                      { id: 'Papua', label: 'Papua' },
-                      { id: 'Global', label: '🌍 Global (Dunia)' },
-                      { id: 'Global Terbanyak', label: 'Penutur Terbanyak' },
-                      { id: 'Asia Timur & Tenggara', label: 'Asia Timur & Tenggara' },
-                      { id: 'Asia Selatan & Tengah', label: 'Asia Selatan & Tengah' },
-                      { id: 'Timur Tengah & Afrika Utara', label: 'Timur Tengah & Afrika' },
-                      { id: 'Afrika Sub-Sahara', label: 'Afrika Sub-Sahara' },
-                      { id: 'Eropa', label: 'Eropa' },
-                      { id: 'Amerika', label: 'Amerika' },
-                      { id: 'Oseania & Pasifik', label: 'Oseania & Pasifik' },
-                      { id: 'Bahasa Buatan / Fiksi', label: 'Bahasa Buatan / Fiksi' },
-                    ].map((cat) => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => setActiveRegionFilter(cat.id)}
-                        className={`px-2.5 py-1 rounded-full whitespace-nowrap transition-colors border cursor-pointer ${
-                          activeRegionFilter === cat.id
-                            ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-sm'
-                            : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
-                        }`}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Current Active Language Indicator & Reset Option */}
-                  <div className="mb-2 p-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs shrink-0">
-                    <div className="flex items-center gap-1.5 text-[11px] truncate">
-                      <span className="text-slate-400">Status:</span>
-                      <span className="font-semibold text-amber-300 truncate">
-                        {selectedLanguage ? `${selectedLanguage.name} (${selectedLanguage.speakersOrRegion})` : 'Bahasa Indonesia (Standar)'}
-                      </span>
-                    </div>
-                    {selectedLanguage && (
-                      <button
-                        type="button"
-                        onClick={() => handleSelectLanguage(null)}
-                        className="text-[10px] px-2 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 cursor-pointer shrink-0 font-medium"
-                      >
-                        Reset ke Standar
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Languages List */}
-                  <div className="flex-1 overflow-y-auto pr-1 space-y-1.5 no-scrollbar">
-                    {filteredLanguages.length === 0 ? (
-                      <div className="text-center py-8 text-xs text-slate-400">
-                        Bahasa tidak ditemukan. Coba ketik nama negara, pulau, atau nama bahasa lain.
-                      </div>
-                    ) : (
-                      filteredLanguages.map((lang) => {
-                        const isSelected = selectedLanguage?.id === lang.id;
-                        return (
-                          <div
-                            key={lang.id}
-                            className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 ${
-                              isSelected
-                                ? 'bg-amber-500/20 border-amber-400/60 shadow-sm'
-                                : 'bg-white/5 hover:bg-white/10 border-white/10'
-                            }`}
-                            onClick={() => handleSelectLanguage(isSelected ? null : lang)}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-xs text-white">
-                                  {lang.name}
-                                </span>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-medium truncate max-w-[140px]">
-                                  {lang.speakersOrRegion}
-                                </span>
-                              </div>
-                              {isSelected ? (
-                                <span className="flex items-center gap-1 text-[11px] text-amber-400 font-bold">
-                                  <Check size={13} /> Aktif
-                                </span>
-                              ) : (
-                                <span className="text-[10px] text-slate-400 hover:text-amber-300">
-                                  Pilih bahasa →
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[11px] text-slate-300 italic line-clamp-1">
-                              &ldquo;{lang.sampleGreeting}&rdquo;
-                            </p>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Floating Launcher Button */}
-      <div className="relative flex items-center gap-2 group">
+      {/* Floating WhatsApp Launcher Button (Draggable) */}
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragElastic={0.05}
+        className="relative flex items-center gap-2 group cursor-grab active:cursor-grabbing inline-block"
+      >
         <div className="absolute right-16 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
           <div className="bg-slate-950 text-amber-300 border border-amber-400/40 text-[11px] font-semibold px-3 py-1.5 rounded-2xl shadow-2xl backdrop-blur-md whitespace-nowrap flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            🎙️ Voice Call • 💬 Chatbot
+            💬 Chat WA
           </div>
         </div>
 
-        <motion.button
+        <motion.a
+          href="https://wa.me/6281310508974"
+          target="_blank"
+          rel="noopener noreferrer"
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
-          onClick={() => setIsOpen(!isOpen)}
-          className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-slate-950/30 backdrop-blur-2xl text-amber-400 font-bold rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-amber-400/30 cursor-pointer shrink-0 overflow-hidden"
-          aria-label="Buka Ka Lila AI Assistant"
+          onClick={(e) => {
+            // Prevent navigation if user was dragging
+          }}
+          className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-slate-950/30 backdrop-blur-2xl text-emerald-400 font-bold rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-emerald-400/30 cursor-pointer shrink-0 overflow-hidden pointer-events-auto"
+          aria-label="WhatsApp CS Arminareka"
         >
           {/* Subtle inner glow */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/10 to-transparent opacity-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/10 to-transparent opacity-50"></div>
           
           <span className="absolute -top-1 -right-1 flex h-4 w-4 z-10">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400/30 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500/40 backdrop-blur-sm border-2 border-slate-950/50 shadow-[0_0_10px_rgba(16,185,129,0.3)]"></span>
           </span>
-          <Bot size={28} className="text-amber-400" />
-        </motion.button>
-      </div>
-    </motion.div>
+          <MessageCircle size={28} className="text-emerald-400" />
+        </motion.a>
+      </motion.div>
+    </div>
   );
 }
