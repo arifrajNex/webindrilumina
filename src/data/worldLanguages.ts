@@ -456,16 +456,6 @@ export const WORLD_LANGUAGES_DATA: WorldLanguage[] = [
     sampleReply: 'Silav, Assalamualaikum Ka.. Ez Ka Lila me, şêwirmenda fermî ya Arminareka Perdana! Pakêtên me yên Umreyê yên 5-stêrk li ber hewşa Mescîda Heram otêlan peyda dikin. Hûn di kîjan mehê de difikirin biçin? Gelek spas!',
   },
   {
-    id: 'hebrew',
-    name: 'עברית (Ibrani / Hebrew - Israel)',
-    nativeName: 'עברית',
-    category: 'Timur Tengah & Afrika Utara',
-    regionOrFamily: 'Israel & Timur Tengah / Semitic',
-    speakersInfo: '10+ Juta Penutur',
-    sampleGreeting: 'שלום Ka Lila! אפשר לקבל פרטים על חבילות העומרה של Arminareka?',
-    sampleReply: 'שלום וברוכים הבאים! Assalamualaikum Ka.. אני Ka Lila, היועצת הרשמית של Arminareka Perdana. חבילות העומרה שלנו ברמת 5 כוכבים מציעות מלונות מול רחבת מסגד אל-חראם והמסגד הנבואי. לאיזה חודש אתם מתכננים את הנסיעה? תודה רבה!',
-  },
-  {
     id: 'berber',
     name: 'Tamaziɣt (Berber / Amazigh - Afrika Utara)',
     nativeName: 'ⵜⴰⵎⴰⵣⵉⵖⵜ',

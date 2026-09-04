@@ -253,7 +253,7 @@ export const PACKAGES_DATA: TravelPackage[] = [
     slotsLeft: 7,
     inclusions: [
       'Penerbangan Pesawat EgyptAir PP',
-      'Visa Mesir, Israel/Aqsa, dan Jordan Resmi',
+      'Visa Mesir, Al-Aqsa / Palestina, dan Jordan Resmi',
       'Akomodasi Hotel Bintang 5',
       'Makan 3x Sehari Full Board Halal',
       'Bus Pariwisata Eksekutif Ber-AC',

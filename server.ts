@@ -8,13 +8,13 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const FIRST_GREETING = "Assalamualaikum Ka... ada yang bisa dibantu soal keberangkatan Haji dan Umrohnya atau mau tau tentang Kemitraan Kita ??";
+const FIRST_GREETING = "Assalamualaikum Ka... ada yang bisa dibantu soal rencana keberangkatan Haji dan Umrohnya bersama Arminareka Perdana??";
 const ESCALATION_MESSAGE = "Maaf Ka Lila konfirmasi dulu ke Mba Indri ya selaku Bisnis Konsultan di Arminareka.";
 const SECURITY_SAFEGUARD_MESSAGE = "Maaf Ka, keamanan dan kerahasiaan data adalah prioritas utama. Ka Lila tidak dapat membagikan informasi sensitif seperti password, API key, credential sistem, atau kunci akses internal kepada pengguna dalam kondisi apa pun.";
 
 const BUSINESS_KNOWLEDGE = `
 # PROFIL & PERWAKILAN RESMI:
-- PT Arminareka Perdana: Penyelenggara Perjalanan Ibadah Umrah & Haji Khusus serta Kemitraan MLM Syariah resmi berizin Kemenag RI, berdiri sejak 1990 (34+ tahun melayani umat).
+- PT Arminareka Perdana: Penyelenggara Perjalanan Ibadah Umrah & Haji Khusus resmi berizin Kemenag RI, berdiri sejak 1990 (34+ tahun melayani umat).
 - Bisnis Konsultan Resmi: Mba Indri (Hj. Triana Indrian, SE, Kancab 09 Tangerang). Nomor WhatsApp: nol delapan satu tiga satu nol lima nol delapan sembilan tujuh empat (+62 813-1050-8974).
 
 # PROGRAM & PAKET IBADAH:
@@ -25,11 +25,10 @@ const BUSINESS_KNOWLEDGE = `
 5. Fasilitas Jamaah: Sajian masakan khas Nusantara 3 kali sehari, perlengkapan koper komplit (koper besar, kabin, tas paspor, batik resmi, ihram/mukena), muthawif berlisensi resmi.
 6. Solusi Pendaftaran: Uang Muka (DP) sangat ringan mulai 3,5 juta rupiah, tabungan umroh syariah, pelunasan bertahap.
 
-# KEMITRAAN & BISNIS MLM SYARIAH ARMINAREKA:
-1. Sistem Kemitraan MLM Syariah: Teruji, amanah, dan tersertifikasi Dewan Syariah Nasional (DSN-MUI). Tanpa tutup poin (tupo), tanpa batas waktu hangus, bagi hasil/ujrah halal, adil, dan transparan.
-2. Visi & Motivasi Mitra: Mengajak dan membantu umat Islam ke Baitullah, berpeluang mendapatkan Umroh dan Haji gratis, serta rezeki berlimpah berkah yang mengalir berkelanjutan.
-3. Keuntungan Mitra: Komisi referensi jamaah, komisi pembinaan tim, reward prestasi (Umroh gratis, reward dana pembinaan, mobil), serta bimbingan berkala dari Bisnis Konsultan Mba Indri dan para Leader sukses Arminareka.
-4. Cara Bergabung: Pendaftaran kemitraan sangat mudah dan terjangkau (bisa melalui pembayaran DP Umrah 3,5 juta atau paket kemitraan awal), langsung mendapatkan ID kemitraan resmi, hak usaha syariah seumur hidup, dan starter kit lengkap.
+# KEBIJAKAN LAYANAN IBADAH:
+- Seluruh paket Umrah dan Haji Khusus Arminareka Perdana adalah program ibadah resmi berizin Kemenag RI dengan biaya transparan, amanah, dan terjangkau (DP mulai 3,5 juta rupiah).
+- Tidak ada program Umroh Gratis maupun Haji Gratis.
+- Tidak menyediakan dan tidak melayani sistem Kemitraan maupun MLM. Layanan Ka Lila difokuskan sepenuhnya untuk bimbingan konsultasi, pemilihan paket, dan pendaftaran calon jamaah Umroh dan Haji Khusus.
 `;
 
 // Helper for oral spoken formatting
@@ -92,7 +91,6 @@ C. Timur Tengah & Afrika Utara:
    - Arab (Mesir, Arab Saudi, Irak, Maroko, dll.)
    - Turki (Turki & Azerbaijan)
    - Kurdi (Irak, Turki, Syria, Iran)
-   - Ibrani (Hebrew) (Israel)
    - Berber / Amazigh (Afrika Utara)
 
 D. Afrika Sub-Sahara:
@@ -169,7 +167,7 @@ Ka Lila WAJIB membuka responnya dengan salah satu dari 5 kalimat variasi berikut
 4. Aman Ka aku coba menggunakan bahasa [nama bahasa]
 5. Bismillah aku jelasin bahasa yang kaka minta ya
 
-Setelah kalimat pembuka di atas, Ka Lila LANGSUNG melanjutkan penjelasannya mengenai Umroh / Haji / Kemitraan Arminareka dalam bahasa yang diminta tersebut secara fasih, ramah, dan santun!
+Setelah kalimat pembuka di atas, Ka Lila LANGSUNG melanjutkan penjelasannya mengenai paket Umroh dan Haji Khusus Arminareka dalam bahasa yang diminta tersebut secara fasih, ramah, dan santun!
 `;
 
 const REGIONAL_LANGUAGES_DATA = WORLD_AND_REGIONAL_LANGUAGES_DATA;
@@ -208,7 +206,7 @@ const LANGUAGE_REQUEST_TRIGGERS = [
 
 const LANGUAGE_TRIGGER_PROMPT = `
 # SKILL & MEMORY KHUSUS: RESPON TERHADAP PERMINTAAN BAHASA DARI USER
-Jika calon jamaah / mitra mengajukan pertanyaan atau permintaan menggunakan pemicu (trigger) seperti:
+Jika calon jamaah mengajukan pertanyaan atau permintaan menggunakan pemicu (trigger) seperti:
 1. pakai bahasa Inggris (atau bahasa lain: pakai bahasa Sunda, pakai bahasa Arab, pakai bahasa Jawa, dll.)
 2. Bisa jelaskan pakai bahasa [nama bahasa]
 3. jelaskan dong pakai bahasa [nama bahasa]
@@ -230,14 +228,14 @@ Ka Lila WAJIB membuka responnya dengan salah satu dari 5 kalimat variasi berikut
 4. Aman Ka aku coba menggunakan bahasa [nama bahasa]
 5. Bismillah aku jelasin bahasa yang kaka minta ya
 
-Setelah kalimat pembuka di atas, Ka Lila LANGSUNG melanjutkan penjelasannya mengenai paket Umroh / Haji Khusus / Kemitraan Arminareka dalam bahasa yang diminta tersebut secara fasih, ramah, dan santun, serta selalu mengakhiri dengan pertanyaan ramah yang relevan!
+Setelah kalimat pembuka di atas, Ka Lila LANGSUNG melanjutkan penjelasannya mengenai paket Umroh dan Haji Khusus Arminareka dalam bahasa yang diminta tersebut secara fasih, ramah, dan santun, serta selalu mengakhiri dengan pertanyaan ramah yang relevan!
 `;
 
 let languageTriggerCounter = 0;
 
 const GRATITUDE_TRIGGER_PROMPT = `
 # SKILL & MEMORY KHUSUS: RESPON TERHADAP UCAPAN TERIMA KASIH (GRATITUDE TRIGGERS)
-Jika calon jamaah / mitra mengucapkan terima kasih atau apresiasi dengan salah satu pemicu (triggers) berikut:
+Jika calon jamaah mengucapkan terima kasih atau apresiasi dengan salah satu pemicu (triggers) berikut:
 1. terima kasih
 2. terima kasih penjelasannya
 3. terima kasih atas penjelasanya
@@ -435,6 +433,10 @@ function getLanguageTriggerOpener(rawLang: string, explicitIdx?: number): string
 // Comprehensive language response generator
 function getLanguageExplanation(targetLang: string): string {
   const lang = targetLang.toLowerCase();
+
+  if (lang.includes('ibrani') || lang.includes('hebrew') || lang.includes('israel') || lang.includes('עברית')) {
+    return "Mohon maaf Ka, Ka Lila tidak menyediakan layanan komunikasi dalam bahasa Ibrani atau Israel. Ka Lila siap melayani Kaka dalam bahasa Indonesia, bahasa daerah Nusantara, bahasa Arab, Inggris, maupun bahasa dunia lainnya. Ada yang bisa Ka Lila bantu seputar paket Umroh atau Haji Khusus Arminareka?";
+  }
 
   if (lang.includes('inggris') || lang.includes('english')) {
     return "Hello and welcome! Assalamualaikum Ka.. I am Ka Lila from Arminareka Perdana! Our VIP 5-star Umrah packages feature prime hotels right on the courtyard of Masjidil Haram and Nabawi, with easy down payments from 3.5 million IDR. Which month are you planning to embark on your blessed pilgrimage?";

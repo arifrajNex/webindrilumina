@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import heroVideo from '../assets/hero-video.mp4';
+import nightHeroVideo from '../assets/night-hero-video.mp4';
 import {
   Music2,
   Facebook,
@@ -24,6 +25,10 @@ import {
   Mail,
   Volume2,
   VolumeX,
+  Moon,
+  Sun,
+  CalendarDays,
+  CheckCircle2,
 } from 'lucide-react';
 
 import StatsSection from './components/StatsSection';
@@ -46,6 +51,16 @@ export default function App() {
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [isNightMode, setIsNightMode] = useState(false);
+  const [dailyModeOpen, setDailyModeOpen] = useState(false);
+  const [dailyTasks, setDailyTasks] = useState([
+    { id: 1, title: 'Sholat Tahajud & Witir (Qiyamul Lail)', completed: false, category: 'Ibadah Malam' },
+    { id: 2, title: 'Dzikir Pagi & Petang', completed: false, category: 'Dzikir' },
+    { id: 3, title: 'Tilawah Al-Quran (Minimal 1 Juz)', completed: false, category: 'Al-Quran' },
+    { id: 4, title: 'Sholat Rawatib & Dhuha', completed: false, category: 'Sholat Sunnah' },
+    { id: 5, title: 'Doa Niat Kuat ke Baitullah & Istighfar', completed: false, category: 'Doa Umroh' },
+    { id: 6, title: 'Manasik & Belajar Doa Thawaf / Sa\'i', completed: false, category: 'Manasik' },
+  ]);
 
   const toggleMusic = () => {
     const videoEl = document.getElementById('bg-hero-video') as HTMLVideoElement;
@@ -136,7 +151,8 @@ export default function App() {
       {/* Background Hero Video */}
       <video
         id="bg-hero-video"
-        src={heroVideo}
+        key={isNightMode ? 'night' : 'day'}
+        src={isNightMode ? nightHeroVideo : heroVideo}
         autoPlay
         loop
         muted
@@ -145,7 +161,7 @@ export default function App() {
       />
 
       {/* Atmospheric Overlays for Contrast and Depth */}
-      <div className="fixed inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/90 pointer-events-none z-[1]" />
+      <div className={`fixed inset-0 ${isNightMode ? 'bg-gradient-to-b from-black/80 via-black/60 to-black/95' : 'bg-gradient-to-b from-slate-900/50 via-amber-950/20 to-slate-950/80'} pointer-events-none z-[1] transition-all duration-500`} />
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black/70 pointer-events-none z-[1]" />
 
       {/* Main Container */}
@@ -187,13 +203,30 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Action Button & Music Toggle & Mobile Toggle */}
-          <div className="flex items-center gap-3">
+          {/* Action Button & Music Toggle & Night/Daily Toggles & Mobile Toggle */}
+          <div className="flex items-center gap-2.5">
+            {/* Single Night/Day Toggle Button (Tombol Lingkaran) */}
+            <button
+              onClick={() => setIsNightMode(!isNightMode)}
+              aria-label="Toggle Night/Day Mode"
+              title={isNightMode ? "Ubah ke Mode Siang" : "Ubah ke Mode Malam"}
+              className="liquid-glass bg-slate-950/40 border border-amber-500/30 hover:border-amber-400 text-amber-300 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(251,191,36,0.1)] transition-all duration-300 hover:scale-105 cursor-pointer"
+            >
+              {isNightMode ? (
+                <Sun size={16} className="text-amber-400" />
+              ) : (
+                <Moon size={16} className="text-indigo-300" />
+              )}
+            </button>
+
+
+
             {/* Transparent Music Toggle Icon Button */}
             <button
               onClick={toggleMusic}
               aria-label="Toggle Background Music"
-              className="liquid-glass bg-slate-950/40 border border-amber-500/30 hover:border-amber-400 text-amber-300 p-2.5 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(251,191,36,0.1)] transition-all duration-300 hover:scale-105 group relative"
+              title={isPlayingMusic ? "Matikan Musik" : "Putar Musik"}
+              className="liquid-glass bg-slate-950/40 border border-amber-500/30 hover:border-amber-400 text-amber-300 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(251,191,36,0.1)] transition-all duration-300 hover:scale-105 cursor-pointer group relative"
             >
               <div className="relative flex items-center justify-center w-4 h-4">
                 {isPlayingMusic ? (
@@ -487,6 +520,91 @@ export default function App() {
           </div>
         </motion.footer>
       </div>
+
+      {/* Daily Mode Modal */}
+      {dailyModeOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto"
+          onClick={() => setDailyModeOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-xl my-8 rounded-3xl bg-[#121212] border border-white/20 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setDailyModeOpen(false)}
+              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/70 text-white hover:bg-black flex items-center justify-center border border-white/20 transition-all cursor-pointer shadow-lg"
+            >
+              <X size={18} />
+            </button>
+
+            {/* Header */}
+            <div className="relative p-6 sm:p-8 bg-gradient-to-b from-amber-500/20 via-black/40 to-transparent border-b border-white/10">
+              <span className="inline-block px-3 py-1 rounded-full text-[11px] font-bold bg-amber-400 text-black mb-2 uppercase tracking-wider">
+                Mode Harian • Rencana & Amalan
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                Checklist Amalan & Agenda Harian Umroh
+              </h3>
+              <p className="text-xs sm:text-sm text-amber-300 font-medium">
+                Persiapan spiritual dan fisik menuju Baitullah bersama Arminareka Perdana.
+              </p>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-4 text-white/90 text-xs sm:text-sm">
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs leading-relaxed">
+                💡 Tips Harian: Jaga niat tulus karena Allah SWT, perbanyak shalawat, istighfar, serta kuatkan tabungan dan persiapan dokumen keberangkatan Umroh.
+              </div>
+
+              <div className="space-y-3">
+                {dailyTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    onClick={() => {
+                      setDailyTasks(dailyTasks.map(t => t.id === task.id ? { ...t, completed: !t.completed } : t));
+                    }}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      task.completed 
+                        ? 'bg-emerald-950/30 border-emerald-500/40 text-white line-through opacity-75' 
+                        : 'bg-white/5 border-white/10 hover:border-amber-400/50 text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${
+                        task.completed ? 'bg-emerald-500 border-emerald-400 text-black' : 'border-white/30 bg-transparent'
+                      }`}>
+                        {task.completed && <CheckCircle2 size={14} className="text-black" />}
+                      </div>
+                      <div>
+                        <span className="block font-semibold text-sm">{task.title}</span>
+                        <span className="text-[10px] text-amber-300/80 uppercase tracking-wider">{task.category}</span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-white/10 text-white/80">
+                      {task.completed ? 'Selesai' : 'Belum'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                <span className="text-xs text-white/60">
+                  Progres: {dailyTasks.filter(t => t.completed).length} dari {dailyTasks.length} Amalan Selesai
+                </span>
+                <button
+                  onClick={() => setDailyTasks(dailyTasks.map(t => ({ ...t, completed: false })))}
+                  className="text-xs text-amber-400 hover:underline cursor-pointer"
+                >
+                  Reset Harian
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Detail / Itinerary Inspection Modal */}
       <PackageModal
