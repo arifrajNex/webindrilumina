@@ -161,8 +161,8 @@ export default function App() {
       />
 
       {/* Atmospheric Overlays for Contrast and Depth */}
-      <div className={`fixed inset-0 ${isNightMode ? 'bg-gradient-to-b from-black/80 via-black/60 to-black/95' : 'bg-gradient-to-b from-slate-900/50 via-amber-950/20 to-slate-950/80'} pointer-events-none z-[1] transition-all duration-500`} />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black/70 pointer-events-none z-[1]" />
+      <div className={`fixed inset-0 ${isNightMode ? 'bg-gradient-to-b from-black/35 via-black/20 to-black/50' : 'bg-gradient-to-b from-slate-900/50 via-amber-950/20 to-slate-950/80'} pointer-events-none z-[1] transition-all duration-500`} />
+      <div className={`fixed inset-0 ${isNightMode ? 'bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-black/30' : 'bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black/70'} pointer-events-none z-[1] transition-all duration-500`} />
 
       {/* Main Container */}
       <div
