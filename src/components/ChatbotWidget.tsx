@@ -23,12 +23,31 @@ type WidgetTab = 'voice' | 'chat';
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<WidgetTab>('voice');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'model',
-      text: "Assalamualaikum Ka.. Aku Ka Lila. Asisten AI Cerdas resmi Arminareka. Ada yang bisa Lila bantu untuk rencana ibadah suci Kakak hari ini?",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = localStorage.getItem('arminareka_ka_lila_memory');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return [
+      {
+        role: 'model',
+        text: "Assalamualaikum, Bagaimana kabarnya? Aku Ka Lila, Asisten Virtual untuk membantu rencana keberangkatan umrah atau haji Kakak. Gimana, ada yang mau ditanyakan atau bisa Ka Lila bantu? Silakan jangan sungkan!",
+      },
+    ];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('arminareka_ka_lila_memory', JSON.stringify(messages));
+    } catch {
+      // ignore
+    }
+  }, [messages]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -430,12 +449,18 @@ export default function ChatbotWidget() {
         setIsVoiceCallActive(true);
         setActiveTab('voice');
         
-        // Setup Mic Processor with echo suppression
+        // Setup Mic Processor with echo suppression and AGC Boost
         const source = inputCtx.createMediaStreamSource(stream);
+        
+        // Add AGC / Volume Boost Node to catch distant voices
+        const gainNode = inputCtx.createGain();
+        gainNode.gain.value = 3.0; // Boost input sensitivity by 3x
+        source.connect(gainNode);
+
         const processor = inputCtx.createScriptProcessor(4096, 1, 1);
         micProcessorRef.current = processor;
         
-        source.connect(processor);
+        gainNode.connect(processor);
         processor.connect(inputCtx.destination);
 
         processor.onaudioprocess = (e) => {
@@ -484,7 +509,7 @@ export default function ChatbotWidget() {
 
       // Greet user with Ka Lila's voice so they still get the natural voice experience immediately!
       const greeting =
-        "Assalamualaikum Ka.. Aku Ka Lila! Senang sekali bisa menyapa Kakak. Silakan pilih atau ketik pertanyaan di bawah, Ka Lila siap bantu jelaskan paket Umroh dan Haji Arminareka.";
+        "Assalamualaikum, Bagaimana kabarnya? Aku Ka Lila, Asisten Virtual untuk membantu rencana keberangkatan umrah atau haji Kakak. Gimana, ada yang mau ditanyakan atau bisa Ka Lila bantu? Silakan jangan sungkan!";
       speakText(greeting);
     }
   };
@@ -722,6 +747,14 @@ export default function ChatbotWidget() {
         console.warn("AudioContext resume error:", e);
       }
     }
+
+    const greetings = [
+      "Assalamualaikum, Bagaimana kabarnya, Aku Ka Lila, ada yang bisa aku bantu soal rencana keberangkatan umrah atau haji kaka ?",
+      "Assalamualaikum, Kenalin Aku Ka Lila, Aku Asisten Virtual untuk membantu rencana keberangkatan umrah atau haji kaka. Gimana ada yang bisa Ka Lila bantu ?",
+      "Assalamualaikum, dengan Ka Lila disini, Aku Asisten Virtual untuk membantu rencana keberangkatan umrah atau haji kaka. Gimana ada yang mau ditanyakan silahkan jangan sungkan ?"
+    ];
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    speakText(greeting);
 
     startLiveVoiceCall();
   };
