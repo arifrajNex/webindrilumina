@@ -5,8 +5,8 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import heroVideo from '../assets/hero-video.mp4';
-import nightHeroVideo from '../assets/night-hero-video.mp4';
+const heroVideo = "https://res.cloudinary.com/jhzwpoxx/video/upload/v1788722822/hero_vidaudio.mp4";
+const nightHeroVideo = "https://res.cloudinary.com/jhzwpoxx/video/upload/v1788722846/webindri_night_music.mp4";
 import {
   Music2,
   Facebook,
@@ -149,10 +149,13 @@ export default function App() {
       className="relative w-full min-h-screen overflow-x-hidden flex flex-col items-center font-sans selection:bg-amber-400/30 selection:text-amber-200"
     >
       {/* Background Hero Video */}
-      <video
+      <motion.video
         id="bg-hero-video"
         key={isNightMode ? 'night' : 'day'}
         src={isNightMode ? nightHeroVideo : heroVideo}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
         autoPlay
         loop
         muted
