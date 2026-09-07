@@ -207,6 +207,37 @@ export default function PosterSection() {
   const [showSectionTextEditModal, setShowSectionTextEditModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
+  // Cloudinary Configuration State
+  const [cloudinaryCloudName, setCloudinaryCloudName] = useState<string>(() => {
+    try {
+      return localStorage.getItem('arminareka_cloudinary_cloud_name') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  const [cloudinaryUploadPreset, setCloudinaryUploadPreset] = useState<string>(() => {
+    try {
+      return localStorage.getItem('arminareka_cloudinary_upload_preset') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [showCloudinarySettings, setShowCloudinarySettings] = useState(false);
+
+  const handleSaveCloudinarySettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      localStorage.setItem('arminareka_cloudinary_cloud_name', cloudinaryCloudName.trim());
+      localStorage.setItem('arminareka_cloudinary_upload_preset', cloudinaryUploadPreset.trim());
+      setUploadNotice('Konfigurasi Cloudinary berhasil disimpan!');
+      setTimeout(() => setUploadNotice(null), 4000);
+      setShowCloudinarySettings(false);
+    } catch (err) {
+      console.warn('Failed to save cloudinary settings', err);
+    }
+  };
+
   // Section Texts State
   const [sectionTexts, setSectionTexts] = useState<SectionTextConfig>(() => {
     try {
@@ -542,9 +573,15 @@ startxref
   };
 
   // Process File Selection / Drop (Admin Only)
-  const handleFileProcess = (file: File) => {
+  const handleFileProcess = async (file: File) => {
     if (!isAdmin) {
       setShowAdminLoginModal(true);
+      return;
+    }
+
+    if (posters.length >= 50) {
+      setUploadNotice('Kapasitas maksimum penyimpanan telah mencapai batas 50 poster & brosur. Silakan hapus beberapa poster lama terlebih dahulu.');
+      setTimeout(() => setUploadNotice(null), 5000);
       return;
     }
 
@@ -558,55 +595,88 @@ startxref
     }
 
     if (file.size > 25 * 1024 * 1024) {
-      setUploadNotice('Ukuran berkas maksimal 25 MB.');
+      setUploadNotice(`Ukuran berkas "${file.name}" maksimal 25 MB.`);
       setTimeout(() => setUploadNotice(null), 4000);
       return;
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
+    const sizeInMB = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+    const cleanName = file.name.replace(/\.[^/.]+$/, '');
+    const format: 'JPG' | 'PDF' = isPdf ? 'PDF' : 'JPG';
 
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      const sizeInMB = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-      const cleanName = file.name.replace(/\.[^/.]+$/, '');
-      const format: 'JPG' | 'PDF' = isPdf ? 'PDF' : 'JPG';
+    let fileUrl = '';
 
-      const newPoster: PosterItem = {
-        id: `poster-item-${Date.now()}`,
-        title: customTitle.trim() || cleanName,
-        category: customCategory,
-        format: format,
-        fileSize: sizeInMB,
-        uploadDate: 'Baru saja diunggah',
-        description:
-          customDescription.trim() ||
-          `Materi poster / brosur resmi "${file.name}" yang diunggah oleh pengelola Arminareka untuk keperluan syiar dan informasi jamaah.`,
-        thumbnailUrl: isPdf
-          ? 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop'
-          : result,
-        downloadUrl: result,
-        fileName: file.name,
-        isDummy: false,
-      };
+    // Check if Cloudinary is configured
+    if (cloudinaryCloudName.trim() && cloudinaryUploadPreset.trim()) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', cloudinaryUploadPreset.trim());
 
-      const updated = [newPoster, ...posters];
-      setPosters(updated);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName.trim()}/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.secure_url) {
+          fileUrl = data.secure_url;
+        } else {
+          throw new Error(data.error?.message || 'Gagal mengunggah ke Cloudinary');
+        }
+      } catch (err: any) {
+        console.warn('Cloudinary upload error, falling back to local storage:', err);
+      }
+    }
+
+    // If Cloudinary didn't provide a URL, use local FileReader
+    if (!fileUrl) {
+      try {
+        fileUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      } catch (err) {
+        alert('Gagal memproses berkas. Silakan coba kembali.');
+        setIsUploading(false);
+        return;
+      }
+    }
+
+    const newPoster: PosterItem = {
+      id: `poster-item-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      title: customTitle.trim() || cleanName,
+      category: customCategory,
+      format: format,
+      fileSize: sizeInMB,
+      uploadDate: cloudinaryCloudName.trim() ? 'Baru saja (Cloudinary Live)' : 'Baru saja diunggah',
+      description:
+        customDescription.trim() ||
+        `Materi poster / brosur resmi "${file.name}" yang diunggah dari perangkat untuk keperluan informasi jamaah Arminareka.`,
+      thumbnailUrl: isPdf
+        ? 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop'
+        : fileUrl,
+      downloadUrl: fileUrl,
+      fileName: file.name,
+      isDummy: false,
+    };
+
+    setPosters((prev) => {
+      if (prev.length >= 50) return prev;
+      const updated = [newPoster, ...prev];
       savePostersToStorage(updated);
-      setIsUploading(false);
-      setCustomTitle('');
-      setCustomDescription('');
-      setShowUploadModal(false);
-      setUploadNotice(`Poster "${file.name}" berhasil diunggah dan siap diunduh!`);
-      setTimeout(() => setUploadNotice(null), 5000);
-    };
+      return updated;
+    });
 
-    reader.onerror = () => {
-      alert('Gagal memproses berkas. Silakan coba kembali.');
-      setIsUploading(false);
-    };
-
-    reader.readAsDataURL(file);
+    setIsUploading(false);
+    setCustomTitle('');
+    setCustomDescription('');
+    setShowUploadModal(false);
+    setUploadNotice(`Poster / Brosur "${file.name}" berhasil diunggah secara online! (${posters.length + 1}/50 Berkas)`);
+    setTimeout(() => setUploadNotice(null), 6000);
   };
 
   // Drag and drop handlers
@@ -2140,9 +2210,60 @@ startxref
                 <X size={16} />
               </button>
 
-              <div className="flex items-center gap-2.5 text-amber-300 font-bold text-base sm:text-lg border-b border-white/10 pb-4 mb-5">
+              <div className="flex items-center gap-2.5 text-amber-300 font-bold text-base sm:text-lg border-b border-white/10 pb-4 mb-4">
                 <Upload size={20} />
                 <span>Unggah Poster / E-Brosur Baru</span>
+              </div>
+
+              {/* Cloudinary Config Accordion / Toggle */}
+              <div className="mb-5 p-4 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-xs text-white">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                    <Sparkles size={14} />
+                    <span>Konfigurasi Cloudinary Live (Opsional)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowCloudinarySettings(!showCloudinarySettings)}
+                    className="text-amber-300 underline hover:text-amber-200 cursor-pointer font-medium"
+                  >
+                    {showCloudinarySettings ? 'Tutup Pengaturan' : (cloudinaryCloudName ? 'Ubah Cloudinary' : 'Hubungkan Cloudinary')}
+                  </button>
+                </div>
+                <p className="text-white/70 text-[11px] leading-relaxed">
+                  {cloudinaryCloudName ? '✓ Cloudinary terhubung (File akan langsung live online).' : 'Belum diatur: File menggunakan penyimpanan lokal browser. Hubungkan Cloudinary Anda agar file tersimpan di cloud secara live.'}
+                </p>
+
+                {showCloudinarySettings && (
+                  <form onSubmit={handleSaveCloudinarySettings} className="mt-3 pt-3 border-t border-amber-400/20 space-y-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-white/80 mb-1">Cloudinary Cloud Name:</label>
+                      <input
+                        type="text"
+                        value={cloudinaryCloudName}
+                        onChange={(e) => setCloudinaryCloudName(e.target.value)}
+                        placeholder="Contoh: my_cloud_name"
+                        className="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-white/80 mb-1">Upload Preset (Unsigned):</label>
+                      <input
+                        type="text"
+                        value={cloudinaryUploadPreset}
+                        onChange={(e) => setCloudinaryUploadPreset(e.target.value)}
+                        placeholder="Contoh: arminareka_preset"
+                        className="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all shadow-md cursor-pointer"
+                    >
+                      Simpan Pengaturan Cloudinary
+                    </button>
+                  </form>
+                )}
               </div>
 
               {/* Poster Details Form Prior to Upload */}
@@ -2239,11 +2360,14 @@ startxref
                 <input
                   ref={fileInputRef}
                   type="file"
+                  multiple
                   accept=".jpg,.jpeg,.png,.pdf"
                   className="hidden"
                   onChange={(e) => {
                     if (e.target.files && e.target.files.length > 0) {
-                      handleFileProcess(e.target.files[0]);
+                      Array.from(e.target.files).forEach((file) => {
+                        handleFileProcess(file);
+                      });
                     }
                   }}
                 />

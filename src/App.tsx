@@ -36,7 +36,6 @@ import FeaturedPackages from './components/FeaturedPackages';
 import ScheduleSection from './components/ScheduleSection';
 import WhyChooseUs from './components/WhyChooseUs';
 import AboutConsultant from './components/AboutConsultant';
-import GallerySection from './components/GallerySection';
 import PosterSection from './components/PosterSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import ConsultationSection from './components/ConsultationSection';
@@ -378,10 +377,7 @@ export default function App() {
           onConsultClick={() => handleDirectWhatsApp('Konsultasi Privat bersama Hj. Triana Indrian SE')}
         />
 
-        {/* 6. Travel & Pilgrimage Documentation Gallery */}
-        <GallerySection />
-
-        {/* 7. Official Posters & Digital Brochures (Download & Upload) */}
+        {/* 6. Official Posters & Digital Brochures (Download & Upload) */}
         <PosterSection />
 
         {/* 8. Client & Pilgrim Testimonials */}

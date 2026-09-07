@@ -124,15 +124,25 @@ export default function FeaturedPackages({
           ref={scrollRef}
           className="flex overflow-x-auto gap-6 pb-6 pt-2 px-2 sm:px-4 no-scrollbar scroll-smooth snap-x snap-mandatory"
         >
-          {PACKAGES_DATA.map((pkg) => (
+          {PACKAGES_DATA.map((pkg, idx) => (
             <motion.div
               key={pkg.id}
+              initial={{ opacity: 0, y: 50 + (idx % 2) * 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{
+                duration: 0.8,
+                delay: idx * 0.12,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               whileHover={{
-                y: -8,
-                scale: 1.015,
+                y: -12,
+                scale: 1.02,
+                rotateX: 1,
+                rotateY: 1,
                 transition: { duration: 0.3, ease: 'easeOut' },
               }}
-              className={`liquid-glass rounded-3xl p-6 sm:p-8 border flex flex-col justify-between transition-colors group cursor-default shadow-xl min-w-[320px] sm:min-w-[400px] md:min-w-[440px] max-w-[480px] shrink-0 snap-start ${
+              className={`liquid-glass rounded-3xl p-6 sm:p-8 border flex flex-col justify-between transition-colors group cursor-default shadow-2xl min-w-[320px] sm:min-w-[400px] md:min-w-[440px] max-w-[480px] shrink-0 snap-start transform-gpu ${
                 pkg.isBestSeller
                   ? 'border-amber-400/40 hover:border-amber-400/80 shadow-amber-500/10 hover:shadow-2xl hover:shadow-amber-500/20'
                   : 'border-white/10 hover:border-amber-400/40 hover:shadow-2xl'
