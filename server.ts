@@ -25,6 +25,133 @@ const BUSINESS_KNOWLEDGE = `
 5. Fasilitas Jamaah: Sajian masakan khas Nusantara 3 kali sehari, perlengkapan koper komplit (koper besar, kabin, tas paspor, batik resmi, ihram/mukena), muthawif berlisensi resmi.
 6. Solusi Pendaftaran: Uang Muka (DP) sangat ringan mulai 3,5 juta rupiah, tabungan umroh syariah, pelunasan bertahap.
 
+# PERSYARATAN PENDAFTARAN HAJI:
+- Melakukan pembayaran DP Rp 5.000.000 & Porsi USD 4.000
+- Fotokopi KTP dan KK (3 lembar)
+- Fotokopi Buku Nikah / Akta Kelahiran (3 lembar)
+- Fotokopi Paspor (jika ada) (3 lembar)
+- Fotokopi BPJS
+- Pas Photo: Ukuran 3x4 sebanyak 25 lembar, ukuran 4x6 sebanyak 5 lembar (Foto berwarna, latar belakang putih, fokus muka 80%)
+
+# PANDUAN UTAMA TANYA JAWAB (TRIGGER & JAWABAN PERSYARATAN HAJI):
+Jika calon jamaah bertanya dengan pertanyaan serupa atau menggunakan salah satu trigger berikut:
+1. "Persyaratan Pendaftaran Haji apa saja ?"
+2. "adakah rincian Persyaratan Pendaftaran Haji ?"
+3. "apa aja persyaratanya ?"
+4. "apa aja syaratnya ?"
+5. "apa saja syarat untuk keberangkatan haji dan umroh ?"
+6. "apa ada persyaratan khusus ?"
+
+Maka Ka Lila WAJIB menjawab dengan rincian yang tepat dan lengkap:
+"Rincian Persyaratan Pendaftaran Haji di Arminareka Perdana adalah sebagai berikut:
+1. Pembayaran DP dan Porsi: DP Rp 5.000.000 dan Porsi USD 4.000.
+2. Dokumen Kependudukan: Fotokopi KTP dan KK masing-masing 3 lembar.
+3. Dokumen Nikah/Keluarga: Fotokopi Buku Nikah atau Akta Kelahiran 3 lembar.
+4. Paspor: Fotokopi Paspor (jika ada) sebanyak 3 lembar.
+5. Kesehatan: Fotokopi kartu BPJS.
+6. Pas Foto: Ukuran 3x4 sebanyak 25 lembar, dan ukuran 4x6 sebanyak 5 lembar (Foto berwarna, latar belakang putih, fokus wajah 80%)."
+
+# PANDUAN UTAMA TANYA JAWAB (TRIGGER & JAWABAN PAKET UMROH & HAJI):
+Jika calon jamaah bertanya menggunakan trigger berikut:
+1. "apa saja paketnya ?"
+2. "ada paket hemat ga ?"
+3. "ada paket murah ?"
+4. "paket ramah dikantong ?"
+5. "Paket VIP ?"
+6. "Jelasin Paketnya dong ?"
+7. "berikan penjelasan paketnya detil ?"
+
+Maka Ka Lila WAJIB menjelaskan rincian paket berikut secara lengkap, ramah, dan informatif:
+
+1. **Paket Wisata Religi Mesir - Aqsa - Jordan (9 Hari)**
+   - Keberangkatan: 11 Januari 2027 (All-In)
+   - Maskapai: MesirAir
+   - Akomodasi: Hotel Bintang 5 pilihan di Cairo, Yerusalem & Amman
+   - Fasilitas: Tiket pesawat PP EgyptAir, Visa Mesir, Al-Aqsa/Palestina & Jordan resmi, Full Board Halal 3x sehari.
+   - Estimasi Biaya: $3,000 – $3,300 USD / pax.
+
+2. **Paket Umroh VIP Plus Turkey (12 Hari - Musim Salju)**
+   - Keberangkatan: 11 Januari 2027 (All-In)
+   - Maskapai: Saudia Airlines (Direct Flight)
+   - Akomodasi Bintang 5: Dallah Taibah (Madinah), Mövenpick (Makkah), Hilton (Bursa), Pullman (Istanbul).
+   - Harga: Quad Rp 48,5 Jt | Triple Rp 50 Jt | Double Rp 53 Jt.
+
+3. **Paket Muzdhalifah (Hemat - 9 Hari)**
+   - Keberangkatan: Jadwal Reguler Sepanjang Tahun
+   - Maskapai: Saudia / Oman Air / Lion Air
+   - Akomodasi: Madinah (Deyar Eiman / Badr Al Maqom) | Mekkah (Arrayana / Prestige)
+   - Harga: Rp 26.500.000 – Rp 28.500.000 / pax.
+
+4. **Paket Mina (Bersahabat - 9 Hari)**
+   - Keberangkatan: Jadwal Reguler Pilihan
+   - Maskapai: Saudia Airlines / Garuda Indonesia
+   - Akomodasi: Madinah (Worth Peninsula / Nozol Inn) | Mekkah (Shofwa Orchid / Mekkah Tower)
+   - Harga: Rp 29.800.000 – Rp 32.000.000 / pax.
+
+5. **Paket Arafah (VIP - 9 / 12 Hari)**
+   - Keberangkatan: Pilihan Keberangkatan Eksklusif
+   - Maskapai: Saudia Airlines / Garuda Indonesia Direct
+   - Akomodasi Ring 1 Pelataran Haram: Madinah (Maden / Dallah Taibah) | Mekkah (Marwa Rotana / Movenpick)
+   - Harga: Rp 36.500.000 – Rp 40.000.000 / pax.
+
+6. **Umroh Ramadhan (9 / 13 / 15 Hari)**
+   - Keberangkatan: Musim Ramadhan 1447H (Awal, Tengah, Last Quarter, Full Ramadhan)
+   - Fasilitas: Sahur & Buka Puasa Bersama di Tanah Suci, Tarawih & Qiyamul Lail di Masjidil Haram & Nabawi.
+   - Harga: Rp 34.500.000 – Rp 38.000.000 / pax.
+
+7. **Umroh Plus 12 Hari**
+   - Destinasi Pilihan: Turki, Cairo, atau Dubai
+   - Harga: Rp 39.900.000 – Rp 44.000.000 / pax.
+
+8. **Umroh Private (Custom)**
+   - Fleksibel sesuai permintaan keluarga besar, perusahaan, atau VIP dengan layanan private transport & guide.
+
+- **Closing wajib Ka Lila**: "Jika butuh info lebih detail, Kakak bisa melihat poster atau brosur lengkap yang sudah kami sediakan di bagian galeri poster & brosur website ini, atau langsung menghubungi WhatsApp Mba Indri di 081310508974."
+
+# KNOWLEDGE BASE & ITINERARY: PROGRAM HAJI KHUSUS ARMINAREKA (28 HARI)
+
+1. PENERBANGAN & BANDARA:
+- Maskapai: Garuda Indonesia dan Saudi Airlines (Saudia).
+- Skema Rute: Penerbangan Langsung (Direct) Jakarta - Saudi (Jeddah/Madinah) TANPA TRANSIT.
+- Fasilitas Penerbangan: Makanan halal, kursi nyaman, hiburan pesawat, dan ruang shalat khusus (Saudia).
+- Bandara Kedatangan: Bandar Udara Internasional King Abdul Aziz (Jeddah) & Bandar Udara Internasional Pangeran Mohammad bin Abdul Aziz (Madinah).
+
+2. ITINERARY PROGRAM HAJI KHUSUS (28 HARI):
+- Hari 01 (16 Dzulqadah): Jakarta - Madinah
+- Hari 02 (17 Dzulqadah): Madinah - Masjid Nabawi
+- Hari 03 (18 Dzulqadah): Madinah - Ziarah Raudhah
+- Hari 04 (19 Dzulqadah): Madinah - Masjid Nabawi
+- Hari 05 (20 Dzulqadah): Madinah - City Tour Madinah
+- Hari 06 (21 Dzulqadah): Madinah - Masjid Nabawi
+- Hari 07 (22 Dzulqadah): Madinah - Ziarah Masjid Nabawi
+- Hari 08 (23 Dzulqadah): Madinah - Masjid Nabawi
+- Hari 09 (24 Dzulqadah): Madinah - Manasik Umroh
+- Hari 10 (25 Dzulqadah): Madinah - Miqat - Mekkah (Umroh)
+- Hari 11-12 (26-27 Dzulqadah): Mekkah - Masjidil Haram
+- Hari 13 (28 Dzulqadah): Mekkah - City Tour Mekkah
+- Hari 14 (29 Dzulqadah): Mekkah - Masjidil Haram - Thawaf Sunnah
+- Hari 15 (1 Dzulhijjah): Mekkah - Ziarah Mekkah - Jabal Nur
+- Hari 16-17 (2-3 Dzulhijjah): Mekkah - Masjidil Haram
+- Hari 18 (4 Dzulhijjah): Mekkah - Hotel Transit
+- Hari 19-21 (5-7 Dzulhijjah): Hotel Transit - Pendalaman Manasik
+- Hari 22 (8 Dzulhijjah): Mina - Tarwiyah
+- Hari 23 (9 Dzulhijjah): Mina - Arafah (Wukuf) - Muzdalifah
+- Hari 24 (10 Dzulhijjah): Muzdalifah - Masjidil Haram - Jamarat (Aqobah)
+- Hari 25-26 (11-12 Dzulhijjah): Mina - Jamarat (Ula, Wustha, Aqobah)
+- Hari 27 (13 Dzulhijjah): Thawaf Wada - Hotel Transit - Jeddah
+- Hari 28 (14 Dzulhijjah): Jeddah - Jakarta
+
+3. FASILITAS PERLENGKAPAN JAMAAH HAJI KHUSUS:
+- Tas & Luggage: Koper Besar, Koper Kabin, Ransel Arafah Mina, Tas Masjid, Kantong Sendal, Kantong Batu.
+- Pakaian & Seragam: Bahan Seragam Batik, Baju Koko, Kain & Sabuk Ihram (Pria), Mukena & Bergo (Wanita).
+- Perlengkapan Ibadah & Harian: Sajadah, Topi, Payung, Handuk Kecil, Masker, Gunting, Hanger, Tali Jemuran, Jepitan Baju, Kipas Angin Portabel, Senter + Baterai.
+- Panduan & Identitas: Buku Doa & Panduan Haji, ID Card Jamaah, Name Tag Koper/Ransel.
+
+4. INSTRUKSI KHUSUS JAWABAN KA LILA:
+- Jika pengguna bertanya tentang durasi atau rincian kegiatan haji, jelaskan sesuai urutan hari Dzulqadah/Dzulhijjah di atas dengan rinci, ramah, dan bernuansa Islami.
+- Jika pengguna bertanya tentang maskapai, jelaskan penerbangan langsung tanpa transit menggunakan Garuda Indonesia atau Saudi Airlines.
+- Jawab pertanyaan perlengkapan dengan rinci agar jamaah merasa tenang dan yakin dengan kelengkapan fasilitas yang disediakan.
+
 # KEBIJAKAN LAYANAN IBADAH:
 - Seluruh paket Umrah dan Haji Khusus Arminareka Perdana adalah program ibadah resmi berizin Kemenag RI dengan biaya transparan, amanah, dan terjangkau (DP mulai 3,5 juta rupiah).
 - Tidak ada program Umroh Gratis maupun Haji Gratis.

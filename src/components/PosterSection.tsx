@@ -55,6 +55,19 @@ Hubungi Hj. Triana Indrian SE via WhatsApp untuk ketersediaan seat dan jadwal ke
 // Default Live Cloudinary Posters
 const DEFAULT_DUMMY_POSTERS: PosterItem[] = [
   {
+    id: 'cloudinary-poster-12',
+    title: 'Poster Eksklusif Arminareka Perdana',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.0 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Poster promosi eksklusif Arminareka Perdana bersama Hj. Triana Indrian SE.\n\nFasilitas & Keunggulan Utama:\n• Akomodasi Hotel Nyaman & Dekat Masjid\n• Bimbingan Ibadah Sesuai Sunnah\n• Pelayanan Amanah & Profesional`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788815016/Gemini_Generated_Image_nkqeyenkqeyenkqe.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788815016/Gemini_Generated_Image_nkqeyenkqeyenkqe.jpg',
+    fileName: 'Gemini_Generated_Image_nkqeyenkqeyenkqe.jpg',
+    isDummy: false,
+  },
+  {
     id: 'cloudinary-poster-1',
     title: 'Poster Resmi Umroh VIP & Keberangkatan Arminareka (1)',
     category: 'Umroh',
