@@ -52,54 +52,150 @@ Fasilitas & Keunggulan Utama:
 Informasi Pendaftaran & Konsultasi:
 Hubungi Hj. Triana Indrian SE via WhatsApp untuk ketersediaan seat dan jadwal keberangkatan resmi.`;
 
-// Default 2 Dummy Posters with structured paragraphs and points
+// Default Live Cloudinary Posters
 const DEFAULT_DUMMY_POSTERS: PosterItem[] = [
   {
-    id: 'poster-dummy-1',
-    title: 'Poster Brosur Resmi Umroh VIP Ramadhan 1446 H',
+    id: 'cloudinary-poster-1',
+    title: 'Poster Resmi Umroh VIP & Keberangkatan Arminareka (1)',
     category: 'Umroh',
     format: 'JPG',
-    fileSize: '3.4 MB',
-    uploadDate: 'Maret 2025',
-    description: `Materi promosi resmi resolusi tinggi (300 DPI) Paket Umroh VIP Ramadhan bersama Hj. Triana Indrian SE.
-
-Fasilitas & Keunggulan Utama:
-• Hotel Bintang 5 Ring 1 (Depan Pelataran Masjidil Haram & Nabawi)
-• Penerbangan Langsung (Direct Flight) Garuda Indonesia / Saudia Airlines
-• Sajian Katering Masakan Khas Nusantara 3x Sehari
-• Bimbingan Manasik Intensif & Muthawif Bersertifikasi Kemenag RI
-• Perlengkapan Eksklusif: Koper Fiber, Kain Ihram/Mukena, & Bahan Seragam
-
-Siap cetak untuk brosur fisik maupun disebarkan secara digital melalui WhatsApp dan media sosial.`,
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop',
-    downloadUrl:
-      'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1600&auto=format&fit=crop',
-    fileName: 'Poster_Umroh_VIP_Ramadhan_Arminareka.jpg',
-    isDummy: true,
+    fileSize: '1.8 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Materi promosi resmi resolusi tinggi Paket Umroh VIP Arminareka Perdana bersama Hj. Triana Indrian SE.\n\nFasilitas & Keunggulan Utama:\n• Akomodasi Hotel Bintang 5 Ring 1\n• Penerbangan Langsung (Direct Flight)\n• Pembimbing Ibadah & Muthawif Bersertifikat\n\nSiap dibagikan melalui WhatsApp dan media sosial untuk calon jamaah.`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.20_1.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.20_1.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.20_1.jpg',
+    isDummy: false,
   },
   {
-    id: 'poster-dummy-2',
-    title: 'Katalog & E-Brosur Haji Khusus Furoda VIP 2025/2026',
+    id: 'cloudinary-poster-2',
+    title: 'Brosur Jadwal & Paket Umroh Syariah Terbaru (2)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.1 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Brosur informasi jadwal keberangkatan dan rincian fasilitas paket umroh reguler serta VIP.\n\nLayanan Unggulan:\n• Katering cita rasa Nusantara 3x sehari\n• Manasik intensif sebelum keberangkatan\n• Perlengkapan eksklusif jamaah lengkap`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.20.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.20.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.20.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-3',
+    title: 'Informasi Hotel Ring 1 Masjidil Haram & Nabawi (3)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.4 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Poster informasi akomodasi hotel berbintang lima yang berada tepat di Ring 1 pelataran Masjidil Haram dan Masjid Nabawi.\n\nKenyamanan Beribadah:\n• Akses cepat dan mudah tanpa jarak jauh\n• Kamar istirahat luas dan nyaman untuk keluarga\n• Pelayanan prima 24 jam`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.19_2.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.19_2.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.19_2.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-4',
+    title: 'Katalog Fasilitas Eksklusif Penerbangan Langsung (4)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '1.9 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Katalog visual fasilitas penerbangan langsung (direct flight) bersama maskapai terkemuka mitra Arminareka.\n\nKeistimewaan Perjalanan:\n• Tanpa transit yang melelahkan\n• Bagasi kabin dan bagasi utama luas\n• Kenyamanan maksimal selama penerbangan`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.20_2.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.20_2.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.20_2.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-5',
+    title: 'Panduan Pendaftaran & Persyaratan Jamaah Umroh (5)',
+    category: 'Panduan',
+    format: 'JPG',
+    fileSize: '2.0 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Panduan ringkas tata cara pendaftaran, dokumen syarat, dan tahapan persiapan ibadah umroh bersama Arminareka.\n\nLangkah Mudah:\n• Konsultasi jadwal dan seat\n• Pengisian formulir & kelengkapan berkas\n• Pelunasan dan bimbingan manasik`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.19.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814179/WhatsApp_Image_2026-09-07_at_14.21.19.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.19.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-6',
+    title: 'Brosur Haji Khusus Furoda Tanpa Antre (6)',
     category: 'Haji',
-    format: 'PDF',
-    fileSize: '4.8 MB',
-    uploadDate: 'Musim Haji 1446 H',
-    description: `E-Brosur resmi format dokumen PDF panduan komprehensif Haji Furoda Langsung Berangkat tanpa masa tunggu antrean kuota reguler.
-
-Informasi & Layanan Utama:
-• Legalitas Resmi PIHK PT Arminareka Perdana Terakreditasi "A" Kemenag RI
-• Maktab Haji VIP Fasilitas Tenda Ber-AC Nyaman di Arafah & Mina
-• Akomodasi Hotel Bintang 5 Bintang Lima di Makkah & Madinah
-• Pembimbing Ibadah Berpengalaman & Tim Medis Standby 24 Jam
-• Simulasi Manasik & Pendampingan Tahapan Rukun Haji Lengkap
-
-Unduh dokumen lengkap untuk mempelajari rincian paket, syarat pendaftaran, dan jadwal keberangkatan.`,
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop',
-    downloadUrl: '',
-    fileName: 'Katalog_Haji_Khusus_Furoda_Arminareka.pdf',
-    isDummy: true,
+    format: 'JPG',
+    fileSize: '2.5 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Brosur resmi program Haji Furoda (Visa Mujamalah) resmi Kemenag RI langsung berangkat tanpa menunggu antrean kuota reguler.\n\nFasilitas Utama:\n• Maktab VIP Arafah & Mina\n• Tenda ber-AC dan katering penuh\n• Pembimbing ibadah syar'i berpengalaman`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.15.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.15.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.15.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-7',
+    title: 'Poster Layanan Muthawif & Pembimbing Ibadah (7)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '1.7 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Informasi tim muthawif dan pembimbing ibadah profesional yang mendampingi jamaah sejak keberangkatan hingga kepulangan ke tanah air.\n\nKomitmen Pelayanan:\n• Bimbingan rukun ibadah sesuai sunnah\n• Pendampingan kesehatan & ziarah tempat bersejarah`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.19_1.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.19_1.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.19_1.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-8',
+    title: 'Paket Wisata Halal Internasional & Timur Tengah (8)',
+    category: 'Wisata Halal',
+    format: 'JPG',
+    fileSize: '2.2 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Brosur promosi paket wisata halal internasional mengunjungi destinasi sejarah islam dunia dengan fasilitas premium dan nyaman.\n\nDestinasi Pilihan:\n• Turki, Mesir, Dubai, & Aqsa\n• Kuliner halal terjamin & hotel pilihan`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.21.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.21.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.21.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-9',
+    title: 'Flyer Promo Spesial Umroh Ramadhan & Syawal (9)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '1.9 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Flyer promo eksklusif keberangkatan Umroh Awal & Akhir Ramadhan serta Syawal bersama Hj. Triana Indrian SE.\n\nKeutamaan Ibadah:\n• Meraih pahala umroh senilai haji bersama Rasulullah SAW\n• Suasana ibadah yang syahdu di Tanah Suci`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.14.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.14.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.14.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-10',
+    title: 'Dokumentasi Layanan & Manasik Jamaah Arminareka (10)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.3 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Dokumentasi kegiatan manasik dan pelepasan jamaah umroh Arminareka Perdana yang amanah dan berpengalaman.\n\nPelayanan Sepenuh Hati:\n• Persiapan mental & fisik jamaah\n• Silaturahmi antar sesama jamaah`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.13.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.13.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.13.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-11',
+    title: 'Rangkuman Keunggulan & Legalitas Resmi Kemenag RI (11)',
+    category: 'Panduan',
+    format: 'JPG',
+    fileSize: '2.0 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Informasi legalitas resmi PT Arminareka Perdana sebagai PIHK terakreditasi "A" dengan pengalaman puluhan tahun melayani jamaah.\n\nLegalitas & Kepercayaan:\n• Izin Umroh & Haji Resmi Kemenag RI\n• Solusi mudah berangkat baitullah`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.13_1.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788814178/WhatsApp_Image_2026-09-07_at_14.21.13_1.jpg',
+    fileName: 'WhatsApp_Image_2026-09-07_at_14.21.13_1.jpg',
+    isDummy: false,
   },
 ];
 
@@ -259,16 +355,11 @@ export default function PosterSection() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Auto upgrade dummy poster descriptions if they were previously saved without line breaks
-          return parsed.map((item: PosterItem) => {
-            if (item.id === 'poster-dummy-1' && !item.description.includes('\n')) {
-              return { ...item, description: DEFAULT_DUMMY_POSTERS[0].description };
-            }
-            if (item.id === 'poster-dummy-2' && !item.description.includes('\n')) {
-              return { ...item, description: DEFAULT_DUMMY_POSTERS[1].description };
-            }
-            return item;
-          });
+          // Filter out any dummy posters
+          const realPosters = parsed.filter((item: PosterItem) => !item.isDummy);
+          if (realPosters.length > 0) {
+            return realPosters;
+          }
         }
       }
     } catch (e) {
@@ -294,6 +385,7 @@ export default function PosterSection() {
   const [customTitle, setCustomTitle] = useState('');
   const [customDescription, setCustomDescription] = useState('');
   const [customCategory, setCustomCategory] = useState<'Umroh' | 'Haji' | 'Wisata Halal' | 'Panduan'>('Umroh');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // Delete poster confirmation state
   const [posterToDelete, setPosterToDelete] = useState<PosterItem | null>(null);
@@ -572,12 +664,15 @@ startxref
     }
   };
 
-  // Process File Selection / Drop (Admin Only)
-  const handleFileProcess = async (file: File) => {
+  // Process Multiple File Selection / Drop (Admin Only)
+  const handleMultipleFiles = async (fileList: FileList | File[]) => {
     if (!isAdmin) {
       setShowAdminLoginModal(true);
       return;
     }
+
+    const files = Array.from(fileList);
+    if (files.length === 0) return;
 
     if (posters.length >= 50) {
       setUploadNotice('Kapasitas maksimum penyimpanan telah mencapai batas 50 poster & brosur. Silakan hapus beberapa poster lama terlebih dahulu.');
@@ -585,98 +680,113 @@ startxref
       return;
     }
 
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-    const isImage = file.type.startsWith('image/');
-
-    if (!isPdf && !isImage) {
-      setUploadNotice('Mohon unggah berkas dengan format JPG, PNG, atau PDF.');
-      setTimeout(() => setUploadNotice(null), 4000);
-      return;
-    }
-
-    if (file.size > 25 * 1024 * 1024) {
-      setUploadNotice(`Ukuran berkas "${file.name}" maksimal 25 MB.`);
-      setTimeout(() => setUploadNotice(null), 4000);
-      return;
-    }
-
     setIsUploading(true);
-    const sizeInMB = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-    const cleanName = file.name.replace(/\.[^/.]+$/, '');
-    const format: 'JPG' | 'PDF' = isPdf ? 'PDF' : 'JPG';
+    setUploadNotice(`Sedang memproses dan mengunggah ${files.length} berkas ke Cloudinary...`);
 
-    let fileUrl = '';
+    const newPostersList: PosterItem[] = [];
 
-    // Check if Cloudinary is configured
-    if (cloudinaryCloudName.trim() && cloudinaryUploadPreset.trim()) {
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', cloudinaryUploadPreset.trim());
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      const isImage = file.type.startsWith('image/');
 
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName.trim()}/upload`, {
-          method: 'POST',
-          body: formData,
-        });
+      if (!isPdf && !isImage) continue;
+      if (file.size > 25 * 1024 * 1024) continue;
 
-        const data = await res.json();
-        if (data.secure_url) {
-          fileUrl = data.secure_url;
-        } else {
-          throw new Error(data.error?.message || 'Gagal mengunggah ke Cloudinary');
+      const sizeInMB = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+      const cleanName = file.name.replace(/\.[^/.]+$/, '');
+      const format: 'JPG' | 'PDF' = isPdf ? 'PDF' : 'JPG';
+
+      let fileUrl = '';
+
+      // Check if Cloudinary is configured
+      if (cloudinaryCloudName.trim() && cloudinaryUploadPreset.trim()) {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', cloudinaryUploadPreset.trim());
+
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName.trim()}/upload`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          const data = await res.json();
+          if (data.secure_url) {
+            fileUrl = data.secure_url;
+          } else {
+            throw new Error(data.error?.message || 'Gagal mengunggah ke Cloudinary');
+          }
+        } catch (err: any) {
+          console.warn('Cloudinary upload error for file:', file.name, err);
+          setUploadNotice(`Gagal Cloudinary: ${err.message || 'Periksa Cloud Name / Upload Preset Unsigned'}`);
+          setTimeout(() => setUploadNotice(null), 8000);
         }
-      } catch (err: any) {
-        console.warn('Cloudinary upload error, falling back to local storage:', err);
       }
+
+      // Fallback to local FileReader if Cloudinary didn't provide a URL
+      if (!fileUrl) {
+        try {
+          fileUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        } catch (err) {
+          console.warn('Failed to read file locally:', file.name);
+          continue;
+        }
+      }
+
+      const newPoster: PosterItem = {
+        id: `poster-item-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 7)}`,
+        title: customTitle.trim() ? `${customTitle.trim()} (${i + 1})` : cleanName,
+        category: customCategory,
+        format: format,
+        fileSize: sizeInMB,
+        uploadDate: cloudinaryCloudName.trim() ? 'Baru saja (Cloudinary Live)' : 'Baru saja diunggah',
+        description:
+          customDescription.trim() ||
+          `Materi poster / brosur resmi "${file.name}" yang diunggah dari perangkat untuk keperluan informasi jamaah Arminareka.`,
+        thumbnailUrl: isPdf
+          ? 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop'
+          : fileUrl,
+        downloadUrl: fileUrl,
+        fileName: file.name,
+        isDummy: false,
+      };
+
+      newPostersList.push(newPoster);
     }
 
-    // If Cloudinary didn't provide a URL, use local FileReader
-    if (!fileUrl) {
-      try {
-        fileUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target?.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      } catch (err) {
-        alert('Gagal memproses berkas. Silakan coba kembali.');
-        setIsUploading(false);
-        return;
-      }
+    if (newPostersList.length > 0) {
+      setPosters((prev) => {
+        const remainingCapacity = 50 - prev.length;
+        const toAdd = newPostersList.slice(0, remainingCapacity);
+        const updated = [...toAdd, ...prev];
+        savePostersToStorage(updated);
+        return updated;
+      });
     }
-
-    const newPoster: PosterItem = {
-      id: `poster-item-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      title: customTitle.trim() || cleanName,
-      category: customCategory,
-      format: format,
-      fileSize: sizeInMB,
-      uploadDate: cloudinaryCloudName.trim() ? 'Baru saja (Cloudinary Live)' : 'Baru saja diunggah',
-      description:
-        customDescription.trim() ||
-        `Materi poster / brosur resmi "${file.name}" yang diunggah dari perangkat untuk keperluan informasi jamaah Arminareka.`,
-      thumbnailUrl: isPdf
-        ? 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop'
-        : fileUrl,
-      downloadUrl: fileUrl,
-      fileName: file.name,
-      isDummy: false,
-    };
-
-    setPosters((prev) => {
-      if (prev.length >= 50) return prev;
-      const updated = [newPoster, ...prev];
-      savePostersToStorage(updated);
-      return updated;
-    });
 
     setIsUploading(false);
     setCustomTitle('');
     setCustomDescription('');
+    setSelectedFiles([]);
     setShowUploadModal(false);
-    setUploadNotice(`Poster / Brosur "${file.name}" berhasil diunggah secara online! (${posters.length + 1}/50 Berkas)`);
+    setUploadNotice(`Berhasil mengunggah ${newPostersList.length} berkas poster & brosur secara online ke Cloudinary!`);
     setTimeout(() => setUploadNotice(null), 6000);
+  };
+
+  // Execute Upload with Selected Files
+  const handleExecuteUpload = async () => {
+    if (selectedFiles.length === 0) {
+      setUploadNotice('Mohon pilih minimal satu berkas poster atau brosur terlebih dahulu.');
+      setTimeout(() => setUploadNotice(null), 4000);
+      return;
+    }
+    await handleMultipleFiles(selectedFiles);
   };
 
   // Drag and drop handlers
@@ -699,7 +809,7 @@ startxref
       return;
     }
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileProcess(e.dataTransfer.files[0]);
+      setSelectedFiles(Array.from(e.dataTransfer.files));
     }
   };
 
@@ -2344,13 +2454,13 @@ startxref
                 </div>
               </div>
 
-              {/* Drag and Drop Zone */}
+               {/* Drag and Drop Zone */}
               <div
                 id="poster-upload-dropzone"
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`rounded-2xl p-6 border-2 transition-all text-center flex flex-col items-center justify-center cursor-pointer group ${
+                className={`rounded-2xl p-6 border-2 transition-all text-center flex flex-col items-center justify-center cursor-pointer group mb-4 ${
                   isDragging
                     ? 'border-amber-400 bg-amber-500/15 scale-[1.01]'
                     : 'border-dashed border-amber-400/30 hover:border-amber-400/70 hover:bg-white/5'
@@ -2365,9 +2475,8 @@ startxref
                   className="hidden"
                   onChange={(e) => {
                     if (e.target.files && e.target.files.length > 0) {
-                      Array.from(e.target.files).forEach((file) => {
-                        handleFileProcess(file);
-                      });
+                      setSelectedFiles(Array.from(e.target.files));
+                      e.target.value = '';
                     }
                   }}
                 />
@@ -2377,18 +2486,40 @@ startxref
                 </div>
 
                 <h4 className="text-sm sm:text-base font-bold text-white mb-1">
-                  {isUploading ? 'Sedang Memproses Berkas...' : 'Pilih Berkas atau Tarik File ke Sini'}
+                  {selectedFiles.length > 0 ? `${selectedFiles.length} Berkas Dipilih` : (isUploading ? 'Sedang Memproses Berkas...' : 'Pilih Berkas atau Tarik File ke Sini')}
                 </h4>
 
                 <p className="text-xs text-white/60 mb-3">
-                  Maksimal ukuran berkas 25 MB (JPG, PNG, atau PDF).
+                  {selectedFiles.length > 0
+                    ? selectedFiles.map(f => f.name).join(', ')
+                    : 'Maksimal ukuran berkas 25 MB (JPG, PNG, atau PDF).'}
                 </p>
 
                 <button
                   type="button"
                   className="px-5 py-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-xs shadow-md pointer-events-none"
                 >
-                  Pilih Berkas Poster / PDF
+                  {selectedFiles.length > 0 ? 'Ganti / Tambah Berkas Lain' : 'Pilih Berkas Poster / PDF'}
+                </button>
+              </div>
+
+              {/* Save & Upload Action Button */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowUploadModal(false)}
+                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  disabled={isUploading}
+                  onClick={handleExecuteUpload}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Upload size={15} />
+                  <span>{isUploading ? 'Menyimpan & Mengunggah...' : 'Simpan & Unggah Poster'}</span>
                 </button>
               </div>
             </motion.div>
