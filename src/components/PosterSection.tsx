@@ -55,6 +55,45 @@ Hubungi Hj. Triana Indrian SE via WhatsApp untuk ketersediaan seat dan jadwal ke
 // Default Live Cloudinary Posters
 const DEFAULT_DUMMY_POSTERS: PosterItem[] = [
   {
+    id: 'cloudinary-poster-13',
+    title: 'Brosur & Jadwal Resmi Arminareka Perdana (3)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.2 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Brosur dan informasi jadwal resmi program perjalanan ibadah Umroh dan Tour Religi Arminareka Perdana bersama Hj. Triana Indrian SE.\n\nFasilitas & Keunggulan Utama:\n• Akomodasi Hotel Nyaman & Strategis\n• Bimbingan Ibadah Sesuai Sunnah\n• Pelayanan Amanah & Profesional`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788818716/WhatsApp_Image_2026-09-08_at_05.03.08.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788818716/WhatsApp_Image_2026-09-08_at_05.03.08.jpg',
+    fileName: 'WhatsApp_Image_2026-09-08_at_05.03.08.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-14',
+    title: 'Brosur & Jadwal Resmi Arminareka Perdana (4)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.1 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Brosur promosi dan informasi program perjalanan Arminareka Perdana.\n\nFasilitas & Keunggulan Utama:\n• Layanan Konsultasi & Pendaftaran Resmi\n• Jadwal Pasti & Transparan\n• Pembimbing Berpengalaman`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788818716/WhatsApp_Image_2026-09-08_at_05.03.07.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788818716/WhatsApp_Image_2026-09-08_at_05.03.07.jpg',
+    fileName: 'WhatsApp_Image_2026-09-08_at_05.03.07.jpg',
+    isDummy: false,
+  },
+  {
+    id: 'cloudinary-poster-15',
+    title: 'Brosur & Jadwal Resmi Arminareka Perdana (5)',
+    category: 'Umroh',
+    format: 'JPG',
+    fileSize: '2.0 MB',
+    uploadDate: 'Cloudinary Live',
+    description: `Materi promosi resmi Arminareka Perdana Kancab 09 Tangerang bersama Hj. Triana Indrian SE.\n\nFasilitas & Keunggulan Utama:\n• Pilihan Paket Umroh & Haji Khusus\n• Akomodasi Berkualitas\n• Pendaftaran Mudah & Amanah`,
+    thumbnailUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788818716/WhatsApp_Image_2026-09-08_at_05.02.42.jpg',
+    downloadUrl: 'https://res.cloudinary.com/jhzwpoxx/image/upload/v1788818716/WhatsApp_Image_2026-09-08_at_05.02.42.jpg',
+    fileName: 'WhatsApp_Image_2026-09-08_at_05.02.42.jpg',
+    isDummy: false,
+  },
+  {
     id: 'cloudinary-poster-12',
     title: 'Poster Eksklusif Arminareka Perdana',
     category: 'Umroh',
@@ -365,15 +404,18 @@ export default function PosterSection() {
   const [posters, setPosters] = useState<PosterItem[]>(() => {
     try {
       const saved = localStorage.getItem('arminareka_all_posters');
+      let userPosters: PosterItem[] = [];
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Filter out any dummy posters
-          const realPosters = parsed.filter((item: PosterItem) => !item.isDummy);
-          if (realPosters.length > 0) {
-            return realPosters;
-          }
+        if (Array.isArray(parsed)) {
+          userPosters = parsed.filter((item: PosterItem) => !item.isDummy);
         }
+      }
+      const existingIds = new Set(userPosters.map((p) => p.id));
+      const missingDefaults = DEFAULT_DUMMY_POSTERS.filter((p) => !existingIds.has(p.id));
+      const combined = [...userPosters, ...missingDefaults];
+      if (combined.length > 0) {
+        return combined;
       }
     } catch (e) {
       console.warn('Failed to load saved posters from localStorage', e);
